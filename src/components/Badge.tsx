@@ -38,7 +38,7 @@ const shadowClasses = {
 };
 
 export default function Badge(props: {
-    text: string;
+    text?: string;
     className?: string;
     style?: React.CSSProperties;
     px?: number;
@@ -69,6 +69,7 @@ export default function Badge(props: {
                 text-center
                 justify-center
                 w-fit
+                h-fit
                 ${fontWeightClasses[props.fontWeight ?? "semibold"]}
                 ${textSizeClasses[props.textSize ?? "xs"]}
                 ${borderRadiusClasses[props.borderRadius ?? "full"]}

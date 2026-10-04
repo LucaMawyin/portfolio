@@ -909,6 +909,7 @@ export default function SettingsClient(props : {
                                         wrap-break-word
                                         [&_span]:text-gray-500
                                         gap-1
+                                        mb-auto
                                     ">
                                         
                                         {/* PROJECT PIN & HIDDEN */}
@@ -1049,18 +1050,18 @@ export default function SettingsClient(props : {
 
                                     {/* Delete/Edit Buttons */}
                                     <div 
-                                        className="shrink-0 self-center flex gap-4"
+                                        className="shrink-0 flex gap-4 max-h-[calc(50%+0.5rem)]"
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         <Button
                                             text="Edit"
-                                            className="w-20! sm:w-fit rounded-lg!"
+                                            className="w-20! sm:w-fit h-fit self-end rounded-lg!"
                                             x={0}
                                             y={0}
                                             onClick={() => {router.push(`add-project/edit?id=${project.id}`)}}
                                         />
                                         <DeleteButton
-                                            className="w-20! sm:w-fit rounded-lg!"
+                                            className="w-20! sm:w-fit h-fit self-end rounded-lg!"
                                             x={0}
                                             y={0}
                                             text="Project"
@@ -1110,7 +1111,8 @@ export default function SettingsClient(props : {
                         flex 
                         flex-wrap 
                         justify-center 
-                        my-4
+                        mt-4
+                        mb-6
                         gap-4
                     ">
                         {visibleCount > projectLengthIncrement && (

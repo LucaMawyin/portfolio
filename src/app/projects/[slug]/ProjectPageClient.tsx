@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import DeleteButton from "@/components/DeleteButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import { getProject } from "@/lib/getProjects";
+import { shadow } from "@/lib/tags";
 import { Project } from "@/lib/types";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
@@ -39,6 +40,18 @@ export default function ProjectPageClient({
         : project.libraries || []
     ) as string[];
 
+    const { 
+        glowColour, 
+        glowRGB, 
+        borderColour 
+    } = shadow(project.colour);
+
+    const { 
+        glowColour: statusGlowColour, 
+        glowRGB: statusGlowRGB, 
+        borderColour: statusBorderColour
+    } = shadow(project.status_colour);
+
     return (
         <div className="
             mt-[10vh]
@@ -70,62 +83,174 @@ export default function ProjectPageClient({
 
                 {/* PROJECT */}
                 {project.image && (
-                    <img
-                        src={project.image}
-                        alt={project.name}
-                        className="w-full rounded-2xl"
-                    />
+                    <div className="relative">
+                        <Badge
+                            text={project.status}
+                            style={{
+                                "--glow" : statusGlowRGB,
+                                backgroundColor: project.status_colour,
+                                borderColor: statusBorderColour,
+                                color: statusGlowColour,
+                            } as React.CSSProperties}
+                            className="
+                                absolute
+                                left-0
+                                bottom-0
+                                m-2
+                                border
+                                animate-tag-pulse
+                            "
+                        />
+                        <Badge
+                            text={project.tag}
+                            style={{
+                                "--glow" : glowRGB,
+                                backgroundColor: project.colour,
+                                borderColor: borderColour,
+                                color: glowColour,
+                            } as React.CSSProperties}
+                            textSize="xl"
+                            px={3}
+                            py={0}
+                            className="
+                                absolute
+                                left-0
+                                top-0
+                                m-2
+                                border
+                                animate-tag-pulse
+                            "
+                        />
+                        <img
+                            src={project.image}
+                            alt={project.name}
+                            className="w-full rounded-2xl"
+                        />                        
+                    </div>
+
                 )}
                 
-                <a
-                    href={project.link}
-                    target="_blank"
-                    className="
-                        group
+                <div>
+                    <a
+                        href={project.link}
+                        target="_blank"
+                        className="
+                            group
+                            flex
+                            flex-wrap
+                            w-full
+                            justify-between
+                            mb-4
+                            gap-4
+                            transition-colors
+                            duration-200
+                            hover:text-blue-800
+                        "
+                    >
+                        <h2 className="m-0 text-6xl leading-none">
+                            {project.name}
+                        </h2>
+
+                        {project.link && (() => {
+                            let isGithub = false;
+
+                            try {
+                                const hostname = new URL(project.link).hostname;
+                                isGithub = hostname === "github.com" || hostname.endsWith(".github.com");
+                            } catch {
+
+                            }
+
+                            return (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+
+                                        window.open(
+                                            project.link,
+                                            "_blank",
+                                            "noopener,noreferrer"
+                                        );
+                                    }}
+                                    aria-label={
+                                        isGithub
+                                            ? `View ${project.name} source code`
+                                            : `Visit ${project.name} website`
+                                    }
+                                    style={{
+                                        "--glow": glowRGB,
+                                        "--project-colour": project.colour,
+                                        color: glowColour,
+                                        borderColor: borderColour,
+                                    } as React.CSSProperties}                  
+                                    className="
+                                        group
+                                        self-center
+                                        h-fit
+                                        flex
+                                        items-center
+                                        gap-2
+                                        px-4
+                                        py-2
+                                        rounded-full
+                                        border-2
+                                        bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
+                                        text-sm
+                                        font-semibold
+                                        shadow-[0_2px_8px_rgba(0,0,0,0.12)]
+                                        cursor-pointer
+                                        transition-all
+                                        duration-200
+                                        group-hover:scale-105
+                                        group-hover:border-gray-500
+                                        group-hover:bg-(--project-colour)
+                                        group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)]
+                                        group-active:scale-95
+                                        animate-tag-pulse
+                                    "
+                                >
+                                    <span>{isGithub ? "View Code" : "Visit Website"}</span>
+                                    <span className="
+                                        animate-[arrow-idle_1.2s_ease-in-out_infinite]
+                                        transition-transform
+                                        duration-200
+                                    ">
+                                        ↗
+                                    </span>
+                                </button>
+                            );
+                        })()}
+                    </a>
+
+                    <div className="
+                        text-gray-400 
+                        text-sm
                         flex
-                        flex-row
-                        w-fit
-                        transition-colors
-                        duration-200
-                        hover:text-blue-800
-                    "
-                >
-                    <h2 className="m-0 text-6xl leading-none">
-                        {project.name}
-                    </h2>
+                        flex-col
+                        gap-2
+                    ">
+                        <p>
+                            Created{" "}
+                            {new Date(project.created_at).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            })}                    
+                        </p>
 
-                    <img
-                        src="/new-tab.svg"
-                        alt="Open In New Tab"
-                        className="ml-4 h-8 w-8 brightness-0 self-center"
-                    />
-                </a>
-
-                <div className="
-                    text-gray-400 
-                    text-sm
-                    flex
-                    flex-col
-                    gap-2
-                ">
-                    <p>
-                        Created{" "}
-                        {new Date(project.created_at).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}                    
-                    </p>
-
-                    <p>
-                        Updated{" "}
-                        {new Date(project.updated_at).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}                    
-                    </p>                    
+                        <p>
+                            Updated{" "}
+                            {new Date(project.updated_at).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            })}                    
+                        </p>                    
+                    </div>                    
                 </div>
+
 
                 
 

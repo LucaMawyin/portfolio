@@ -550,7 +550,7 @@ export default function Projects(props: {
 
             {/* MOBILE / SMALL SCREEN CAROUSEL */}
 
-            <FadeInOnView className="relative overflow-hidden w-full">
+            <FadeInOnView className="relative w-full">
                 <div 
                     className="
                         flex

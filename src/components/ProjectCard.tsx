@@ -114,34 +114,22 @@ export default function ProjectCard( props : {
                 
                 {props.project.tag && (
                     
-                    <h2 
-                        style={{ 
-                            "--glow": glowRGB,
+                    <Badge
+                        text={props.project.tag}
+                        style={{
+                            "--glow" : glowRGB,
                             backgroundColor: props.project.colour,
-                            color: glowColour,
                             borderColor: borderColour,
+                            color: glowColour,
                         } as React.CSSProperties}
-
-                        className={`
-                            self-center sm:self-start
-                            text-xl
-                            max-w-fit
-                            w-fit
-                            inline-flex
-                            text-center
-                            justify-center
-                            px-3
-                            py-1
-                            font-semibold
-                            rounded-full
+                        textSize="xl"
+                        px={3}
+                        py={0}
+                        className="
                             border
-                            leading-none
                             animate-tag-pulse
-                            ${props.childClassName?.includes("flex-col") ? "flex-wrap" : ""}
-                        `}
-                    >
-                        {props.project.tag}
-                    </h2>
+                        "
+                    />
                 )}
 
                 {props.holdProgress !== undefined && (
@@ -247,11 +235,11 @@ export default function ProjectCard( props : {
                 {/* Image */}
                 <div className="flex-1 min-w-70! lg:min-w-0 max-w-full flex justify-center">
                     {props.project.image && 
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-center">
                             <img
                                 src={props.project.image}
                                 alt={`Project ${props.project.id}`}
-                                className="w-full h-auto rounded-xl"
+                                className="w-[90%] h-auto rounded-xl"
                                 loading="lazy"
                             />                                   
                         </div>
@@ -305,12 +293,12 @@ export default function ProjectCard( props : {
                     const hostname = new URL(props.project.link).hostname;
                     isGithub = hostname === "github.com" || hostname.endsWith(".github.com");
                 } catch {
-                    // Invalid URL — treat it as a normal website link
                 }
 
                 return (
-                    <button
-                        type="button"
+
+  
+                    <div className="cursor-pointer mt-4"
                         onMouseEnter={() => {
                             props.onHoldCancel?.();
                             props.onButtonHoverStart?.();
@@ -331,48 +319,42 @@ export default function ProjectCard( props : {
                                 ? `View ${props.project.name} source code`
                                 : `Visit ${props.project.name} website`
                         }
-                        style={{
-                            "--glow": glowRGB,
-                            "--project-colour": props.project.colour,
-                            color: glowColour,
-                            borderColor: borderColour,
-                        } as React.CSSProperties}                  
-                        className="
-                            group
-                            mt-4
-                            ml-auto
-                            h-fit
-                            flex
-                            items-center
-                            gap-2
-                            px-4
-                            py-2
-                            rounded-full
-                            border-2
-                            bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
-                            text-sm
-                            font-semibold
-                            shadow-[0_2px_8px_rgba(0,0,0,0.12)]
-                            cursor-pointer
-                            transition-all
-                            duration-200
-                            hover:scale-105
-                            hover:border-gray-500
-                            hover:bg-(--project-colour)
-                            hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)]
-                            active:scale-95
-                            animate-tag-pulse
-                        "
                     >
-                        <span>{isGithub ? "View Code" : "Visit Website"}</span>
-                        <span className="
-                            animate-[arrow-idle_1.2s_ease-in-out_infinite]
-                            transition-transform
-                            duration-200
-                        ">
-                            ↗
-                        </span>
-                    </button>
+                        <Badge
+                            style={{
+                                "--glow": glowRGB,
+                                "--project-colour": props.project.colour,
+                                color: glowColour,
+                                borderColor: borderColour,
+                            } as React.CSSProperties}      
+                            textSize="sm"
+                            px={4}
+                            py={2}
+                            className="
+                                group
+                                ml-auto
+                                gap-2!
+                                bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
+                                hover:bg-(--project-colour)
+                                transition-all
+                                duration-200
+                                active:scale-95
+                                hover:scale-105
+                                border-2
+                                animate-tag-pulse
+                            "
+                        >
+                            <span>{isGithub ? "View Code" : "Visit Website"}</span>
+                            <span className="
+                                animate-[arrow-idle_1.2s_ease-in-out_infinite]
+                                transition-transform
+                                duration-200
+                            ">
+                                ↗
+                            </span>
+                        </Badge>                              
+                    </div>
+             
                 );
             })()}
         </a>
