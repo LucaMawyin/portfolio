@@ -9,6 +9,8 @@ import { formatToMonthYear } from "@/lib/formatMonthYear";
 import DeleteButton from "./DeleteButton";
 import { useState } from "react";
 import Badge from "./Badge";
+import AddButton from "./AddButton";
+import EditButton from "./EditButton";
 
 
 export default function ExperienceClient(props: { isLoggedIn:boolean; experienceList: Experience[] }) {
@@ -37,34 +39,35 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                     text-3xl 
                     font-bold
 
-                    ${props.isLoggedIn ? "" : "pb-8 sm:pb-0"}
+                    ${props.isLoggedIn ? "pb-4" : "pb-8 sm:pb-0"}
                 `}>
                     Experience
                 </h1>
                 
                 {/* Add Experience button if logged in */}
-                {props.isLoggedIn && 
-                    <div className="
-                        flex 
-                        w-full
-                        justify-center
-                        p-4 sm:p-0 sm:pt-4
-                    ">
-                        <Button 
+                {props.isLoggedIn && (
+                    <div
+                        className="
+                            flex
+                            w-full
+                            justify-center
+                            pb-4 sm:pb-0
+                        "
+                    >
+                        <AddButton
                             text="Add Experience"
-                            onClick={() => (router.push("/add-experience"))}
-                        />            
+                            x={4}
+                            y={2}
+                            action={() => (router.push("/add-experience"))}
+                        />
+
                     </div>
-        
-                }
+                )}
             </FadeInOnView>
 
 
 
             <div className="relative w-full my-[2.5%]">
-
-
-
                 <div className="
                     absolute
                     hidden md:block
@@ -226,54 +229,43 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         </ReactMarkdown>
                                     </div>
 
+                                    
+                                    {props.isLoggedIn && (
+                                        <div className="flex w-full justify-between mt-auto">
+                                            <EditButton
+                                                action={() => {router.push(`add-experience/edit?id=${exp.id}`)}}
+                                            />
+                                            <DeleteButton
+                                                itemName={exp.title}
+                                                action={async () => {
+                                                const res = await fetch("/api/experience", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ id: exp.id }),
+                                                });
+                    
+                                                if (res.status === 401) {
+                                                    router.push("/login");
+                                                    return;
+                                                }
+                                                
+                                                    setExperience((prev) =>
+                                                        prev.filter((p) => p.id !== exp.id)
+                                                    );
+                                                }}
+                                            /> 
+                                        </div>
+                                    )}
+
+
+
                                 </FadeInOnView>
                             </div>
 
 
-                            {/* BUTTONS */}
-                            {props.isLoggedIn && (
-                                <div className={`
-                                    flex 
-                                    h-fit
-                                    w-full 
-                                    md:w-[45%] 
-                                    justify-between
-                                    ${index % 2 === 0 
-                                        ? "md:self-start" 
-                                        : "md:self-end"
-                                    }
-                                `}>
-                                    <Button
-                                        text="Edit"
-                                        className="min-w-32 h-fit"
-                                        onClick={() => {router.push(`add-experience/edit?id=${exp.id}`)}}
-                                    />
-                                    <DeleteButton
-                                        className="min-w-32 h-fit"
-                                        text="Experience"
-                                        action={async () => {
-                                        const res = await fetch("/api/experience", {
-                                            method: "DELETE",
-                                            headers: {
-                                                "Content-Type": "application/json",
-                                            },
-                                            body: JSON.stringify({ id: exp.id }),
-                                        });
-            
-                                        if (res.status === 401) {
-                                            router.push("/login");
-                                            return;
-                                        }
-                                        
-                                            setExperience((prev) =>
-                                                prev.filter((p) => p.id !== exp.id)
-                                            );
-                                        }}
-                                    />                        
-                                </div>
-        
-        
-                            )}
+
                             
                         </div>
                         
@@ -445,54 +437,39 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         </ReactMarkdown>
                                     </div>
 
+                                    {props.isLoggedIn && (
+                                        <div className="flex w-full justify-between mt-auto">
+                                            <EditButton
+                                                action={() => {router.push(`add-experience/edit?id=${cert.id}`)}}
+                                            />
+                                            <DeleteButton
+                                                itemName={cert.title}
+                                                action={async () => {
+                                                const res = await fetch("/api/experience", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ id: cert.id }),
+                                                });
+                    
+                                                if (res.status === 401) {
+                                                    router.push("/login");
+                                                    return;
+                                                }
+                                                
+                                                    setExperience((prev) =>
+                                                        prev.filter((p) => p.id !== cert.id)
+                                                    );
+                                                }}
+                                            /> 
+                                        </div>
+                                    )}
+
                                 </FadeInOnView>
                             </div>
 
 
-                            {/* BUTTONS */}
-                            {props.isLoggedIn && (
-                                <div className={`
-                                    flex 
-                                    h-fit
-                                    w-full 
-                                    md:w-[45%] 
-                                    justify-between
-                                    ${((experience.length + index) % 2 === 0)
-                                        ? "md:self-start"
-                                        : "md:self-end"
-                                    }
-                                `}>
-                                    <Button
-                                        text="Edit"
-                                        className="min-w-32 h-fit"
-                                        onClick={() => {router.push(`add-experience/edit?id=${cert.id}`)}}
-                                    />
-                                    <DeleteButton
-                                        className="min-w-32 h-fit"
-                                        text="Experience"
-                                        action={async () => {
-                                        const res = await fetch("/api/experience", {
-                                            method: "DELETE",
-                                            headers: {
-                                                "Content-Type": "application/json",
-                                            },
-                                            body: JSON.stringify({ id: cert.id }),
-                                        });
-            
-                                        if (res.status === 401) {
-                                            router.push("/login");
-                                            return;
-                                        }
-                                        
-                                            setCertificates((prev) =>
-                                                prev.filter((p) => p.id !== cert.id)
-                                            );
-                                        }}
-                                    />                        
-                                </div>
-        
-        
-                            )}
                             
                         </div>
                         

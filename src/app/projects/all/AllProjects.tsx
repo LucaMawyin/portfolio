@@ -29,17 +29,6 @@ export default function AllProjects(props: {
         });
     }, []);
 
-    const getDelay = (i: number) => {
-        if (typeof window === "undefined") return 0;
-
-        const columns =
-            window.innerWidth >= 1280 ? 3 :
-            window.innerWidth >= 1024 ? 2 :
-            1;
-
-        return (i % columns) * 150;
-    };
-
     return (
         <div className="w-full mt-[10vh]">
             <h1 className="text-center pb-4 px-8">
@@ -69,55 +58,35 @@ export default function AllProjects(props: {
                             h-full 
                             justify-center
                         "
-                        style={{
-                            "--delay": `${getDelay(i)}ms`,
-                        } as React.CSSProperties}
+                        delay={i * 150}
                     >
                         <ProjectCard
                             project={project}
                             isLoggedIn={props.isLoggedIn}
                             position="start"
                             holdProgress={0}
+                            onEdit={() => {router.push(`/add-project/edit?id=${project.id}`)}}
+                            onDelete={async () => {
+                                const res = await fetch("/api/projects", {
+                                    method: "DELETE",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({ id: project.id }),
+                                });
+
+                                if (res.status === 401) {
+                                    router.push("/login");
+                                    return;
+                                }
+                                
+                                setProjects((prev) =>
+                                    prev.filter((p) => p.id !== project.id)
+                                );
+                                
+                                notify("Project deleted successfully", "success");
+                            }}
                         />
-
-                        {/* Delete button if logged in */}
-                        {props.isLoggedIn && (
-                            <div className="w-full flex justify-between">
-                                <Button
-                                    text="Edit"
-                                    className="h-fit w-1/4!"
-                                    y={2}
-                                    x={0}
-                                    onClick={() => {router.push(`/add-project/edit?id=${project.id}`)}}
-                                />
-                                <DeleteButton
-                                    text="Project"
-                                    className="h-fit w-1/4!"
-                                    y={2}
-                                    x={0}
-                                    action={async () => {
-                                        const res = await fetch("/api/projects", {
-                                            method: "DELETE",
-                                            headers: {
-                                                "Content-Type": "application/json",
-                                            },
-                                            body: JSON.stringify({ id: project.id }),
-                                        });
-
-                                        if (res.status === 401) {
-                                            router.push("/login");
-                                            return;
-                                        }
-                                        
-                                        setProjects((prev) =>
-                                            prev.filter((p) => p.id !== project.id)
-                                        );
-                                        
-                                        notify("Project deleted successfully", "success");
-                                    }}
-                                />                        
-                            </div>
-                        )}
                     </FadeInOnView>              
                     
 

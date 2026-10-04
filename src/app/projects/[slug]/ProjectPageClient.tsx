@@ -3,6 +3,7 @@
 import Badge from "@/components/Badge";
 import Button from "@/components/Button";
 import DeleteButton from "@/components/DeleteButton";
+import EditButton from "@/components/EditButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import { getProject } from "@/lib/getProjects";
 import { shadow } from "@/lib/tags";
@@ -378,18 +379,12 @@ export default function ProjectPageClient({
                 {/* Delete button if logged in */}
                 {isLoggedIn && (
                     <div className="w-full flex flex-wrap justify-between mt-8 gap-6">
-                        <Button
-                            text="Edit"
-                            className="h-fit w-full sm:w-1/4!"
-                            y={2}
-                            x={0}
-                            onClick={() => {router.push(`/add-project/edit?id=${project.id}`)}}
+                        <EditButton
+                            action={() => {router.push(`/add-project/edit?id=${project.id}`)}}
                         />
+
                         <DeleteButton
-                            text="Project"
-                            className="h-fit w-full sm:w-1/4!"
-                            y={2}
-                            x={0}
+                            itemName={project.name}
                             action={async () => {
                                 const res = await fetch("/api/projects", {
                                     method: "DELETE",

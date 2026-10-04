@@ -28,7 +28,6 @@ export default function FadeInOnView({
 
     const classNames = className.split(/\s+/);
 
-    // Base direction
     const baseDirection =
         classNames.includes("fade-right")
             ? "right"
@@ -36,7 +35,6 @@ export default function FadeInOnView({
                 ? "left"
                 : "up";
 
-    // Small-screen-and-up direction
     const smDirection =
         classNames.includes("sm:fade-right")
             ? "right"
@@ -70,40 +68,28 @@ export default function FadeInOnView({
     if (visible) {
         animationClasses =
             "opacity-100 translate-x-0 translate-y-0";
-    }
-
-    // Base -> sm:up
-    else if (smDirection === "up") {
+    } else if (smDirection === "up") {
         animationClasses =
             baseDirection === "right"
                 ? "opacity-0 translate-x-8 sm:translate-x-0 sm:translate-y-4"
                 : baseDirection === "left"
                     ? "opacity-0 -translate-x-8 sm:translate-x-0 sm:translate-y-4"
                     : "opacity-0 translate-y-4";
-    }
-
-    // Base -> sm:right
-    else if (smDirection === "right") {
+    } else if (smDirection === "right") {
         animationClasses =
             baseDirection === "up"
                 ? "opacity-0 translate-y-4 sm:translate-y-0 sm:translate-x-8"
                 : baseDirection === "left"
                     ? "opacity-0 -translate-x-8 sm:translate-x-8"
                     : "opacity-0 translate-x-8";
-    }
-
-    // Base -> sm:left
-    else if (smDirection === "left") {
+    } else if (smDirection === "left") {
         animationClasses =
             baseDirection === "up"
                 ? "opacity-0 translate-y-4 sm:translate-y-0 sm:-translate-x-8"
                 : baseDirection === "right"
                     ? "opacity-0 translate-x-8 sm:-translate-x-8"
                     : "opacity-0 -translate-x-8";
-    }
-
-    // Base only
-    else {
+    } else {
         animationClasses =
             baseDirection === "right"
                 ? "opacity-0 translate-x-8"
@@ -122,7 +108,9 @@ export default function FadeInOnView({
             onTouchCancel={onTouchCancel}
             style={{
                 ...style,
-                transitionDelay: `var(--delay, ${delay}ms)`,
+                transitionDelay:
+                    style?.transitionDelay ??
+                    `${delay}ms`,
             }}
             className={`
                 relative

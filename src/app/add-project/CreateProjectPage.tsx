@@ -75,10 +75,6 @@ export default function CreateProjectPage(props : {
         return sessionStorage.getItem("nextPage") ?? props.referrer ?? null;
     });
 
-    const initialCreatedAt = form.created_at
-        ? new Date(form.created_at)
-        : undefined;
-
     // Setting data if loading a draft that exists
     useEffect(() => {
         if (!props.initialData) return;
@@ -345,13 +341,13 @@ export default function CreateProjectPage(props : {
     } = shadow(form.status_colour);
 
     return (
-        <div className="flex justify-center min-h-[90vh]">
+        <div className="flex justify-center min-h-[90vh] max-h-fit">
             <form 
                 className="
                     flex
                     flex-col
                     w-full
-                    h-full
+                    min-h-[80vh]
                     max-w-3xl
                     mt-[10vh]
                     [&_div]:mt-4
@@ -448,624 +444,591 @@ export default function CreateProjectPage(props : {
                         {steps[step - 1]}
                     </div>
                 </div>
-
+                
+                <div className="my-auto!">
                 {/* FORM */}
-                <div className="relative w-full mt-0! px-2">
-                    <div
-                        key={step}
-                        className="
-                            animate-step-in
-                            w-full
-                        "
-                    >
-                        {step === 1 && (
-                            <Tile
-                                title={steps[step-1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="name">Project Name</label>
-                                <textarea
-                                    id="name"
-                                    name="name"
-                                    placeholder="Name"
-                                    value={form.name}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                    autoComplete="off"
-                                    required
-                                />
-
-                                <label htmlFor="slug">Slug</label>
-                                <input
-                                    id="slug"
-                                    name="slug"
-                                    value={form.slug}
-                                    readOnly
-                                    tabIndex={-1}
-                                    className="cursor-not-allowed opacity-60"
-                                    aria-label="Project slug, generated automatically"
-                                />
-
-                                <label htmlFor="description">Project Description</label>
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    placeholder="Description"
-                                    value={form.description}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                    onBlur={(e) => {
-                                        setForm({
-                                            ...form,
-                                            description: ensurePunctuation(e.target.value),
-                                        });
-                                    }}
-                                    required
-                                />
-
-                                {/* IMAGE INPUT */}
-                                <div
-                                    onDragOver={(e) => {e.preventDefault()}}
-                                    onDrop={handleDrop}
-                                    className="
-                                        flex 
-                                        flex-col 
-                                        items-center
-                                        justify-center
-                                        gap-3
-                                        min-h-32
-                                        p-6
-                                        m-1
-                                        border-2
-                                        border-dashed
-                                        rounded-xl
-                                        border-gray-400
-                                        bg-gray-200
-                                        cursor-pointer
-                                        transition-colors
-                                        duration-200
-                                        hover:bg-gray-300
-                                        hover:border-gray-500
-                                    "
-                                    onClick={() => inputRef.current?.click()} 
+                    <div className="relative w-full mt-0! px-2">
+                        <div
+                            key={step}
+                            className="
+                                animate-step-in
+                                w-full
+                            "
+                        >
+                            {step === 1 && (
+                                <Tile
+                                    title={steps[step-1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
                                 >
-                                    <input 
-                                        id="thumbnail"
-                                        type="file" 
-                                        accept="image/*" 
-                                        onChange={handleFileChange} 
-                                        ref={inputRef}
-                                        className="hidden"
-                                    />            
-                                    <span className="font-medium">
-                                        Drag & drop an image here
-                                    </span>
-
-                                    <span className="text-sm text-gray-500">
-                                        or click to select
-                                    </span>
-
-                                    {preview && (
-                                        <img src={preview} alt="Preview" className="max-w-1/2 self-center rounded-lg"/>
-                                    )}
-                                </div>
-                                
-                            </Tile>
-                        )}
-                        {step === 2 && (
-                            <Tile
-                                title={steps[step-1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="subtitle">Project Subtitle</label>
-                                <textarea
-                                    id="subtitle"
-                                    name="subtitle"
-                                    placeholder="Subtitle"
-                                    value={form.subtitle}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                    autoComplete="off"
-                                />
-
-                                <label htmlFor="link">Project Link</label>
-                                <input
-                                    id="link"
-                                    name="link"
-                                    type="url"
-                                    placeholder="Link"
-                                    value={form.link}
-                                    onChange={handleChange}
-                                />
-
-                                <label htmlFor="created_at">Created Date</label>
-                                <DayPickerClient
-                                    initialDate={
-                                        form.created_at
-                                            ? new Date(form.created_at)
-                                            : undefined
-                                    }
-                                    onChange={(date) => {
-                                        if (!date) return;
-
-                                        setForm((prev) => ({
-                                            ...prev,
-                                            created_at: date.toISOString(),
-                                        }));
-                                    }}
-                                    className="mt-0!"
-                                />
-                            
-
-                                <label htmlFor="content">Project Content</label>
-                                <textarea
-                                    id="content"
-                                    name="content"
-                                    placeholder="Talk about your project"
-                                    value={form.content}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                    autoComplete="off"
-                                    required
-                                />
-                            </Tile>
-                        )}
-
-                        {step === 3 && (
-                            <Tile
-                                title={steps[step-1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="languages">Languages Used</label>
-                                <textarea
-                                    id="languages"
-                                    name="languages"
-                                    placeholder="Languages (comma separated)"
-                                    value={form.languages}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                />
-
-                                <label htmlFor="libraries">Libraries Used</label>
-                                <textarea
-                                    id="libraries"
-                                    name="libraries"
-                                    placeholder="Libraries (comma separated)"
-                                    value={form.libraries}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                />
-
-                                <label htmlFor="tools">Tools Used</label>
-                                <textarea
-                                    id="tools"
-                                    name="tools"
-                                    placeholder="Tools (comma separated)"
-                                    value={form.tools}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                />
-                            </Tile>
-                        )}
-                        {step === 4 && (
-                            <Tile
-                                title={steps[step-1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                {/* PROJECT TAGS */}
-                                <label htmlFor="tag">Tag</label>
-                                <div className="flex items-center justify-between gap-2 mt-0!">
-                                    <select
-                                        id="tag"
-                                        name="tag"
-                                        className="flex-1"
-                                        value={form.tag}
-                                            onChange={(e) => {
-                                                const selectedTag = props.tags.find(tag => tag.name === e.target.value);
-                                                if (e.target.value === "custom") {
-                                                    setUseCustomTag(true);
-                                                    setForm({ 
-                                                        ...form, 
-                                                        tag: "",
-                                                        colour: "#FAE8FF"
-                                                    });
-                                                } else {
-                                                    setUseCustomTag(false);
-                                                    setForm({ 
-                                                        ...form, 
-                                                        tag: e.target.value,
-                                                        colour: selectedTag?.colour || form.colour
-                                                    });
-                                                }
-                                                
-                                            }}
-                                    >
-
-                                        {props.tags.map((tag) => (
-                                            <option key={tag.id} value={tag.name}>
-                                                {tag.name === "" ? "No tag" : tag.name}
-                                            </option>
-                                        ))}
-
-                                        <option value="custom">Add new tag</option>
-                                    </select>
-
-                                    <DeleteButton
-                                        disabled={
-                                            !form.tag ||
-                                            useCustomTag || 
-                                            props.tags.find(tag => tag.name === form.tag)?.builtin
-                                        }
-                                        text="Tag"
-                                        className="flex min-h-fit rounded-lg! self-start"
-                                        x={2}
-                                        y={0}
-                                        action={async () => {
-                                            if (!form.tag) return;
-
-                                            await fetch("/api/tags", {
-                                                method: "DELETE",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                },
-                                                body: JSON.stringify({ 
-                                                    name: form.tag,
-                                                    category: "project",
-                                                }),
-                                            });
-
-                                            setForm((prev) => ({ ...prev, tag: "" }));
-
-                                            notify("Project tag deleted successfully", "success");
-                                            router.refresh();
+                                    <label htmlFor="name">Project Name</label>
+                                    <textarea
+                                        id="name"
+                                        name="name"
+                                        placeholder="Name"
+                                        value={form.name}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
                                         }}
+                                        onChange={handleChange}
+                                        autoComplete="off"
+                                        required
                                     />
-                                </div>
-                                {useCustomTag && (
-                                    <>
-                                        <input
+
+                                    <label htmlFor="slug">Slug</label>
+                                    <input
+                                        id="slug"
+                                        name="slug"
+                                        value={form.slug}
+                                        readOnly
+                                        tabIndex={-1}
+                                        className="cursor-not-allowed opacity-60"
+                                        aria-label="Project slug, generated automatically"
+                                    />
+
+                                    <label htmlFor="description">Project Description</label>
+                                    <textarea
+                                        id="description"
+                                        name="description"
+                                        placeholder="Description"
+                                        value={form.description}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                        onBlur={(e) => {
+                                            setForm({
+                                                ...form,
+                                                description: ensurePunctuation(e.target.value),
+                                            });
+                                        }}
+                                        required
+                                    />
+
+                                    {/* IMAGE INPUT */}
+                                    <div
+                                        onDragOver={(e) => {e.preventDefault()}}
+                                        onDrop={handleDrop}
+                                        className="
+                                            flex 
+                                            flex-col 
+                                            items-center
+                                            justify-center
+                                            gap-3
+                                            min-h-32
+                                            p-6
+                                            m-1
+                                            border-2
+                                            border-dashed
+                                            rounded-xl
+                                            border-gray-400
+                                            bg-gray-200
+                                            cursor-pointer
+                                            transition-colors
+                                            duration-200
+                                            hover:bg-gray-300
+                                            hover:border-gray-500
+                                        "
+                                        onClick={() => inputRef.current?.click()} 
+                                    >
+                                        <input 
+                                            id="thumbnail"
+                                            type="file" 
+                                            accept="image/*" 
+                                            onChange={handleFileChange} 
+                                            ref={inputRef}
+                                            className="hidden"
+                                        />            
+                                        <span className="font-medium">
+                                            Drag & drop an image here
+                                        </span>
+
+                                        <span className="text-sm text-gray-500">
+                                            or click to select
+                                        </span>
+
+                                        {preview && (
+                                            <img src={preview} alt="Preview" className="max-w-1/2 self-center rounded-lg"/>
+                                        )}
+                                    </div>
+                                    
+                                </Tile>
+                            )}
+                            {step === 2 && (
+                                <Tile
+                                    title={steps[step-1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="subtitle">Project Subtitle</label>
+                                    <textarea
+                                        id="subtitle"
+                                        name="subtitle"
+                                        placeholder="Subtitle"
+                                        value={form.subtitle}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                        autoComplete="off"
+                                    />
+
+                                    <label htmlFor="link">Project Link</label>
+                                    <input
+                                        id="link"
+                                        name="link"
+                                        type="url"
+                                        placeholder="Link"
+                                        value={form.link}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="created_at">Created Date</label>
+                                    <DayPickerClient
+                                        initialDate={
+                                            form.created_at
+                                                ? new Date(form.created_at)
+                                                : undefined
+                                        }
+                                        onChange={(date) => {
+                                            if (!date) return;
+
+                                            setForm((prev) => ({
+                                                ...prev,
+                                                created_at: date.toISOString(),
+                                            }));
+                                        }}
+                                        className="mt-0!"
+                                    />
+                                
+
+                                    <label htmlFor="content">Project Content</label>
+                                    <textarea
+                                        id="content"
+                                        name="content"
+                                        placeholder="Talk about your project"
+                                        value={form.content}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                </Tile>
+                            )}
+
+                            {step === 3 && (
+                                <Tile
+                                    title={steps[step-1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="languages">Languages Used</label>
+                                    <textarea
+                                        id="languages"
+                                        name="languages"
+                                        placeholder="Languages (comma separated)"
+                                        value={form.languages}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="libraries">Libraries Used</label>
+                                    <textarea
+                                        id="libraries"
+                                        name="libraries"
+                                        placeholder="Libraries (comma separated)"
+                                        value={form.libraries}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="tools">Tools Used</label>
+                                    <textarea
+                                        id="tools"
+                                        name="tools"
+                                        placeholder="Tools (comma separated)"
+                                        value={form.tools}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+                            {step === 4 && (
+                                <Tile
+                                    title={steps[step-1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    {/* PROJECT TAGS */}
+                                    <label htmlFor="tag">Tag</label>
+                                    <div className="flex items-center justify-between gap-2 mt-0!">
+                                        <select
                                             id="tag"
-                                            placeholder="Add New Tag"
-                                            value={capitalizeNamesAndTitles(customTag)}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setCustomTag(value);
-                                                setForm({ ...form, tag: value });
+                                            name="tag"
+                                            className="flex-1"
+                                            value={form.tag}
+                                                onChange={(e) => {
+                                                    const selectedTag = props.tags.find(tag => tag.name === e.target.value);
+                                                    if (e.target.value === "custom") {
+                                                        setUseCustomTag(true);
+                                                        setForm({ 
+                                                            ...form, 
+                                                            tag: "",
+                                                            colour: "#FAE8FF"
+                                                        });
+                                                    } else {
+                                                        setUseCustomTag(false);
+                                                        setForm({ 
+                                                            ...form, 
+                                                            tag: e.target.value,
+                                                            colour: selectedTag?.colour || form.colour
+                                                        });
+                                                    }
+                                                    
+                                                }}
+                                        >
+
+                                            {props.tags.map((tag) => (
+                                                <option key={tag.id} value={tag.name}>
+                                                    {tag.name === "" ? "No tag" : tag.name}
+                                                </option>
+                                            ))}
+
+                                            <option value="custom">Add new tag</option>
+                                        </select>
+
+                                        <DeleteButton
+                                            disabled={
+                                                !form.tag ||
+                                                useCustomTag || 
+                                                props.tags.find(tag => tag.name === form.tag)?.builtin
+                                            }
+                                            itemName={form.tag}
+                                            className="flex min-h-fit rounded-lg! self-start"
+                                            x={4}
+                                            y={1}
+                                            action={async () => {
+                                                if (!form.tag) return;
+
+                                                await fetch("/api/tags", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ 
+                                                        name: form.tag,
+                                                        category: "project",
+                                                    }),
+                                                });
+
+                                                setForm((prev) => ({ ...prev, tag: "" }));
+
+                                                notify("Project tag deleted successfully", "success");
+                                                router.refresh();
                                             }}
-                                            required
                                         />
-                                    </>
-                                )}
-                                {props.tags.find(tag => tag.name === form.tag)?.builtin ? null : (
-                                    <>
-                                        <label htmlFor="colour">Tag Color</label>
-                                        <input
-                                            id="colour"
-                                            name="colour"
-                                            type="color"
-                                            placeholder="Colour"
-                                            value={form.colour}
-                                            onChange={(e) => {
-                                                setForm({ ...form, colour: e.target.value });
-                                            }}
-                                            required
-                                        />
-                                    </>
-                                )}
-
-                                {/* PROJECT STATUS */}
-                                <label htmlFor="status">Status</label>
-                                <div className="flex items-center justify-between gap-2 mt-0!">
-                                    <select
-                                        id="status"
-                                        name="status"
-                                        className="flex-1"
-                                        value={form.status}
-                                            onChange={(e) => {
-                                                const selectedStatus = props.statuses.find(status => status.name === e.target.value);
-                                                if (e.target.value === "custom-status") {
-                                                    setUseCustomStatus(true);
-                                                    setForm({ 
-                                                        ...form, 
-                                                        status: "",
-                                                        status_colour: "#FAE8FF"
-                                                    });
-                                                } else {
-                                                    setUseCustomStatus(false);
-                                                    setForm({ 
-                                                        ...form, 
-                                                        status: e.target.value,
-                                                        status_colour: selectedStatus?.colour || form.status_colour
-                                                    });
-                                                }
-                                                
-                                            }}
-                                    >
-
-                                        {props.statuses.map((status) => (
-                                            <option key={status.id} value={status.name}>
-                                                {status.name === "" ? "No status" : status.name}
-                                            </option>
-                                        ))}
-
-                                        <option value="custom-status">Add new status</option>
-                                    </select>
-
-                                    <DeleteButton
-                                        disabled={
-                                            !form.status ||
-                                            useCustomStatus || 
-                                            props.statuses.find(status => status.name === form.status)?.builtin
-                                        }
-                                        text="Status"
-                                        className="flex min-h-fit rounded-lg! self-start"
-                                        x={2}
-                                        y={0}
-                                        action={async () => {
-                                            if (!form.status) return;
-
-                                            await fetch("/api/tags", {
-                                                method: "DELETE",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                },
-                                                body: JSON.stringify({ 
-                                                    name: form.status,
-                                                    category: "status",
-                                                }),
-                                            });
-
-                                            setForm((prev) => ({ ...prev, status: "" }));
-
-                                            notify("Project status deleted successfully", "success");
-                                            router.refresh();
-                                        }}
-                                    />
-                                </div>
-                                {useCustomStatus && (
-                                    <>
-                                        <input
-                                            id="status"
-                                            placeholder="Add New Status"
-                                            value={capitalizeNamesAndTitles(customStatus)}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setCustomStatus(value);
-                                                setForm({ ...form, status: value });
-                                            }}
-                                            required
-                                        />
-                                    </>
-                                )}
-                                {props.statuses.find(status => status.name === form.status)?.builtin ? null : (
-                                    <>
-                                        <label htmlFor="status-colour">Status Color</label>
-                                        <input
-                                            id="status-colour"
-                                            name="status-colour"
-                                            type="color"
-                                            placeholder="Colour"
-                                            value={form.status_colour}
-                                            onChange={(e) => {
-                                                setForm({ ...form, status_colour: e.target.value });
-                                            }}
-                                            required
-                                        />
-                                    </>
-                                )}
-                                {/* PIN & HIDE */}
-                                <div className="flex flex-wrap justify-evenly">
-                                    <label className="flex gap-2 items-center cursor-pointer">
-                                        <span>Pin Project</span>
-                                        <input
-                                            name="pinned"
-                                            type="checkbox"
-                                            className="mb-0!"
-                                            checked={form.pinned}
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        pinned: e.target.checked,
-                                                    })
-                                                }
-                                        />                            
-                                    </label>
-                                    
-                                    <label className="flex gap-2 items-center cursor-pointer">
-                                        <span>Hide Project</span>
-                                        <input
-                                            name="hidden"
-                                            type="checkbox"
-                                            className="mb-0!"
-                                            checked={form.hidden}
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        hidden: e.target.checked,
-                                                    })
-                                                }
-                                        />                            
-                                    </label>
-                                </div>
-                            </Tile>
-                        )}
-                        {step === 5 && (
-                            <Tile
-                                title={steps[step-1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                                childClassName="[&_div]:mt-0!"
-                            >
-                                <div 
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4 
-                                        rounded-xl 
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(4)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[3]}
-                                    </h2>
-                                    <div className="grid grid-cols-3 items-center">
-                                        {/* TAG */}
-                                        <div className="justify-self-start">
-                                            {form.tag && (
-                                                <h2
-                                                    style={{
-                                                        "--glow": glowRGB,
-                                                        backgroundColor: form.colour,
-                                                        color: glowColour,
-                                                        borderColor: borderColour,
-                                                    } as React.CSSProperties}
-                                                    className="
-                                                        self-center
-                                                        sm:self-start
-                                                        text-xl
-                                                        min-w-fit
-                                                        w-fit
-                                                        inline-flex
-                                                        text-center
-                                                        justify-center
-                                                        px-3
-                                                        py-1
-                                                        font-semibold
-                                                        rounded-full
-                                                        border
-                                                        leading-none
-                                                    "
-                                                >
-                                                    {form.tag}
-                                                </h2>
-                                            )}
-                                        </div>
-
-                                        {/* STATUS */}
-                                        <div className="justify-self-center">
-                                            {form.status && (
-                                                <Badge
-                                                    text={form.status}
-                                                    style={{
-                                                        "--glow": statusGlowRGB,
-                                                        backgroundColor: form.status_colour,
-                                                        borderColor: statusBorderColour,
-                                                        color: statusGlowColour,
-                                                    } as React.CSSProperties}
-                                                    className="border"
-                                                />
-                                            )}
-                                        </div>
-
-                                        {/* PIN / HIDDEN */}
-                                        <div className="flex flex-row gap-4 h-fit justify-self-end">
-                                            {form.pinned && (
-                                                <Badge
-                                                    text="Pinned"
-                                                    className="bg-yellow-400"
-                                                />
-                                            )}
-
-                                            {form.hidden && (
-                                                <Badge
-                                                    text="Hidden"
-                                                    className="bg-orange-400"
-                                                />
-                                            )}
-                                        </div>
                                     </div>
-                                
-                                </div>
-                                <div 
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4 
-                                        rounded-xl 
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(1)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[0]}
-                                    </h2>
-                                    <h4>{form.name}</h4>
-                                    <div className="prose prose-sm">/projects/{form.slug}</div>
-                                    <div className="
-                                        flex
-                                        prose
-                                        prose-sm
-                                        min-w-full
-                                    ">
-                                        <ReactMarkdown>
-                                            {form.description}
-                                        </ReactMarkdown>
-                                    </div>
-                                    
-                                    {preview && (
-                                        <img src={preview} alt="Preview" className="max-w-1/2 self-center"/>
+                                    {useCustomTag && (
+                                        <>
+                                            <input
+                                                id="tag"
+                                                placeholder="Add New Tag"
+                                                value={capitalizeNamesAndTitles(customTag)}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setCustomTag(value);
+                                                    setForm({ ...form, tag: value });
+                                                }}
+                                                required
+                                            />
+                                        </>
                                     )}
-                                </div>
-                                <div 
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4 
-                                        rounded-xl 
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(2)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[1]}
-                                    </h2>
+                                    {props.tags.find(tag => tag.name === form.tag)?.builtin ? null : (
+                                        <>
+                                            <label htmlFor="colour">Tag Color</label>
+                                            <input
+                                                id="colour"
+                                                name="colour"
+                                                type="color"
+                                                placeholder="Colour"
+                                                value={form.colour}
+                                                onChange={(e) => {
+                                                    setForm({ ...form, colour: e.target.value });
+                                                }}
+                                                required
+                                            />
+                                        </>
+                                    )}
 
-                                    {form.subtitle && (
+                                    {/* PROJECT STATUS */}
+                                    <label htmlFor="status">Status</label>
+                                    <div className="flex items-center justify-between gap-2 mt-0!">
+                                        <select
+                                            id="status"
+                                            name="status"
+                                            className="flex-1"
+                                            value={form.status}
+                                                onChange={(e) => {
+                                                    const selectedStatus = props.statuses.find(status => status.name === e.target.value);
+                                                    if (e.target.value === "custom-status") {
+                                                        setUseCustomStatus(true);
+                                                        setForm({ 
+                                                            ...form, 
+                                                            status: "",
+                                                            status_colour: "#FAE8FF"
+                                                        });
+                                                    } else {
+                                                        setUseCustomStatus(false);
+                                                        setForm({ 
+                                                            ...form, 
+                                                            status: e.target.value,
+                                                            status_colour: selectedStatus?.colour || form.status_colour
+                                                        });
+                                                    }
+                                                    
+                                                }}
+                                        >
+
+                                            {props.statuses.map((status) => (
+                                                <option key={status.id} value={status.name}>
+                                                    {status.name === "" ? "No status" : status.name}
+                                                </option>
+                                            ))}
+
+                                            <option value="custom-status">Add new status</option>
+                                        </select>
+
+                                        <DeleteButton
+                                            disabled={
+                                                !form.status ||
+                                                useCustomStatus || 
+                                                props.statuses.find(status => status.name === form.status)?.builtin
+                                            }
+                                            itemName={form.status}
+                                            className="flex min-h-fit rounded-lg! self-start"
+                                            x={4}
+                                            y={1}
+                                            action={async () => {
+                                                if (!form.status) return;
+
+                                                await fetch("/api/tags", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ 
+                                                        name: form.status,
+                                                        category: "status",
+                                                    }),
+                                                });
+
+                                                setForm((prev) => ({ ...prev, status: "" }));
+
+                                                notify("Project status deleted successfully", "success");
+                                                router.refresh();
+                                            }}
+                                        />
+                                    </div>
+                                    {useCustomStatus && (
+                                        <>
+                                            <input
+                                                id="status"
+                                                placeholder="Add New Status"
+                                                value={capitalizeNamesAndTitles(customStatus)}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setCustomStatus(value);
+                                                    setForm({ ...form, status: value });
+                                                }}
+                                                required
+                                            />
+                                        </>
+                                    )}
+                                    {props.statuses.find(status => status.name === form.status)?.builtin ? null : (
+                                        <>
+                                            <label htmlFor="status-colour">Status Color</label>
+                                            <input
+                                                id="status-colour"
+                                                name="status-colour"
+                                                type="color"
+                                                placeholder="Colour"
+                                                value={form.status_colour}
+                                                onChange={(e) => {
+                                                    setForm({ ...form, status_colour: e.target.value });
+                                                }}
+                                                required
+                                            />
+                                        </>
+                                    )}
+                                    {/* PIN & HIDE */}
+                                    <div className="flex flex-wrap justify-evenly">
+                                        <label className="flex gap-2 items-center cursor-pointer">
+                                            <span>Pin Project</span>
+                                            <input
+                                                name="pinned"
+                                                type="checkbox"
+                                                className="mb-0!"
+                                                checked={form.pinned}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            pinned: e.target.checked,
+                                                        })
+                                                    }
+                                            />                            
+                                        </label>
+                                        
+                                        <label className="flex gap-2 items-center cursor-pointer">
+                                            <span>Hide Project</span>
+                                            <input
+                                                name="hidden"
+                                                type="checkbox"
+                                                className="mb-0!"
+                                                checked={form.hidden}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            hidden: e.target.checked,
+                                                        })
+                                                    }
+                                            />                            
+                                        </label>
+                                    </div>
+                                </Tile>
+                            )}
+                            {step === 5 && (
+                                <Tile
+                                    title={steps[step-1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                    childClassName="[&_div]:mt-0!"
+                                >
+                                    <div 
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4 
+                                            rounded-xl 
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(4)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[3]}
+                                        </h2>
+                                        <div className="grid grid-cols-3 items-center">
+                                            {/* TAG */}
+                                            <div className="justify-self-start">
+                                                {form.tag && (
+                                                    <h2
+                                                        style={{
+                                                            "--glow": glowRGB,
+                                                            backgroundColor: form.colour,
+                                                            color: glowColour,
+                                                            borderColor: borderColour,
+                                                        } as React.CSSProperties}
+                                                        className="
+                                                            self-center
+                                                            sm:self-start
+                                                            text-xl
+                                                            min-w-fit
+                                                            w-fit
+                                                            inline-flex
+                                                            text-center
+                                                            justify-center
+                                                            px-3
+                                                            py-1
+                                                            font-semibold
+                                                            rounded-full
+                                                            border
+                                                            leading-none
+                                                        "
+                                                    >
+                                                        {form.tag}
+                                                    </h2>
+                                                )}
+                                            </div>
+
+                                            {/* STATUS */}
+                                            <div className="justify-self-center">
+                                                {form.status && (
+                                                    <Badge
+                                                        text={form.status}
+                                                        style={{
+                                                            "--glow": statusGlowRGB,
+                                                            backgroundColor: form.status_colour,
+                                                            borderColor: statusBorderColour,
+                                                            color: statusGlowColour,
+                                                        } as React.CSSProperties}
+                                                        className="border"
+                                                    />
+                                                )}
+                                            </div>
+
+                                            {/* PIN / HIDDEN */}
+                                            <div className="flex flex-row gap-4 h-fit justify-self-end">
+                                                {form.pinned && (
+                                                    <Badge
+                                                        text="Pinned"
+                                                        className="bg-yellow-400"
+                                                    />
+                                                )}
+
+                                                {form.hidden && (
+                                                    <Badge
+                                                        text="Hidden"
+                                                        className="bg-orange-400"
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+                                    <div 
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4 
+                                            rounded-xl 
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(1)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[0]}
+                                        </h2>
+                                        <h4>{form.name}</h4>
+                                        <div className="prose prose-sm">/projects/{form.slug}</div>
                                         <div className="
                                             flex
                                             prose
@@ -1073,178 +1036,215 @@ export default function CreateProjectPage(props : {
                                             min-w-full
                                         ">
                                             <ReactMarkdown>
-                                                {form.subtitle}
+                                                {form.description}
                                             </ReactMarkdown>
-                                        </div>                                        
-                                    )}
-
-                                    {form.link && (
-                                        <a
-                                            href={
-                                                form.link.startsWith("http://") || form.link.startsWith("https://")
-                                                    ? form.link
-                                                    : `https://${form.link}`
-                                            }
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="
-                                                relative
-                                                z-10
-                                                text-sm
-                                                text-blue-600
-                                                hover:text-blue-800
-                                            "
-                                        >
-                                            {form.link}
-                                        </a>
-                                    )}
-
-                                    <div className="
-                                        min-w-full
-
-                                        prose
-                                        prose-sm
-                                        prose-a:text-blue-400
-                                        prose-a:transition-colors
-                                        prose-a:duration-100
-                                        prose-a:no-underline
-                                        prose-a:hover:text-blue-800
-                                        prose-h1:mb-0
-                                        prose-h1:text-6xl!
-                                        prose-h2:mt-0
-                                        prose-h2:mb-4
-                                        prose-h2:text-4xl!
-                                        prose-h3:mt-0
-                                        prose-h3:text-2xl!
-                                    ">
-                                        <ReactMarkdown>
-                                            {form.content}
-                                        </ReactMarkdown>
-                                    </div>  
-                                </div>
-
-                                <div 
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4 
-                                        rounded-xl 
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(3)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[2]}
-                                    </h2>
-                                    {form.languages && (
-                                        <div>
-                                            <h4 className="font-semibold">Languages</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {form.languages.split(",").map((lang: string, i: number) => (
-                                                    <Badge
-                                                        key={i}
-                                                        fontWeight="normal"
-                                                        borderRadius="lg"
-                                                        textSize="xs"
-                                                        shadow="sm"
-                                                        px={2}
-                                                        py={1}
-                                                        className="bg-gray-200 border border-gray-300"
-                                                        text={lang}
-                                                    />
-                                                ))}
-                                            </div>
                                         </div>
-                                    )}
-                                    {form.libraries && (
-                                        <div>
-                                            <h4 className="font-semibold">Libraries</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {form.libraries.split(",").map((lib: string, i: number) => (
-                                                    <Badge
-                                                        key={i}
-                                                        fontWeight="normal"
-                                                        borderRadius="lg"
-                                                        textSize="xs"
-                                                        shadow="sm"
-                                                        px={2}
-                                                        py={1}
-                                                        className="bg-gray-100 border border-gray-300"
-                                                        text={lib}
-                                                    />
-                                                ))}
+                                        
+                                        {preview && (
+                                            <img src={preview} alt="Preview" className="max-w-1/2 self-center"/>
+                                        )}
+                                    </div>
+                                    <div 
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4 
+                                            rounded-xl 
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(2)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[1]}
+                                        </h2>
+
+                                        {form.subtitle && (
+                                            <div className="
+                                                flex
+                                                prose
+                                                prose-sm
+                                                min-w-full
+                                            ">
+                                                <ReactMarkdown>
+                                                    {form.subtitle}
+                                                </ReactMarkdown>
+                                            </div>                                        
+                                        )}
+
+                                        {form.link && (
+                                            <a
+                                                href={
+                                                    form.link.startsWith("http://") || form.link.startsWith("https://")
+                                                        ? form.link
+                                                        : `https://${form.link}`
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="
+                                                    relative
+                                                    z-10
+                                                    text-sm
+                                                    text-blue-600
+                                                    hover:text-blue-800
+                                                "
+                                            >
+                                                {form.link}
+                                            </a>
+                                        )}
+
+                                        <div className="
+                                            min-w-full
+
+                                            prose
+                                            prose-sm
+                                            prose-a:text-blue-400
+                                            prose-a:transition-colors
+                                            prose-a:duration-100
+                                            prose-a:no-underline
+                                            prose-a:hover:text-blue-800
+                                            prose-h1:mb-0
+                                            prose-h1:text-6xl!
+                                            prose-h2:mt-0
+                                            prose-h2:mb-4
+                                            prose-h2:text-4xl!
+                                            prose-h3:mt-0
+                                            prose-h3:text-2xl!
+                                        ">
+                                            <ReactMarkdown>
+                                                {form.content}
+                                            </ReactMarkdown>
+                                        </div>  
+                                    </div>
+
+                                    <div 
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4 
+                                            rounded-xl 
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(3)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[2]}
+                                        </h2>
+                                        {form.languages && (
+                                            <div>
+                                                <h4 className="font-semibold">Languages</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.languages.split(",").map((lang: string, i: number) => (
+                                                        <Badge
+                                                            key={i}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="bg-gray-200 border border-gray-300"
+                                                            text={lang}
+                                                        />
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                    {form.tools && (
-                                        <div>
-                                            <h4 className="font-semibold">Tools</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {form.tools.split(",").map((tool: string, i: number) => (
-                                                    <Badge
-                                                        key={i}
-                                                        fontWeight="normal"
-                                                        borderRadius="lg"
-                                                        textSize="xs"
-                                                        shadow="sm"
-                                                        px={2}
-                                                        py={1}
-                                                        className="bg-gray-300 border border-gray-400"
-                                                        text={tool}
-                                                    />
-                                                ))}
+                                        )}
+                                        {form.libraries && (
+                                            <div>
+                                                <h4 className="font-semibold">Libraries</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.libraries.split(",").map((lib: string, i: number) => (
+                                                        <Badge
+                                                            key={i}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="bg-gray-100 border border-gray-300"
+                                                            text={lib}
+                                                        />
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </Tile>
-                        )}    
+                                        )}
+                                        {form.tools && (
+                                            <div>
+                                                <h4 className="font-semibold">Tools</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.tools.split(",").map((tool: string, i: number) => (
+                                                        <Badge
+                                                            key={i}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="bg-gray-300 border border-gray-400"
+                                                            text={tool}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Tile>
+                            )}    
+                        </div>
+                    </div>
+
+                    {/* Button container */}
+                    <div className="
+                        flex
+                        w-full 
+                        justify-between
+                        px-4
+                        pb-4
+                    ">
+                        <Button
+                            text="Back"
+                            variant="secondary"
+                            onClick={() => {
+                                if (step !== 1) {
+                                    setStep(step - 1)
+                                }
+
+                                else {
+                                    router.refresh();
+                                    router.push(nextPage ?? "/projects");
+                                }
+                            }}
+                        />
+
+                        {step !== 5 && (
+                            <Button
+                                text="Next"
+                                onClick={() => goToStep(step + 1)}
+                            />                        
+                        )}
+
+                        {step === 5 && (
+                            <Button 
+                                text="Post" 
+                                type="submit" 
+                                name="mode"
+                            />
+                        )}
+
                     </div>
                 </div>
-
-                {/* Button container */}
-                <div className="
-                    flex
-                    w-full 
-                    justify-between
-                    px-4
-                ">
-                    <Button
-                        text="Back"
-                        variant="secondary"
-                        onClick={() => {
-                            if (step !== 1) {
-                                setStep(step - 1)
-                            }
-
-                            else {
-                                router.refresh();
-                                router.push(nextPage ?? "/projects");
-                            }
-                        }}
-                    />
-
-                    {step !== 5 && (
-                        <Button
-                            text="Next"
-                            onClick={() => goToStep(step + 1)}
-                        />                        
-                    )}
-
-                    {step === 5 && (
-                        <Button 
-                            text="Post" 
-                            type="submit" 
-                            name="mode"
-                        />
-                    )}
-
-                </div>          
+    
             </form>
             
         </div>

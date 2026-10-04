@@ -10,6 +10,8 @@ import FadeInOnView from "./FadeInOnView";
 import { useNotifications } from "./NotificationProvider";
 import Link from "next/link";
 import { createPortal } from "react-dom";
+import EditButton from "./EditButton";
+import AddButton from "./AddButton";
 
 export default function Projects(props: {
     isLoggedIn: boolean;
@@ -370,8 +372,7 @@ export default function Projects(props: {
                         className="
                             flex
                             flex-row
-                            gap-8
-                            sm:gap-4
+                            gap-4
                             shrink-0
                         "
                     >
@@ -438,12 +439,12 @@ export default function Projects(props: {
                 {/* Project position indicators */}
                 {featuredPool.length > 0 && (
                     <div
-                        className="
+                        className={`
                             flex
                             justify-center
                             mt-3
-                            pb-8
-                        "
+                            ${props.isLoggedIn ? "pb-6" : "pb-8"}
+                        `}
                     >
                         <div
                             className="
@@ -534,14 +535,16 @@ export default function Projects(props: {
                             pb-8
                         "
                     >
-                        <Button
+                        <AddButton
                             text="Add Project"
-                            onClick={() =>
-                                router.push(
-                                    "/add-project"
-                                )
-                            }
+                            x={4}
+                            y={2}
+                            action={() =>
+                            router.push(
+                                "/add-project"
+                            )}
                         />
+
                     </div>
                 )}
             </FadeInOnView>
@@ -584,84 +587,67 @@ export default function Projects(props: {
                                 px-[5%]
                             "
                         >
-                            <div className="
-                                flex 
-                                flex-col 
-                                justify-center 
-                                items-center 
-                                gap-8
-                            ">
-                                <div
-                                    className="flex h-full"
-                                    onMouseEnter={() => {
-                                        startHold(project);
+                            <div
+                                className="flex h-full"
+                                onMouseEnter={() => {
+                                    startHold(project);
+                                    setIsInteracting(true);
+                                }}
+                                onMouseLeave={() => {
+                                    cancelHold();
+                                    setIsInteracting(false);
+                                }}
+                                onTouchStart={(e) =>
+                                    onTouchStart(e, project)
+                                }
+                                onTouchCancel={() => {
+                                    cancelHold();
+                                    startX.current = null;
+                                    setIsInteracting(false);
+                                }}
+                            >
+                                <ProjectCard
+                                    project={project}
+                                    condenseTech={true}
+                                    isLoggedIn={props.isLoggedIn}
+                                    position="start"
+                                    className="max-w-full"
+                                    onHoldCancel={cancelHoldAndPauseCarousel}
+                                    onButtonHoverStart={() => {
                                         setIsInteracting(true);
                                     }}
-                                    onMouseLeave={() => {
-                                        cancelHold();
+                                    onButtonHoverEnd={() => {
                                         setIsInteracting(false);
+                                        setTimerDeadline(Date.now() + 10000);
                                     }}
-                                    onTouchStart={(e) =>
-                                        onTouchStart(e, project)
+                                    holdProgress={
+                                        holdingProjectId === project.id
+                                            ? holdProgress
+                                            : 0
                                     }
-                                    onTouchCancel={() => {
-                                        cancelHold();
-                                        startX.current = null;
-                                        setIsInteracting(false);
+                                    onEdit={() => {
+                                        router.push(`add-project/edit?id=${project.id}`);
                                     }}
-                                >
-                                    <ProjectCard
-                                        project={project}
-                                        condenseTech={true}
-                                        isLoggedIn={props.isLoggedIn}
-                                        position="start"
-                                        className="max-w-full"
-                                        onHoldCancel={
-                                            cancelHoldAndPauseCarousel
-                                        }
-                                        holdProgress={
-                                            holdingProjectId === project.id
-                                                ? holdProgress
-                                                : 0
-                                        }
-                                    />                                
-                                </div>
+                                    onDelete={async () => {
+                                        const res = await fetch("/api/projects", {
+                                            method: "DELETE",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                            },
+                                            body: JSON.stringify({ id: project.id }),
+                                        });
 
-                                {/* Delete button if logged in */}
-                                {props.isLoggedIn && (
-                                    <div className="w-full max-w-5xl flex justify-between">
-                                        <Button
-                                            text="Edit"
-                                            className="min-w-32"
-                                            onClick={() => {router.push(`add-project/edit?id=${project.id}`)}}
-                                        />
-                                        <DeleteButton
-                                            className="min-w-32"
-                                            text="Project"
-                                            action={async () => {
-                                                const res = await fetch("/api/projects", {
-                                                    method: "DELETE",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                    },
-                                                    body: JSON.stringify({ id: project.id }),
-                                                });
-
-                                                if (res.status === 401) {
-                                                    router.push("/login");
-                                                    return;
-                                                }
-                                                
-                                                setProjects((prev) =>
-                                                    prev.filter((p) => p.id !== project.id)
-                                                );
-                                            }}
-                                        />                        
-                                    </div>
-                                )}                                
+                                        if (res.status === 401) {
+                                            router.push("/login");
+                                            return;
+                                        }
+                                        
+                                        setProjects((prev) =>
+                                            prev.filter((p) => p.id !== project.id)
+                                        );
+                                    }}
+                                />
                             </div>
-        
-
                         </div>
                     ))}
                 </div>       
@@ -701,15 +687,14 @@ export default function Projects(props: {
                                 fade-right
                                 sm:fade-up
                             "
-                            style={{
-                                "--delay": `${i * 150}ms`,
-                            } as React.CSSProperties}
+                            delay={i * 150}
                         >
                             <div
                                 className="
                                     relative
                                     flex
                                     flex-1
+                                    z-10
                                 "
                                 onMouseEnter={() => {
                                     startHold(project);
@@ -726,98 +711,50 @@ export default function Projects(props: {
                                     )
                                 }
                             >
-                                <div
-                                    className="
-                                        relative
-                                        z-10
-                                        flex
-                                        flex-1
-                                    "
-                                >
-                                    <ProjectCard
-                                        project={project}
-                                        condenseTech={true}
-                                        isLoggedIn={props.isLoggedIn}
-                                        childClassName="xl:flex-col!"
-                                        position={`${i % 2 === 0 ? "start" : "end"}`}
-                                        onHoldCancel={cancelHoldAndPauseCarousel}
-                                        holdProgress={
-                                            holdingProjectId === project.id
-                                                ? holdProgress
-                                                : 0
+
+                                <ProjectCard
+                                    project={project}
+                                    condenseTech={true}
+                                    isLoggedIn={props.isLoggedIn}
+                                    position="start"
+                                    className="max-w-full"
+                                    onHoldCancel={cancelHoldAndPauseCarousel}
+                                    onButtonHoverStart={() => {
+                                        setIsInteracting(true);
+                                    }}
+                                    onButtonHoverEnd={() => {
+                                        setIsInteracting(false);
+                                        setTimerDeadline(Date.now() + 10000);
+                                    }}
+                                    holdProgress={
+                                        holdingProjectId === project.id
+                                            ? holdProgress
+                                            : 0
+                                    }
+                                    onEdit={() => {
+                                        router.push(`add-project/edit?id=${project.id}`);
+                                    }}
+                                    onDelete={async () => {
+                                        const res = await fetch("/api/projects", {
+                                            method: "DELETE",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                            },
+                                            body: JSON.stringify({ id: project.id }),
+                                        });
+
+                                        if (res.status === 401) {
+                                            router.push("/login");
+                                            return;
                                         }
-                                    />
-                                </div>
+                                        
+                                        setProjects((prev) =>
+                                            prev.filter((p) => p.id !== project.id)
+                                        );
+                                    }}
+                                />
+
                             </div>
-
-                            {/* Edit/Delete buttons if logged in */}
-                            {props.isLoggedIn && (
-                                <div
-                                    className="
-                                        w-full
-                                        max-w-5xl
-                                        flex
-                                        justify-between
-                                    "
-                                >
-                                    <Button
-                                        text="Edit"
-                                        className="min-w-32"
-                                        onClick={() => {
-                                            router.push(
-                                                `add-project/edit?id=${project.id}`
-                                            );
-                                        }}
-                                    />
-
-                                    <DeleteButton
-                                        className="min-w-32"
-                                        text="Project"
-                                        action={async () => {
-                                            const res =
-                                                await fetch(
-                                                    "/api/projects",
-                                                    {
-                                                        method: "DELETE",
-                                                        headers: {
-                                                            "Content-Type":
-                                                                "application/json",
-                                                        },
-                                                        body: JSON.stringify(
-                                                            {
-                                                                id: project.id,
-                                                            }
-                                                        ),
-                                                    }
-                                                );
-
-                                            if (
-                                                res.status ===
-                                                401
-                                            ) {
-                                                router.push(
-                                                    "/login"
-                                                );
-                                                return;
-                                            }
-
-                                            setProjects(
-                                                (prev) =>
-                                                    prev.filter(
-                                                        (p) =>
-                                                            p.id !==
-                                                            project.id
-                                                    )
-                                            );
-
-                                            notify(
-                                                "Project deleted successfully",
-                                                "success"
-                                            );
-                                        }}
-                                    />
-                                </div>
-                            )}
                         </FadeInOnView>
                     )
                 )}
@@ -966,7 +903,7 @@ export default function Projects(props: {
                                     <ProjectCard
                                         project={hoveredProject}
                                         isLoggedIn={props.isLoggedIn}
-                                        childClassName="xl:flex-col! max-w-lg"
+                                        childClassName="xl:flex-col! xl:max-w-lg!"
                                         position="start"
                                         holdProgress={0}
                                     />

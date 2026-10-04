@@ -161,6 +161,7 @@ export default function EditTechClient(props: {
                     flex-col
                     w-full
                     h-full
+                    min-h-[80vh]
                     max-w-3xl
                     mt-[10vh]
                     [&_div]:mt-4
@@ -258,299 +259,303 @@ export default function EditTechClient(props: {
                     </div>
                 </div>
 
-                {/* FORM */}
-                <div className="relative w-full mt-0! px-2">
+                <div className="my-auto!">
+                    {/* FORM */}
+                    <div className="relative w-full mt-0! px-2">
+                        <div
+                            key={step}
+                            className="
+                                animate-step-in
+                                w-full
+                            "
+                        >
+                            {/* STEP 1 — LANGUAGES */}
+                            {step === 1 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="languages">
+                                        Languages
+                                    </label>
+
+                                    <textarea
+                                        id="languages"
+                                        name="languages"
+                                        placeholder="Languages (comma separated)"
+                                        value={form.languages}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                            overflowWrap: "normal",
+                                            wordBreak: "normal",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+
+                            {/* STEP 2 — LIBRARIES */}
+                            {step === 2 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="libraries">
+                                        Libraries
+                                    </label>
+
+                                    <textarea
+                                        id="libraries"
+                                        name="libraries"
+                                        placeholder="Libraries (comma separated)"
+                                        value={form.libraries}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                            overflowWrap: "normal",
+                                            wordBreak: "normal",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+
+                            {/* STEP 3 — TOOLS */}
+                            {step === 3 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="tools">
+                                        Tools
+                                    </label>
+
+                                    <textarea
+                                        id="tools"
+                                        name="tools"
+                                        placeholder="Tools (comma separated)"
+                                        value={form.tools}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                            overflowWrap: "normal",
+                                            wordBreak: "normal",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+
+                            {/* STEP 4 — REVIEW */}
+                            {step === 4 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                    childClassName="[&_div]:mt-0!"
+                                >
+                                    {/* LANGUAGES */}
+                                    <div
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4
+                                            rounded-xl
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(1)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[0]}
+                                        </h2>
+
+                                        {form.languages && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {form.languages
+                                                    .split(",")
+                                                    .map(
+                                                        (
+                                                            language: string,
+                                                            index: number
+                                                        ) => (
+                                                            <Badge
+                                                                key={index}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="
+                                                                    bg-gray-200
+                                                                    border
+                                                                    border-gray-300
+                                                                "
+                                                                text={language.trim()}
+                                                            />
+                                                        )
+                                                    )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* LIBRARIES */}
+                                    <div
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4
+                                            rounded-xl
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(2)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[1]}
+                                        </h2>
+
+                                        {form.libraries && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {form.libraries
+                                                    .split(",")
+                                                    .map(
+                                                        (
+                                                            library: string,
+                                                            index: number
+                                                        ) => (
+                                                            <Badge
+                                                                key={index}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="
+                                                                    bg-gray-100
+                                                                    border
+                                                                    border-gray-300
+                                                                "
+                                                                text={library.trim()}
+                                                            />
+                                                        )
+                                                    )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* TOOLS */}
+                                    <div
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4
+                                            rounded-xl
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(3)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[2]}
+                                        </h2>
+
+                                        {form.tools && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {form.tools
+                                                    .split(",")
+                                                    .map(
+                                                        (
+                                                            tool: string,
+                                                            index: number
+                                                        ) => (
+                                                            <Badge
+                                                                key={index}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="
+                                                                    bg-gray-300
+                                                                    border
+                                                                    border-gray-400
+                                                                "
+                                                                text={tool.trim()}
+                                                            />
+                                                        )
+                                                    )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </Tile>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* BUTTONS */}
                     <div
-                        key={step}
                         className="
-                            animate-step-in
+                            flex
                             w-full
+                            justify-between
+                            px-4
                         "
                     >
-                        {/* STEP 1 — LANGUAGES */}
-                        {step === 1 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="languages">
-                                    Languages
-                                </label>
+                        <Button
+                            text="Back"
+                            variant="secondary"
+                            onClick={() => {
+                                if (step !== 1) {
+                                    setStep(step - 1);
+                                } else {
+                                    router.refresh();
+                                    router.push(
+                                        nextPage ?? "/tech"
+                                    );
+                                }
+                            }}
+                        />
 
-                                <textarea
-                                    id="languages"
-                                    name="languages"
-                                    placeholder="Languages (comma separated)"
-                                    value={form.languages}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                        overflowWrap: "normal",
-                                        wordBreak: "normal",
-                                    }}
-                                    onChange={handleChange}
-                                />
-                            </Tile>
+                        {step !== 4 && (
+                            <Button
+                                text="Next"
+                                onClick={() =>
+                                    goToStep(step + 1)
+                                }
+                            />
                         )}
 
-                        {/* STEP 2 — LIBRARIES */}
-                        {step === 2 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="libraries">
-                                    Libraries
-                                </label>
-
-                                <textarea
-                                    id="libraries"
-                                    name="libraries"
-                                    placeholder="Libraries (comma separated)"
-                                    value={form.libraries}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                        overflowWrap: "normal",
-                                        wordBreak: "normal",
-                                    }}
-                                    onChange={handleChange}
-                                />
-                            </Tile>
-                        )}
-
-                        {/* STEP 3 — TOOLS */}
-                        {step === 3 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="tools">
-                                    Tools
-                                </label>
-
-                                <textarea
-                                    id="tools"
-                                    name="tools"
-                                    placeholder="Tools (comma separated)"
-                                    value={form.tools}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                        overflowWrap: "normal",
-                                        wordBreak: "normal",
-                                    }}
-                                    onChange={handleChange}
-                                />
-                            </Tile>
-                        )}
-
-                        {/* STEP 4 — REVIEW */}
                         {step === 4 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                                childClassName="[&_div]:mt-0!"
-                            >
-                                {/* LANGUAGES */}
-                                <div
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4
-                                        rounded-xl
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(1)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[0]}
-                                    </h2>
-
-                                    {form.languages && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {form.languages
-                                                .split(",")
-                                                .map(
-                                                    (
-                                                        language: string,
-                                                        index: number
-                                                    ) => (
-                                                        <Badge
-                                                            key={index}
-                                                            fontWeight="normal"
-                                                            borderRadius="lg"
-                                                            textSize="xs"
-                                                            shadow="sm"
-                                                            px={2}
-                                                            py={1}
-                                                            className="
-                                                                bg-gray-200
-                                                                border
-                                                                border-gray-300
-                                                            "
-                                                            text={language.trim()}
-                                                        />
-                                                    )
-                                                )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* LIBRARIES */}
-                                <div
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4
-                                        rounded-xl
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(2)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[1]}
-                                    </h2>
-
-                                    {form.libraries && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {form.libraries
-                                                .split(",")
-                                                .map(
-                                                    (
-                                                        library: string,
-                                                        index: number
-                                                    ) => (
-                                                        <Badge
-                                                            key={index}
-                                                            fontWeight="normal"
-                                                            borderRadius="lg"
-                                                            textSize="xs"
-                                                            shadow="sm"
-                                                            px={2}
-                                                            py={1}
-                                                            className="
-                                                                bg-gray-100
-                                                                border
-                                                                border-gray-300
-                                                            "
-                                                            text={library.trim()}
-                                                        />
-                                                    )
-                                                )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* TOOLS */}
-                                <div
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4
-                                        rounded-xl
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(3)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[2]}
-                                    </h2>
-
-                                    {form.tools && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {form.tools
-                                                .split(",")
-                                                .map(
-                                                    (
-                                                        tool: string,
-                                                        index: number
-                                                    ) => (
-                                                        <Badge
-                                                            key={index}
-                                                            fontWeight="normal"
-                                                            borderRadius="lg"
-                                                            textSize="xs"
-                                                            shadow="sm"
-                                                            px={2}
-                                                            py={1}
-                                                            className="
-                                                                bg-gray-300
-                                                                border
-                                                                border-gray-400
-                                                            "
-                                                            text={tool.trim()}
-                                                        />
-                                                    )
-                                                )}
-                                        </div>
-                                    )}
-                                </div>
-                            </Tile>
+                            <Button
+                                text="Post"
+                                type="submit"
+                                name="mode"
+                            />
                         )}
-                    </div>
+                    </div>                    
                 </div>
 
-                {/* BUTTONS */}
-                <div
-                    className="
-                        flex
-                        w-full
-                        justify-between
-                        px-4
-                    "
-                >
-                    <Button
-                        text="Back"
-                        variant="secondary"
-                        onClick={() => {
-                            if (step !== 1) {
-                                setStep(step - 1);
-                            } else {
-                                router.refresh();
-                                router.push(
-                                    nextPage ?? "/tech"
-                                );
-                            }
-                        }}
-                    />
 
-                    {step !== 4 && (
-                        <Button
-                            text="Next"
-                            onClick={() =>
-                                goToStep(step + 1)
-                            }
-                        />
-                    )}
-
-                    {step === 4 && (
-                        <Button
-                            text="Post"
-                            type="submit"
-                            name="mode"
-                        />
-                    )}
-                </div>
             </form>
         </div>
     );

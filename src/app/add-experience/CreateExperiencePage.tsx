@@ -249,6 +249,7 @@ export default function CreateExperiencePage(props: {
                     flex-col
                     w-full
                     h-full
+                    min-h-[80vh]
                     max-w-3xl
                     mt-[10vh]
                     [&_div]:mt-4
@@ -346,570 +347,574 @@ export default function CreateExperiencePage(props: {
                     </div>
                 </div>
 
-                {/* FORM */}
-                <div className="relative w-full mt-0! px-2">
-                    <div
-                        key={step}
-                        className="
-                            animate-step-in
-                            w-full
-                        "
-                    >
-                        {/* STEP 1 - OVERVIEW */}
-                        {step === 1 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="title">
-                                    Experience Title
-                                </label>
+                <div className="my-auto!">
+                    {/* FORM */}
+                    <div className="relative w-full mt-0! px-2">
+                        <div
+                            key={step}
+                            className="
+                                animate-step-in
+                                w-full
+                            "
+                        >
+                            {/* STEP 1 - OVERVIEW */}
+                            {step === 1 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="title">
+                                        Experience Title
+                                    </label>
 
-                                <input
-                                    id="title"
-                                    name="title"
-                                    placeholder="Title"
-                                    value={form.title}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                    <input
+                                        id="title"
+                                        name="title"
+                                        placeholder="Title"
+                                        value={form.title}
+                                        onChange={handleChange}
+                                        required
+                                    />
 
-                                <label htmlFor="company">
-                                    Company
-                                </label>
+                                    <label htmlFor="company">
+                                        Company
+                                    </label>
 
-                                <input
-                                    id="company"
-                                    name="company"
-                                    placeholder="Company"
-                                    value={form.company}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                    <input
+                                        id="company"
+                                        name="company"
+                                        placeholder="Company"
+                                        value={form.company}
+                                        onChange={handleChange}
+                                        required
+                                    />
 
-                                <label htmlFor="description">
-                                    Experience Description
-                                </label>
+                                    <label htmlFor="description">
+                                        Experience Description
+                                    </label>
 
-                                <textarea
-                                    ref={descriptionRef}
-                                    id="description"
-                                    name="description"
-                                    placeholder="Description"
-                                    value={form.description}
-                                    rows={1}
-                                    style={{
-                                        overflow: "hidden",
-                                        resize: "none",
-                                    }}
-                                    onChange={handleChange}
-                                    onBlur={(e) => {
-                                        setForm((prev) => ({
-                                            ...prev,
-                                            description:
-                                                ensurePunctuation(
-                                                    e.target.value
-                                                ),
-                                        }));
-                                    }}
-                                    required
-                                />
+                                    <textarea
+                                        ref={descriptionRef}
+                                        id="description"
+                                        name="description"
+                                        placeholder="Description"
+                                        value={form.description}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                        onBlur={(e) => {
+                                            setForm((prev) => ({
+                                                ...prev,
+                                                description:
+                                                    ensurePunctuation(
+                                                        e.target.value
+                                                    ),
+                                            }));
+                                        }}
+                                        required
+                                    />
 
-                                <label htmlFor="tag">
-                                    Tag
-                                </label>
+                                    <label htmlFor="tag">
+                                        Tag
+                                    </label>
 
-                                <div className="flex items-center justify-between gap-2 mt-0!">
-                                    <select
-                                        id="tag"
-                                        name="tag"
-                                        className="flex-1"
-                                        value={
-                                            useCustomTag
-                                                ? ""
-                                                : form.tag
-                                        }
-                                        onChange={(e) => {
-                                            if (
-                                                e.target.value ===
-                                                "custom"
-                                            ) {
-                                                setUseCustomTag(true);
+                                    <div className="flex items-center justify-between gap-2 mt-0!">
+                                        <select
+                                            id="tag"
+                                            name="tag"
+                                            className="flex-1"
+                                            value={
+                                                useCustomTag
+                                                    ? ""
+                                                    : form.tag
+                                            }
+                                            onChange={(e) => {
+                                                if (
+                                                    e.target.value ===
+                                                    "custom"
+                                                ) {
+                                                    setUseCustomTag(true);
+
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        tag: "",
+                                                    }));
+                                                } else {
+                                                    setUseCustomTag(false);
+
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        tag:
+                                                            e.target.value,
+                                                    }));
+                                                }
+                                            }}
+                                        >
+                                            {props.tags.map((tag) => (
+                                                <option
+                                                    key={tag.id}
+                                                    value={tag.name}
+                                                >
+                                                    {tag.name === ""
+                                                        ? "No tag"
+                                                        : tag.name}
+                                                </option>
+                                            ))}
+
+                                            <option value="custom">
+                                                Add new tag
+                                            </option>
+                                        </select>
+
+                                        <DeleteButton
+                                            disabled={
+                                                !form.tag ||
+                                                useCustomTag ||
+                                                props.tags.find(
+                                                    (tag) =>
+                                                        tag.name ===
+                                                        form.tag
+                                                )?.builtin
+                                            }
+                                            itemName={form.tag}
+                                            className="
+                                                flex
+                                                min-h-fit
+                                                rounded-lg!
+                                                self-start
+                                            "
+                                            x={4}
+                                            y={1}
+                                            action={async () => {
+                                                if (!form.tag) return;
+
+                                                await fetch(
+                                                    "/api/tags",
+                                                    {
+                                                        method: "DELETE",
+                                                        headers: {
+                                                            "Content-Type":
+                                                                "application/json",
+                                                        },
+                                                        body: JSON.stringify({
+                                                            name: form.tag,
+                                                            category:
+                                                                "experience",
+                                                        }),
+                                                    }
+                                                );
 
                                                 setForm((prev) => ({
                                                     ...prev,
                                                     tag: "",
                                                 }));
-                                            } else {
-                                                setUseCustomTag(false);
 
-                                                setForm((prev) => ({
-                                                    ...prev,
-                                                    tag:
-                                                        e.target.value,
-                                                }));
-                                            }
-                                        }}
-                                    >
-                                        {props.tags.map((tag) => (
-                                            <option
-                                                key={tag.id}
-                                                value={tag.name}
-                                            >
-                                                {tag.name === ""
-                                                    ? "No tag"
-                                                    : tag.name}
-                                            </option>
-                                        ))}
-
-                                        <option value="custom">
-                                            Add new tag
-                                        </option>
-                                    </select>
-
-                                    <DeleteButton
-                                        disabled={
-                                            !form.tag ||
-                                            useCustomTag ||
-                                            props.tags.find(
-                                                (tag) =>
-                                                    tag.name ===
-                                                    form.tag
-                                            )?.builtin
-                                        }
-                                        text="Tag"
-                                        className="
-                                            flex
-                                            min-h-fit
-                                            rounded-lg!
-                                            self-start
-                                        "
-                                        x={2}
-                                        y={0}
-                                        action={async () => {
-                                            if (!form.tag) return;
-
-                                            await fetch(
-                                                "/api/tags",
-                                                {
-                                                    method: "DELETE",
-                                                    headers: {
-                                                        "Content-Type":
-                                                            "application/json",
-                                                    },
-                                                    body: JSON.stringify({
-                                                        name: form.tag,
-                                                        category:
-                                                            "experience",
-                                                    }),
-                                                }
-                                            );
-
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                tag: "",
-                                            }));
-
-                                            notify(
-                                                "Experience tag deleted successfully",
-                                                "success"
-                                            );
-
-                                            router.refresh();
-                                        }}
-                                    />
-                                </div>
-
-                                {useCustomTag && (
-                                    <input
-                                        id="custom-tag"
-                                        placeholder="Add New Tag"
-                                        value={capitalizeNamesAndTitles(
-                                            customTag
-                                        )}
-                                        onChange={(e) => {
-                                            const value =
-                                                e.target.value;
-
-                                            setCustomTag(value);
-
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                tag: value,
-                                            }));
-                                        }}
-                                        required
-                                    />
-                                )}
-                            </Tile>
-                        )}
-
-                        {/* STEP 2 - DETAILS */}
-                        {step === 2 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                            >
-                                <label htmlFor="start_date">
-                                    Start Date
-                                </label>
-
-                                <div className="flex gap-2 mt-0!">
-                                    <select
-                                        value={Number(startMonth) - 1}
-                                        onChange={(e) => {
-                                            const month = String(
-                                                Number(e.target.value) + 1
-                                            ).padStart(2, "0");
-
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                start_date:
-                                                    `${startYear}${month}`,
-                                            }));
-                                        }}
-                                    >
-                                        {Array.from({ length: 12 }).map(
-                                            (_, i) => (
-                                                <option
-                                                    key={i}
-                                                    value={i}
-                                                >
-                                                    {new Date(
-                                                        0,
-                                                        i
-                                                    ).toLocaleString(
-                                                        "en",
-                                                        {
-                                                            month: "long",
-                                                        }
-                                                    )}
-                                                </option>
-                                            )
-                                        )}
-                                    </select>
-
-                                    <select
-                                        value={startYear}
-                                        onChange={(e) => {
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                start_date:
-                                                    `${e.target.value}${startMonth}`,
-                                            }));
-                                        }}
-                                    >
-                                        {Array.from({ length: 50 }).map(
-                                            (_, i) => {
-                                                const year =
-                                                    new Date().getFullYear() -
-                                                    i;
-
-                                                return (
-                                                    <option
-                                                        key={year}
-                                                        value={year}
-                                                    >
-                                                        {year}
-                                                    </option>
+                                                notify(
+                                                    "Experience tag deleted successfully",
+                                                    "success"
                                                 );
-                                            }
-                                        )}
-                                    </select>
-                                </div>
 
-                                <label htmlFor="end_date">
-                                    End Date
-                                </label>
+                                                router.refresh();
+                                            }}
+                                        />
+                                    </div>
 
-                                <div className="flex gap-2 mt-0!">
-                                    <select
-                                        value={
-                                            !form.end_date
-                                                ? ""
-                                                : Number(endMonth) - 1
-                                        }
-                                        onChange={(e) => {
-                                            if (e.target.value === "") {
+                                    {useCustomTag && (
+                                        <input
+                                            id="custom-tag"
+                                            placeholder="Add New Tag"
+                                            value={capitalizeNamesAndTitles(
+                                                customTag
+                                            )}
+                                            onChange={(e) => {
+                                                const value =
+                                                    e.target.value;
+
+                                                setCustomTag(value);
+
                                                 setForm((prev) => ({
                                                     ...prev,
-                                                    end_date: "",
+                                                    tag: value,
                                                 }));
+                                            }}
+                                            required
+                                        />
+                                    )}
+                                </Tile>
+                            )}
 
-                                                return;
-                                            }
+                            {/* STEP 2 - DETAILS */}
+                            {step === 2 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="start_date">
+                                        Start Date
+                                    </label>
 
-                                            const month =
-                                                String(
-                                                    Number(
-                                                        e.target.value
-                                                    ) + 1
+                                    <div className="flex gap-2 mt-0!">
+                                        <select
+                                            value={Number(startMonth) - 1}
+                                            onChange={(e) => {
+                                                const month = String(
+                                                    Number(e.target.value) + 1
                                                 ).padStart(2, "0");
 
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                end_date:
-                                                    `${endYear || currentYear}${month}`,
-                                            }));
-                                        }}
-                                    >
-                                        <option value="">
-                                            Present
-                                        </option>
-
-                                        {Array.from({ length: 12 }).map(
-                                            (_, i) => (
-                                                <option
-                                                    key={i}
-                                                    value={i}
-                                                >
-                                                    {new Date(
-                                                        0,
-                                                        i
-                                                    ).toLocaleString(
-                                                        "en",
-                                                        {
-                                                            month: "long",
-                                                        }
-                                                    )}
-                                                </option>
-                                            )
-                                        )}
-                                    </select>
-
-                                    <select
-                                        value={endYear}
-                                        onChange={(e) => {
-                                            const year =
-                                                e.target.value;
-
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                end_date: year
-                                                    ? `${year}${endMonth}`
-                                                    : "",
-                                            }));
-                                        }}
-                                    >
-                                        <option value="">
-                                            Present
-                                        </option>
-
-                                        {Array.from({ length: 50 }).map(
-                                            (_, i) => {
-                                                const year =
-                                                    new Date().getFullYear() -
-                                                    i;
-
-                                                return (
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    start_date:
+                                                        `${startYear}${month}`,
+                                                }));
+                                            }}
+                                        >
+                                            {Array.from({ length: 12 }).map(
+                                                (_, i) => (
                                                     <option
-                                                        key={year}
-                                                        value={year}
+                                                        key={i}
+                                                        value={i}
                                                     >
-                                                        {year}
+                                                        {new Date(
+                                                            0,
+                                                            i
+                                                        ).toLocaleString(
+                                                            "en",
+                                                            {
+                                                                month: "long",
+                                                            }
+                                                        )}
                                                     </option>
-                                                );
+                                                )
+                                            )}
+                                        </select>
+
+                                        <select
+                                            value={startYear}
+                                            onChange={(e) => {
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    start_date:
+                                                        `${e.target.value}${startMonth}`,
+                                                }));
+                                            }}
+                                        >
+                                            {Array.from({ length: 50 }).map(
+                                                (_, i) => {
+                                                    const year =
+                                                        new Date().getFullYear() -
+                                                        i;
+
+                                                    return (
+                                                        <option
+                                                            key={year}
+                                                            value={year}
+                                                        >
+                                                            {year}
+                                                        </option>
+                                                    );
+                                                }
+                                            )}
+                                        </select>
+                                    </div>
+
+                                    <label htmlFor="end_date">
+                                        End Date
+                                    </label>
+
+                                    <div className="flex gap-2 mt-0!">
+                                        <select
+                                            value={
+                                                !form.end_date
+                                                    ? ""
+                                                    : Number(endMonth) - 1
                                             }
-                                        )}
-                                    </select>
-                                </div>
+                                            onChange={(e) => {
+                                                if (e.target.value === "") {
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        end_date: "",
+                                                    }));
 
-                                <label htmlFor="city">
-                                    Company City
-                                </label>
+                                                    return;
+                                                }
 
-                                <input
-                                    id="city"
-                                    name="city"
-                                    placeholder="City"
-                                    value={form.city}
-                                    onChange={handleChange}
-                                />
+                                                const month =
+                                                    String(
+                                                        Number(
+                                                            e.target.value
+                                                        ) + 1
+                                                    ).padStart(2, "0");
 
-                                <label htmlFor="region">
-                                    Company Region
-                                </label>
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    end_date:
+                                                        `${endYear || currentYear}${month}`,
+                                                }));
+                                            }}
+                                        >
+                                            <option value="">
+                                                Present
+                                            </option>
 
-                                <input
-                                    id="region"
-                                    name="region"
-                                    placeholder="Region"
-                                    value={form.region}
-                                    onChange={handleChange}
-                                />
-                            </Tile>
-                        )}
+                                            {Array.from({ length: 12 }).map(
+                                                (_, i) => (
+                                                    <option
+                                                        key={i}
+                                                        value={i}
+                                                    >
+                                                        {new Date(
+                                                            0,
+                                                            i
+                                                        ).toLocaleString(
+                                                            "en",
+                                                            {
+                                                                month: "long",
+                                                            }
+                                                        )}
+                                                    </option>
+                                                )
+                                            )}
+                                        </select>
 
-                        {/* STEP 3 - REVIEW */}
-                        {step === 3 && (
-                            <Tile
-                                title={steps[step - 1]}
-                                disableHover={true}
-                                className="max-w-full flex-0"
-                                childClassName="[&_div]:mt-0!"
-                            >
-                                {/* OVERVIEW */}
-                                <div
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4
-                                        rounded-xl
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(1)}
+                                        <select
+                                            value={endYear}
+                                            onChange={(e) => {
+                                                const year =
+                                                    e.target.value;
+
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    end_date: year
+                                                        ? `${year}${endMonth}`
+                                                        : "",
+                                                }));
+                                            }}
+                                        >
+                                            <option value="">
+                                                Present
+                                            </option>
+
+                                            {Array.from({ length: 50 }).map(
+                                                (_, i) => {
+                                                    const year =
+                                                        new Date().getFullYear() -
+                                                        i;
+
+                                                    return (
+                                                        <option
+                                                            key={year}
+                                                            value={year}
+                                                        >
+                                                            {year}
+                                                        </option>
+                                                    );
+                                                }
+                                            )}
+                                        </select>
+                                    </div>
+
+                                    <label htmlFor="city">
+                                        Company City
+                                    </label>
+
+                                    <input
+                                        id="city"
+                                        name="city"
+                                        placeholder="City"
+                                        value={form.city}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="region">
+                                        Company Region
+                                    </label>
+
+                                    <input
+                                        id="region"
+                                        name="region"
+                                        placeholder="Region"
+                                        value={form.region}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+
+                            {/* STEP 3 - REVIEW */}
+                            {step === 3 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                    childClassName="[&_div]:mt-0!"
                                 >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[0]}
-                                    </h2>
+                                    {/* OVERVIEW */}
+                                    <div
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4
+                                            rounded-xl
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(1)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[0]}
+                                        </h2>
 
-                                    <div className="flex flex-wrap justify-between items-center gap-1">
-                                        <h4>{form.title}</h4>
-                                        {form.tag && (
-                                            <Badge
-                                                text={form.tag}
-                                                px={2}
-                                                py={1}
-                                                textSize="xs"
-                                                shadow="none"
-                                                className="
-                                                    h-fit
-                                                    text-neutral-600! 
-                                                    bg-neutral-200
-                                                "
-                                            />
-                                        )}
-                                    </div>
-                                    
+                                        <div className="flex flex-wrap justify-between items-center gap-1">
+                                            <h4>{form.title}</h4>
+                                            {form.tag && (
+                                                <Badge
+                                                    text={form.tag}
+                                                    px={2}
+                                                    py={1}
+                                                    textSize="xs"
+                                                    shadow="none"
+                                                    className="
+                                                        h-fit
+                                                        text-neutral-600! 
+                                                        bg-neutral-200
+                                                    "
+                                                />
+                                            )}
+                                        </div>
+                                        
 
-                                    <div className="font-medium">
-                                        {form.company}
-                                    </div>
+                                        <div className="font-medium">
+                                            {form.company}
+                                        </div>
 
-                                    <div className="
-                                        flex
-                                        prose
-                                        prose-sm
-                                        min-w-full
-                                    ">
-                                        <ReactMarkdown>
-                                            {form.description}
-                                        </ReactMarkdown>
-                                    </div>
-                                </div>
-
-                                {/* DETAILS */}
-                                <div
-                                    className="
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        p-4
-                                        rounded-xl
-                                        transition-colors
-                                        duration-100
-                                        hover:bg-gray-200
-                                        hover:cursor-pointer
-                                    "
-                                    onClick={() => goToStep(2)}
-                                >
-                                    <h2 className="text-[2rem] font-semibold text-center">
-                                        {steps[1]}
-                                    </h2>
-
-                                    <div>
-                                        <span className="font-semibold">
-                                            Start:
-                                        </span>{" "}
-                                        {new Date(
-                                            Number(startYear),
-                                            Number(startMonth) - 1
-                                        ).toLocaleString("en", {
-                                            month: "long",
-                                            year: "numeric",
-                                        })}
+                                        <div className="
+                                            flex
+                                            prose
+                                            prose-sm
+                                            min-w-full
+                                        ">
+                                            <ReactMarkdown>
+                                                {form.description}
+                                            </ReactMarkdown>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <span className="font-semibold">
-                                            End:
-                                        </span>{" "}
-                                        {form.end_date
-                                            ? new Date(
-                                                Number(endYear),
-                                                Number(endMonth) - 1
+                                    {/* DETAILS */}
+                                    <div
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4
+                                            rounded-xl
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(2)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[1]}
+                                        </h2>
+
+                                        <div>
+                                            <span className="font-semibold">
+                                                Start:
+                                            </span>{" "}
+                                            {new Date(
+                                                Number(startYear),
+                                                Number(startMonth) - 1
                                             ).toLocaleString("en", {
                                                 month: "long",
                                                 year: "numeric",
-                                            })
-                                            : "Present"}
-                                    </div>
+                                            })}
+                                        </div>
 
-                                    {(form.city ||
-                                        form.region) && (
                                         <div>
                                             <span className="font-semibold">
-                                                Location:
+                                                End:
                                             </span>{" "}
-                                            {[
-                                                form.city,
-                                                form.region,
-                                            ]
-                                                .filter(Boolean)
-                                                .join(", ")}
+                                            {form.end_date
+                                                ? new Date(
+                                                    Number(endYear),
+                                                    Number(endMonth) - 1
+                                                ).toLocaleString("en", {
+                                                    month: "long",
+                                                    year: "numeric",
+                                                })
+                                                : "Present"}
                                         </div>
-                                    )}
-                                </div>
-                            </Tile>
-                        )}
+
+                                        {(form.city ||
+                                            form.region) && (
+                                            <div>
+                                                <span className="font-semibold">
+                                                    Location:
+                                                </span>{" "}
+                                                {[
+                                                    form.city,
+                                                    form.region,
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(", ")}
+                                            </div>
+                                        )}
+                                    </div>
+                                </Tile>
+                            )}
+                        </div>
                     </div>
+
+                    {/* BUTTONS */}
+                    <div className="
+                        flex
+                        w-full
+                        justify-between
+                        px-4
+                    ">
+                        <Button
+                            text="Back"
+                            variant="secondary"
+                            onClick={() => {
+                                if (step !== 1) {
+                                    setStep(step - 1);
+                                } else {
+                                    router.refresh();
+                                    router.push(
+                                        nextPage ?? "/experience"
+                                    );
+                                }
+                            }}
+                        />
+
+                        {step !== 3 && (
+                            <Button
+                                text="Next"
+                                onClick={() =>
+                                    goToStep(step + 1)
+                                }
+                            />
+                        )}
+
+                        {step === 3 && (
+                            <Button
+                                text="Post"
+                                type="submit"
+                                name="mode"
+                            />
+                        )}
+                    </div>                    
                 </div>
 
-                {/* BUTTONS */}
-                <div className="
-                    flex
-                    w-full
-                    justify-between
-                    px-4
-                ">
-                    <Button
-                        text="Back"
-                        variant="secondary"
-                        onClick={() => {
-                            if (step !== 1) {
-                                setStep(step - 1);
-                            } else {
-                                router.refresh();
-                                router.push(
-                                    nextPage ?? "/experience"
-                                );
-                            }
-                        }}
-                    />
 
-                    {step !== 3 && (
-                        <Button
-                            text="Next"
-                            onClick={() =>
-                                goToStep(step + 1)
-                            }
-                        />
-                    )}
-
-                    {step === 3 && (
-                        <Button
-                            text="Post"
-                            type="submit"
-                            name="mode"
-                        />
-                    )}
-                </div>
             </form>
         </div>
     );

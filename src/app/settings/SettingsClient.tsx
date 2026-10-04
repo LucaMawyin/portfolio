@@ -1,14 +1,17 @@
 "use client";
 
+import AddButton from "@/components/AddButton";
 import Badge from "@/components/Badge";
 import Button from "@/components/Button";
 import DeleteButton from "@/components/DeleteButton";
+import EditButton from "@/components/EditButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import Tile from "@/components/Tile";
 import { getDevice } from "@/lib/getDevice";
 import resizeImage from "@/lib/resizeImage";
 import { shadow } from "@/lib/tags";
 import { ChangePasswordResponse, Project, Session, SiteContent, User } from "@/lib/types";
+import { RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
@@ -406,7 +409,9 @@ export default function SettingsClient(props : {
 
                             <Button
                                 text="Change About"
-                                className="w-full sm:w-56"
+                                className="w-full sm:w-fit"
+                                x={4}
+                                y={2}
                                 onClick={handleAboutSubmit}
                             />                            
                         </div>
@@ -526,7 +531,9 @@ export default function SettingsClient(props : {
                             <Button
                                 text="Submit Headshot"
                                 type="submit"
-                                className="w-full sm:w-56"
+                                className="w-full sm:w-fit"
+                                x={4}
+                                y={2}
                             />
                         </form>
                     </div>
@@ -642,7 +649,9 @@ export default function SettingsClient(props : {
                             <Button
                                 text="Submit Resume"
                                 type="submit"
-                                className="w-full sm:w-56"
+                                className="w-full sm:w-fit"
+                                x={4}
+                                y={2}
                             />
                         </form>
                     </div>
@@ -728,7 +737,9 @@ export default function SettingsClient(props : {
                                 <Button 
                                     text="Change Password" 
                                     type="submit"
-                                    className="w-full sm:w-56 "
+                                    className="w-full sm:w-fit"
+                                    x={4}
+                                    y={2}
                                     onClick={handlePasswordChange}
                                 />  
                             </div>
@@ -826,9 +837,10 @@ export default function SettingsClient(props : {
                                         </p>       
                                         {props.currentSession.id !== session.id && (
                                             <DeleteButton
-                                                customText="Remove"
-                                                customDescription=" Session"
-                                                className="w-full sm:w-fit rounded-lg!"
+                                                buttonText="Remove Session"
+                                                actionName="Remove"
+                                                itemName="Session"
+                                                className="w-full sm:w-fit"
                                                 x={2}
                                                 y={0}
                                                 action={() => handleRemoveSession(session.id)}
@@ -841,9 +853,12 @@ export default function SettingsClient(props : {
                                 </details>
                             ))}
                             <DeleteButton
-                                customText="Clear"
-                                customDescription="Sessions"
-                                className="w-full sm:w-56 mt-2"
+                                buttonText="Clear All Sessions"
+                                actionName="Clear"
+                                itemName="All Sessions"
+                                className="w-full sm:w-fit mt-6"
+                                x={4}
+                                y={2}
                                 action={handleClearSessions}
                             />                             
                         </div>
@@ -867,11 +882,16 @@ export default function SettingsClient(props : {
                     titleClassName="border-b"
                     disablePillow={true}
                 >
-                    <Button 
+                    <AddButton
+                        className="mt-4 w-full sm:w-fit self-center"
                         text="Add Project"
-                        className="mt-4 w-full sm:w-56 self-center"
-                        onClick={() => (router.push("/add-project"))}
-                    />            
+                        x={4}
+                        y={2}
+                        action={() =>
+                        router.push(
+                            "/add-project"
+                        )}
+                    />
                     {visibleProjects.length > 0 && 
                         <div className="
                             grid
@@ -1050,20 +1070,15 @@ export default function SettingsClient(props : {
 
                                     {/* Delete/Edit Buttons */}
                                     <div 
-                                        className="shrink-0 flex gap-4 max-h-[calc(50%+0.5rem)]"
+                                        className="flex flex-row gap-4 w-full mt-auto"
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        <Button
-                                            text="Edit"
-                                            className="w-20! sm:w-fit h-fit self-end rounded-lg!"
-                                            x={0}
-                                            y={0}
-                                            onClick={() => {router.push(`add-project/edit?id=${project.id}`)}}
+                                        <EditButton
+                                            action={() => {
+                                                router.push(`add-project/edit?id=${project.id}`)
+                                            }}
                                         />
                                         <DeleteButton
-                                            className="w-20! sm:w-fit h-fit self-end rounded-lg!"
-                                            x={0}
-                                            y={0}
                                             text="Project"
                                             action={async () => {
                                                 const res = await fetch("/api/projects", {
@@ -1179,6 +1194,8 @@ export default function SettingsClient(props : {
             {/* DELETED PROJECTS */}
             {deletedProjects.length > 0 && (
                 <Button
+                    x={4}
+                    y={2}
                     text={showDeletedProjects ? "Hide Deleted Projects" : "Show Deleted Projects"}
                     className="w-fit self-center my-4"
                     onClick={() => setShowDeletedProjects((prev) => !prev)}
@@ -1209,6 +1226,7 @@ export default function SettingsClient(props : {
                                 items-stretch
                                 auto-rows-fr
                                 mt-4
+                                mb-6
                                 gap-4
                             ">
                                 {deletedProjects.map((project) => (
@@ -1386,10 +1404,8 @@ export default function SettingsClient(props : {
                                         </div>
 
                                         {/* Delete/Edit Buttons */}
-                                        <div className="shrink-0 self-center flex gap-4">
+                                        <div className="flex flex-row gap-4 w-full mt-auto">
                                             <Button
-                                                text="Restore"
-                                                className="py-0! px-2! min-h-fit w-20! sm:w-fit rounded-lg!"
                                                 onClick={async () => {
                                                     const res = await fetch("/api/projects", {
                                                         method: "PATCH",
@@ -1418,10 +1434,10 @@ export default function SettingsClient(props : {
 
                                                     notify("Project restored successfully", "success");
                                                 }}
-
-                                            />
+                                            >
+                                                <RotateCcw size={18} />
+                                            </Button>
                                             <DeleteButton
-                                                className="py-0! px-2! min-h-fit w-20! sm:w-fit rounded-lg!"
                                                 text="Project"
                                                 action={async () => {
                                                     const res = await fetch("/api/projects", {

@@ -1,50 +1,115 @@
 "use client";
 
-export default function Button(props : {
-    text : string; 
+const textSizeClasses = {
+    xs: "text-xs",
+    sm: "text-sm",
+    base: "text-base",
+    lg: "text-lg",
+    xl: "text-xl",
+    "2xl": "text-2xl",
+};
+
+const fontWeightClasses = {
+    normal: "font-normal",
+    medium: "font-medium",
+    semibold: "font-semibold",
+    bold: "font-bold",
+    extrabold: "font-extrabold",
+};
+
+const borderRadiusClasses = {
+    none: "rounded-none",
+    sm: "rounded-sm",
+    base: "rounded",
+    md: "rounded-md",
+    lg: "rounded-lg",
+    xl: "rounded-xl",
+    "2xl": "rounded-2xl",
+    "3xl": "rounded-3xl",
+    full: "rounded-full",
+};
+
+const shadowClasses = {
+    none: "shadow-none",
+    sm: "shadow-sm",
+    base: "shadow",
+    md: "shadow-md",
+    lg: "shadow-lg",
+    xl: "shadow-xl",
+    "2xl": "shadow-2xl",
+};
+
+export default function Button(props: {
+    text?: string;
     type?: "button" | "submit" | "reset";
     variant?: "primary" | "secondary" | "red" | "transparent";
-    children?:React.ReactNode;
-    className?:string;
+    children?: React.ReactNode;
+    className?: string;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     disabled?: boolean;
-    name?:string;
-    value?:string;
-    x?:number;
-    y?:number;
-}){
-
-    // Handle click event
+    name?: string;
+    value?: string;
+    x?: number;
+    y?: number;
+    textSize?: keyof typeof textSizeClasses;
+    fontWeight?: keyof typeof fontWeightClasses;
+    borderRadius?: keyof typeof borderRadiusClasses;
+    shadow?: keyof typeof shadowClasses;
+}) {
     function clickEvent(e: React.MouseEvent<HTMLButtonElement>) {
         props.onClick?.(e);
     }
 
-    // Base button style
-    const base = `w-fit ${props.y ? "" : "py-4"}  ${props.x ? "" : "px-8"} rounded-xl transition duration-(--transition-duration) cursor-pointer`;
+    const base = `
+        flex
+        justify-center
+        items-center
+        text-center
+        w-fit
+        h-fit
+        ${props.y ? "" : "py-4"}
+        ${props.x ? "" : "px-8"}
+        transition
+        duration-(--transition-duration)
+        cursor-pointer
+        ${textSizeClasses[props.textSize ?? "base"]}
+        ${fontWeightClasses[props.fontWeight ?? "medium"]}
+        ${borderRadiusClasses[props.borderRadius ?? "xl"]}
+        ${shadowClasses[props.shadow ?? "sm"]}
+    `;
 
-    // Variant styles
     const styles = {
         primary:
-            "bg-(--contrast-light) text-white hover:bg-(--contrast-colour) hover:shadow-xl",
+            "bg-white text-gray-950 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-md",
+
         secondary:
-            "bg-gray-200 text-black border border-gray-300 hover:bg-gray-300 hover:border-gray-400 hover:shadow-md",
-        red : 
-            "bg-red-600 text-white hover:bg-red-700 hover:shadow-md",
+            "bg-gray-200 text-gray-800 border border-gray-300 hover:bg-gray-300 hover:border-gray-400 hover:shadow-md",
+
+        red:
+            "bg-red-500 text-white border border-red-600 hover:bg-red-600 hover:border-red-700 hover:shadow-md",
+
         transparent:
-            "bg-transparent text-black",
+            "bg-transparent text-gray-950 border border-transparent hover:bg-gray-100 hover:border-gray-200",
     };
 
-    // Add disabled styles if the button is disabled
     const disabledStyle = props.disabled
-        ? "opacity-50 hover:bg-red-600! cursor-default!"
+        ? "opacity-50 cursor-default!"
         : "";
 
-    return(
-        <button 
+    return (
+        <button
             type={props.type ?? "button"}
-            onClick={clickEvent} 
+            onClick={(e) => {
+                e.stopPropagation();
+                clickEvent(e);
+            }}
             disabled={props.disabled}
-            className={`${base} ${styles[props.variant ?? "primary"]} ${props.className ?? ""} ${disabledStyle}`}
+            className={`
+                ${base}
+                ${styles[props.variant ?? "primary"]}
+                ${props.className ?? ""}
+                ${disabledStyle}
+            `}
             name={props.name}
             value={props.value}
             style={{
@@ -58,9 +123,11 @@ export default function Button(props : {
                 }),
             }}
         >
-                
+
             {props.text}
             {props.children}
+
+            
         </button>
-    )
+    );
 }

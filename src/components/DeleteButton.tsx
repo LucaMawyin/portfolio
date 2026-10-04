@@ -2,50 +2,49 @@
 
 import Button from "@/components/Button";
 import { useEffect, useState, useTransition } from "react";
-import Tile from "./Tile";
 import { createPortal } from "react-dom";
 import { getLenis } from "./SmoothScroll";
+import { Trash2 } from "lucide-react";
 
 export default function DeleteButton({
     action,
     className = "",
-    disabled= false,
-    text="",
-    customText="",
-    customDescription="",
+    disabled = false,
+    buttonText = "",
+    itemName = "",
+    actionName = "",
     x,
     y,
 }: {
     action: () => void;
     className?: string;
     disabled?: boolean;
-    text?:string;
-    customText?:string;
-    customDescription?:string;
-    x?:number;
-    y?:number;
+    buttonText?: string;
+    actionName?: string;
+    itemName?:string;
+    text?: string;
+    customText?: string;
+    customDescription?: string;
+    x?: number;
+    y?: number;
 }) {
-    
-    // Handle delete action with transition
     const [isPending, startTransition] = useTransition();
+    const [open, setOpen] = useState(false);
+
     const handleDelete = () => {
         startTransition(async () => {
             await action();
         });
     };
 
-    // Prevent background scrolling on confirmation dialog
-    const [open, setOpen] = useState(false);
     useEffect(() => {
         if (open) {
             document.body.style.overflow = "hidden";
             document.documentElement.style.overflow = "hidden";
-
             getLenis()?.stop();
         } else {
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
-
             getLenis()?.start();
         }
 
@@ -59,70 +58,121 @@ export default function DeleteButton({
     return (
         <>
             <Button
-                text={customText ? `${customText} ${customDescription ? customDescription : ""}` : `Delete`}
                 type="button"
                 variant="red"
+                text={buttonText}
                 disabled={disabled}
-                className={className}
-                onClick={() => setOpen(true)}
+                className={`flex flex-row-reverse ${
+                    buttonText ? "gap-4" : ""
+                } ${className}`}
+                onClick={(e) => {
+                    e.preventDefault();
+                    setOpen(true);
+                }}
                 x={x}
                 y={y}
-            />
+            >
+                <Trash2 size={18} />
+            </Button>
 
-            {/* Confirmation dialog */}
-            {open && createPortal(
-                <div 
-                    className="
-                        fixed inset-0
-                        bg-black/50
-                        flex items-center justify-center
-                        z-60
-                        touch-none
-                    "
-                    onClick={() => setOpen(false)}
-                >
-                    
-                    <Tile 
-                        title={customText ? `${customText} ${customDescription}?` : `Delete ${customText ? customText : text}?`} 
-                        className="bg-white p-[5%] rounded shadow-md max-w-full sm:max-w-fit sm:p-[2%]"
-                        disableHover={true}
-                        onClick={(e) => e.stopPropagation()}
+            {open &&
+                createPortal(
+                    <div
+                        className="
+                            fixed inset-0
+                            z-10000
+                            flex items-center justify-center
+                            bg-black/50
+                            backdrop-blur-
+                            p-4
+                            touch-none
+                        "
+                        onClick={() => {
+                            if (!isPending) setOpen(false);
+                        }}
                     >
+                        <div
+                            className="
+                                w-full
+                                max-w-md
+                                p-8
+                                shadow-2xl
+                                pillow
+                                squircle
+                            "
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Icon */}
+                            <div className="flex justify-center">
+                                <div
+                                    className="
+                                        flex
+                                        h-16
+                                        w-16
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        bg-red-100
+                                        text-red-600
+                                    "
+                                >
+                                    <Trash2 size={28} />
+                                </div>
+                            </div>
 
-                        <p className="text-sm text-gray-600 mb-6 mt-4">
-                            This action cannot be undone.
-                        </p>
-
-
-                        <div className="flex justify-between gap-3">
-
-                            <Button
-                                text="Cancel"
-                                variant="secondary"
-                                x={4}
-                                y={2}
-                                onClick={() => setOpen(false)}
-                                disabled={isPending}
+                            {/* Title */}
+                            <h2
+                                className="
+                                    mt-7
+                                    text-center
+                                    text-[2em]
+                                    font-semibold
+                                    leading-tight
+                                    text-gray-950
+                                    wrap-break-word
+                                "
                             >
-                                
-                            </Button>
-                            <Button
-                                text={customText ? customText : "Delete"}
-                                variant="red"
-                                x={6}
-                                y={2}
-                                onClick={() => {
-                                    setOpen(false);
-                                    handleDelete();
-                                }}
-                                disabled={isPending}
-                            >
+                                {actionName || "Delete"}{itemName ? " " + itemName : ""}?
+                            </h2>
 
-                            </Button>
+                            {/* Description */}
+                            <div className="mt-4 space-y-2 text-center">
+                                <p className="text-sm leading-6 text-gray-600">
+                                    Are you sure you want to {actionName ? actionName.toLowerCase() : "delete"}{itemName ? `${" " + itemName.toLowerCase()}` : ""}?
+                                </p>
+
+                                <p className="text-sm leading-6 text-gray-500">
+                                    This action is permanent and cannot be undone.
+                                </p>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="mt-9 flex justify-between gap-4">
+                                <Button
+                                    text="Cancel"
+                                    variant="secondary"
+                                    x={4}
+                                    y={2}
+                                    onClick={() => setOpen(false)}
+                                    disabled={isPending}
+                                />
+
+                                <Button
+                                    text={actionName || "Delete"}
+                                    variant="red"
+                                    x={6}
+                                    y={2}
+                                    onClick={() => {
+                                        setOpen(false);
+                                        handleDelete();
+                                    }}
+                                    disabled={isPending}
+                                />
+                            </div>
                         </div>
-                    </Tile>
-                </div>, document.body
-            )}
+                    </div>,
+                    document.body
+                )}
         </>
     );
 }

@@ -8,6 +8,7 @@ import Badge from "./Badge";
 import { useEffect, useState } from "react";
 import { getTechIcon } from "@/lib/techIcons";
 import { getInitials } from "@/lib/getInitials";
+import EditButton from "./EditButton";
 
 export default function TechStack(props: {
     isLoggedIn: boolean;
@@ -125,23 +126,15 @@ export default function TechStack(props: {
                 text-center
             "
         >
-            <FadeInOnView>
+            <FadeInOnView className="flex flex-wrap w-full items-center justify-center gap-x-8 gap-y-2 px-4">
                 <h1>
                     Tech I Use
                 </h1>
-                {props.isLoggedIn && 
-                    <div className="
-                        flex 
-                        w-full
-                        justify-center
-                        p-4 sm:p-0
-                    ">
-                        <Button
-                            text="Edit"
-                            onClick={() => router.push("/edit-tech")}
-                        />        
-                    </div>
-                }
+                {props.isLoggedIn && (
+                    <EditButton
+                        action={() => router.push("/edit-tech")}
+                    />
+                )}
             </FadeInOnView>
             
 

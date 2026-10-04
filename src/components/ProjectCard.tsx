@@ -4,6 +4,8 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import Badge from "./Badge";
 import TechBadges from "./TechBadges";
+import EditButton from "./EditButton";
+import DeleteButton from "./DeleteButton";
 
 
 export default function ProjectCard( props : {
@@ -19,6 +21,8 @@ export default function ProjectCard( props : {
     onButtonHoverEnd?: () => void;
     condenseTech?: boolean;
     holdProgress?: number;
+    onEdit?: () => void;
+    onDelete?: () => void;
 }){
     const tools = (
     typeof props.project.tools === "string"
@@ -298,7 +302,7 @@ export default function ProjectCard( props : {
                 return (
 
   
-                    <div className="cursor-pointer mt-4"
+                    <div className="cursor-pointer ml-auto mt-4 w-fit"
                         onMouseEnter={() => {
                             props.onHoldCancel?.();
                             props.onButtonHoverStart?.();
@@ -332,7 +336,6 @@ export default function ProjectCard( props : {
                             py={2}
                             className="
                                 group
-                                ml-auto
                                 gap-2!
                                 bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
                                 hover:bg-(--project-colour)
@@ -357,6 +360,32 @@ export default function ProjectCard( props : {
              
                 );
             })()}
+            
+            {props.isLoggedIn && (
+                <div
+                    className="flex justify-between mt-4"
+                    onMouseEnter={() => {
+                        props.onHoldCancel?.();
+                        props.onButtonHoverStart?.();
+                    }}
+                    onMouseLeave={() => {
+                        props.onButtonHoverEnd?.();
+                    }}
+                    onTouchStart={() => {
+                        props.onHoldCancel?.();
+                        props.onButtonHoverStart?.();
+                    }}
+                    onTouchEnd={() => {
+                        props.onButtonHoverEnd?.();
+                    }}
+                >
+                    <EditButton action={props.onEdit!} />
+                    <DeleteButton 
+                        action={props.onDelete!}
+                        itemName={props.project.name}
+                    />
+                </div>
+            )}
         </a>
     );
 }
