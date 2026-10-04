@@ -139,6 +139,7 @@ export default function Login(props : {isLoggedIn : boolean}){
 
                     <Button 
                         text="Login" 
+                        variant="secondary"
                         type="submit"
                         className="self-center"
                     />

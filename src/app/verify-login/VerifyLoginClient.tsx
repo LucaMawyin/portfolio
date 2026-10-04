@@ -130,7 +130,7 @@ export default function VerifyLoginClient(props : {type : string}) {
                             value={digit}
                             onChange={(e) => handleChange(e.target.value, i)}
                             onKeyDown={(e) => handleKeyDown(e, i)}
-                            className="w-10 h-12 text-center border rounded text-lg"
+                            className="w-10 h-12 text-center text-lg"
                         />
                     ))}
                 </div>
@@ -138,6 +138,7 @@ export default function VerifyLoginClient(props : {type : string}) {
                 <Button 
                     text={loading ? "Verifying..." : "Verify"} 
                     type="submit" 
+                    variant="secondary"
                     disabled={loading}
                     className="self-center"
                 />
