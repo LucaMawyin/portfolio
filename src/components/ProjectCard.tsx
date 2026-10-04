@@ -18,6 +18,7 @@ export default function ProjectCard( props : {
     onButtonHoverStart?: () => void;
     onButtonHoverEnd?: () => void;
     condenseTech?: boolean;
+    holdProgress?: number;
 }){
     const tools = (
     typeof props.project.tools === "string"
@@ -86,17 +87,20 @@ export default function ProjectCard( props : {
         >   
 
             {/* Tile title */}
-            <div className={`
-                flex 
-                flex-col
-                ${props.position === "start" ? "sm:flex-row" : "sm:flex-row-reverse"}
-                justify-between 
-                w-full 
-                border-b border-gray-200 
-                items-center sm:items-stretch 
-                gap-2
-                pb-4
-            `}>
+            <div
+                className={`
+                    relative
+                    flex 
+                    flex-col
+                    ${props.position === "start" ? "sm:flex-row" : "sm:flex-row-reverse"}
+                    justify-between 
+                    w-full
+                    items-center 
+                    sm:items-stretch 
+                    gap-2
+                    pb-4
+                `}
+            >
                 <h1
                     className={`
                         text-2xl!
@@ -138,6 +142,38 @@ export default function ProjectCard( props : {
                     >
                         {props.project.tag}
                     </h2>
+                )}
+
+                {props.holdProgress !== undefined && (
+                    <>
+                        <div
+                            className="
+                                absolute
+                                bottom-0
+                                left-0
+                                right-0
+                                h-px
+                                bg-gray-300
+                                z-10
+                            "
+                        />
+
+                        <div
+                            className="
+                                absolute
+                                bottom-0
+                                left-0
+                                h-0.5
+                                z-20
+                                transition-none
+                            "
+                            style={{
+                                width: `${props.holdProgress * 100}%`,
+                                backgroundColor: `color-mix(in srgb, ${glowColour} 100%, transparent)`,
+                                boxShadow: `0 0 6px ${glowRGB}`,
+                            }}
+                        />
+                    </>
                 )}
             </div>
 
@@ -293,6 +329,12 @@ export default function ProjectCard( props : {
                                     ? `View ${props.project.name} source code`
                                     : `Visit ${props.project.name} website`
                             }
+                            style={{
+                                "--glow": glowRGB,
+                                "--project-colour": props.project.colour,
+                                color: glowColour,
+                                borderColor: borderColour,
+                            } as React.CSSProperties}                  
                             className="
                                 group
                                 mt-auto
@@ -305,8 +347,7 @@ export default function ProjectCard( props : {
                                 py-2
                                 rounded-full
                                 border-2
-                                border-gray-400
-                                bg-gray-100
+                                bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
                                 text-sm
                                 font-semibold
                                 shadow-[0_2px_8px_rgba(0,0,0,0.12)]
@@ -315,15 +356,11 @@ export default function ProjectCard( props : {
                                 duration-200
                                 hover:scale-105
                                 hover:border-gray-500
-                                hover:bg-gray-200
+                                hover:bg-(--project-colour)
                                 hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)]
                                 active:scale-95
+                                animate-tag-pulse
                             "
-                            style={{
-                                borderColor: borderColour,
-                                boxShadow: `0 2px 10px ${glowRGB}`,
-                                color: glowColour,
-                            }}
                         >
                             <span>{isGithub ? "View Code" : "Visit Website"}</span>
                             <span className="

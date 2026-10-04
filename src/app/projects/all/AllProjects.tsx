@@ -78,6 +78,7 @@ export default function AllProjects(props: {
                             isLoggedIn={props.isLoggedIn}
                             position="start"
                             childClassName="flex-col!"
+                            holdProgress={0}
                         />
 
                         {/* Delete button if logged in */}

@@ -81,7 +81,6 @@ export default function Projects(props: {
 
         closeTimeout.current = setTimeout(() => {
             setHoveredProject(null);
-            setModalStyle({});
             setIsInteracting(false);
         }, 100);
     };
@@ -268,24 +267,6 @@ export default function Projects(props: {
     useEffect(() => {
         if (!hoveredProject) return;
 
-        // Give the browser one render with the card
-        // sitting at its original position.
-        const timeout = setTimeout(() => {
-            setModalStyle((prev) => ({
-                ...prev,
-                left: "50%",
-                top: "50%",
-                transform:
-                    "translate(-50%, -50%)",
-            }));
-        }, 20);
-
-        return () => clearTimeout(timeout);
-    }, [hoveredProject]);
-
-    useEffect(() => {
-        if (!hoveredProject) return;
-
         const body = document.body;
         const scrollY = window.scrollY;
 
@@ -335,9 +316,12 @@ export default function Projects(props: {
                 <div
                     className="
                         flex
-                        flex-wrap
+                        flex-col
+                        sm:flex-wrap
+                        sm:flex-row
                         px-[10%]
-                        justify-between
+                        justify-center
+                        sm:justify-between
                         items-center
                         gap-4
                         pb-4
@@ -348,7 +332,8 @@ export default function Projects(props: {
                         className="
                             flex-1
                             min-w-min
-                            text-start
+                            sm:text-start
+                            text-center
                         "
                     >
                         Featured Projects
@@ -586,73 +571,6 @@ export default function Projects(props: {
                                     )
                                 }
                             >
-                                {holdProgress > 0 &&
-                                    holdingProjectId ===
-                                        project.id &&
-                                    !hoveredProject && (
-                                        <svg
-                                            className="
-                                                absolute
-                                                -inset-5
-                                                z-0
-                                                w-[calc(100%+2.5rem)]
-                                                h-[calc(100%+2.5rem)]
-                                                pointer-events-none
-                                                overflow-visible
-                                            "
-                                            viewBox="0 0 100 100"
-                                            preserveAspectRatio="none"
-                                        >
-                                            <defs>
-                                                <filter
-                                                    id={`hold-shadow-${project.id}`}
-                                                    x="-50%"
-                                                    y="-50%"
-                                                    width="200%"
-                                                    height="200%"
-                                                >
-                                                    <feGaussianBlur
-                                                        stdDeviation="4"
-                                                        result="blur"
-                                                    />
-
-                                                    <feOffset
-                                                        in="blur"
-                                                        dx="0"
-                                                        dy="1"
-                                                        result="offset"
-                                                    />
-
-                                                    <feComponentTransfer>
-                                                        <feFuncA
-                                                            type="linear"
-                                                            slope="0.45"
-                                                        />
-                                                    </feComponentTransfer>
-                                                </filter>
-                                            </defs>
-
-                                            <rect
-                                                x="7"
-                                                y="7"
-                                                width="86"
-                                                height="86"
-                                                rx="5"
-                                                fill="none"
-                                                stroke="black"
-                                                strokeWidth="5"
-                                                pathLength="100"
-                                                strokeDasharray="100"
-                                                strokeDashoffset={
-                                                    100 -
-                                                    holdProgress *
-                                                        100
-                                                }
-                                                filter={`url(#hold-shadow-${project.id})`}
-                                            />
-                                        </svg>
-                                    )}
-
                                 <div
                                     className="
                                         relative
@@ -664,17 +582,14 @@ export default function Projects(props: {
                                     <ProjectCard
                                         project={project}
                                         condenseTech={true}
-                                        isLoggedIn={
-                                            props.isLoggedIn
-                                        }
+                                        isLoggedIn={props.isLoggedIn}
                                         childClassName="xl:flex-col!"
-                                        position={`${
-                                            i % 2 === 0
-                                                ? "start"
-                                                : "end"
-                                        }`}
-                                        onHoldCancel={
-                                            cancelHoldAndPauseCarousel
+                                        position={`${i % 2 === 0 ? "start" : "end"}`}
+                                        onHoldCancel={cancelHoldAndPauseCarousel}
+                                        holdProgress={
+                                            holdingProjectId === project.id
+                                                ? holdProgress
+                                                : 0
                                         }
                                     />
                                 </div>
@@ -799,6 +714,8 @@ export default function Projects(props: {
                             transition-all
                             duration-300
                             group-hover:w-full
+                            group-active:w-1/2
+                            group-active:left-1/4
                         "
                     />
                 </h2>
@@ -825,79 +742,78 @@ export default function Projects(props: {
                             fixed
                             inset-0
                             z-9999
-                            overflow-hidden
+                            overflow-y-auto
                             overscroll-contain
+                            bg-black/50
+                            backdrop-blur-[2px]
                         "
                     >
-                        {/* Backdrop */}
+                        {/* Scrollable portal content */}
                         <div
                             className="
-                                absolute
-                                inset-0
-                                bg-black/50
-                                backdrop-blur-[2px]
+                                min-h-full
+                                w-full
+                                flex
+                                items-center
+                                justify-center
+                                p-4
                             "
                             onClick={closeModal}
-                        />
-
-                        {/* Modal card */}
-                        <div
-                            className="
-                                fixed
-                                z-10000
-                                transition-all
-                                duration-500
-                                ease-[cubic-bezier(0.22,1,0.36,1)]
-                            "
-                            style={modalStyle}
                         >
-                            {/* Close button */}
-                            <div className="relative group">
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        closeModal();
-                                    }}
-                                    aria-label="Close project"
-                                    className="
-                                        absolute
-                                        -top-2
-                                        -right-2
-                                        z-10
-                                        w-10
-                                        h-10
-                                        flex
-                                        items-center
-                                        justify-center
-                                        rounded-full
-                                        bg-white
-                                        text-black
-                                        text-2xl
-                                        leading-none
-                                        shadow-[0_4px_15px_rgba(0,0,0,0.2)]
-                                        cursor-pointer
-                                        transition-transform
-                                        duration-200
-                                        hover:scale-110
-                                        group-hover:-translate-y-1
-                                        group-hover:translate-x-1
-                                        hover:translate-y-0
-                                        hover:translate-x-0
-                                    "
-                                >
-                                    &times;
-                                </button>
+                            {/* Modal */}
+                            <div
+                                className="
+                                    relative
+                                    animate-modal-fade-up
+                                "
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                {/* Close button + card */}
+                                <div className="relative group">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        aria-label="Close project"
+                                        className="
+                                            absolute
+                                            -top-2
+                                            -right-2
+                                            z-10
+                                            w-10
+                                            h-10
+                                            flex
+                                            items-center
+                                            justify-center
+                                            rounded-full
+                                            bg-white
+                                            text-black
+                                            text-2xl
+                                            leading-none
+                                            shadow-[0_4px_15px_rgba(0,0,0,0.2)]
+                                            cursor-pointer
+                                            transition-transform
+                                            duration-200
+                                            hover:scale-110
+                                            group-hover:-translate-y-1
+                                            group-hover:translate-x-1
+                                            hover:translate-y-0
+                                            hover:translate-x-0
+                                        "
+                                    >
+                                        &times;
+                                    </button>
 
-                                <ProjectCard
-                                    project={hoveredProject}
-                                    condenseTech={true}
-                                    isLoggedIn={
-                                        props.isLoggedIn
-                                    }
-                                    childClassName="xl:flex-col! max-w-lg"
-                                    position="start"
-                                />
+                                    <ProjectCard
+                                        project={hoveredProject}
+                                        condenseTech={true}
+                                        isLoggedIn={props.isLoggedIn}
+                                        childClassName="xl:flex-col! max-w-lg"
+                                        position="start"
+                                        holdProgress={0}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>,
