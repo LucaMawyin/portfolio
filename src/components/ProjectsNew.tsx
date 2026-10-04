@@ -829,7 +829,7 @@ export default function Projects(props: {
                     className="
                         group
                         flex flex-col items-center
-                        pt-[10%] sm:pt-[5%]
+                        mt-[10%] sm:mt-[5%]
                         px-[5%]
                     "
                 >
