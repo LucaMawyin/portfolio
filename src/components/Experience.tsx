@@ -318,6 +318,10 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                 lg:px-[5%]
                                 gap-8
                                 ${index !== 0 ? "md:translate-y-[-10%]" : ""}
+                                ${((experience.length + index) % 2 === 0)
+                                    ? "sm:fade-left"
+                                    : "sm:fade-right"
+                                }
                             `}
                             style={{
                                 zIndex: certificates.length - index

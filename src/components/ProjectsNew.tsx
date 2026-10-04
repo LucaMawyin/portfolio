@@ -667,72 +667,75 @@ export default function Projects(props: {
                     )
                 )}
             </div>
-
-            <Link
-                href="/projects/all"
-                className="
-                    group
-                    flex flex-col items-center
-                    pt-[10%] sm:pt-[5%]
-                    px-[5%]
-                "
-            >
-                <h2
+            
+            <FadeInOnView className="fade-right">
+                <Link
+                    href="/projects/all"
                     className="
-                        relative
-                        whitespace-nowrap
-                        text-[clamp(2rem,5vw,3rem)]
-                        font-bold
-                        text-center
-                        transition-transform
-                        duration-300
-                        group-hover:translate-x-2
+                        group
+                        flex flex-col items-center
+                        pt-[10%] sm:pt-[5%]
+                        px-[5%]
                     "
                 >
-                    View All Projects
-
-                    <span
+                    <h2
                         className="
-                            inline-block
-                            ml-3
+                            relative
+                            whitespace-nowrap
+                            text-[clamp(2rem,5vw,3rem)]
+                            font-bold
+                            text-center
                             transition-transform
                             duration-300
                             group-hover:translate-x-2
                         "
                     >
-                        →
-                    </span>
+                        View All Projects
+
+                        <span
+                            className="
+                                inline-block
+                                ml-3
+                                transition-transform
+                                duration-300
+                                group-hover:translate-x-2
+                            "
+                        >
+                            →
+                        </span>
+
+                        <span
+                            className="
+                                absolute
+                                left-0
+                                -bottom-1.5
+                                h-1
+                                w-0
+                                bg-current
+                                transition-all
+                                duration-300
+                                group-hover:w-full
+                                group-active:w-1/2
+                                group-active:left-1/4
+                            "
+                        />
+                    </h2>
 
                     <span
                         className="
-                            absolute
-                            left-0
-                            -bottom-1.5
-                            h-1
-                            w-0
-                            bg-current
+                            mt-8 sm:mt-12
+                            h-px
+                            w-24
+                            bg-black/30
                             transition-all
                             duration-300
-                            group-hover:w-full
-                            group-active:w-1/2
-                            group-active:left-1/4
+                            group-hover:w-40
+                            group-hover:bg-black
                         "
                     />
-                </h2>
+                </Link>                
+            </FadeInOnView>
 
-                <span
-                    className="
-                        mt-8 sm:mt-12
-                        h-px
-                        w-24
-                        bg-black/30
-                        transition-all
-                        duration-300
-                        group-hover:w-40
-                        group-hover:bg-black
-                    "
-                />
-            </Link>
 
             {hoveredProject &&
                 typeof document !== "undefined" &&
