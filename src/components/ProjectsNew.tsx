@@ -343,7 +343,7 @@ export default function Projects(props: {
                         className="
                             flex
                             flex-row
-                            gap-2
+                            gap-8
                             sm:gap-4
                             shrink-0
                         "
