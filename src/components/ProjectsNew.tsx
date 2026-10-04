@@ -26,12 +26,8 @@ export default function Projects(props: {
     const featuredPool = projects;
 
     const [featuredStart, setFeaturedStart] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
 
-    /*
-     * The carousel always displays up to 3 projects.
-     * It stops at the last complete 3-project window rather than
-     * wrapping individual projects around at the end.
-     */
     const maxFeaturedStart = Math.max(
         featuredPool.length - 3,
         0
@@ -42,7 +38,7 @@ export default function Projects(props: {
         featuredStart + 3
     );
 
-    const [startX, setStartX] = useState<number | null>(null);
+    const startX = useRef<number | null>(null);
     const [timerDeadline, setTimerDeadline] = useState(
         Date.now() + 10000
     );
@@ -52,9 +48,6 @@ export default function Projects(props: {
 
     const [hoveredProject, setHoveredProject] =
         useState<Project | null>(null);
-
-    const [modalStyle, setModalStyle] =
-        useState<React.CSSProperties>({});
 
     const closeTimeout =
         useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -152,25 +145,37 @@ export default function Projects(props: {
     };
 
     const goPrev = () => {
-        if (featuredPool.length <= 3) return;
+        if (featuredPool.length <= 1) return;
 
-        setFeaturedStart((prev) =>
-            prev <= 0
+        setFeaturedStart((prev) => {
+            if (isMobile) {
+                return prev <= 0
+                    ? featuredPool.length - 1
+                    : prev - 1;
+            }
+
+            return prev <= 0
                 ? maxFeaturedStart
-                : prev - 1
-        );
+                : prev - 1;
+        });
 
         setTimerDeadline(Date.now() + 10000);
     };
 
     const goNext = () => {
-        if (featuredPool.length <= 3) return;
+        if (featuredPool.length <= 1) return;
 
-        setFeaturedStart((prev) =>
-            prev >= maxFeaturedStart
+        setFeaturedStart((prev) => {
+            if (isMobile) {
+                return prev >= featuredPool.length - 1
+                    ? 0
+                    : prev + 1;
+            }
+
+            return prev >= maxFeaturedStart
                 ? 0
-                : prev + 1
-        );
+                : prev + 1;
+        });
 
         setTimerDeadline(Date.now() + 10000);
     };
@@ -185,7 +190,7 @@ export default function Projects(props: {
         e: React.TouchEvent,
         project: Project
     ) => {
-        setStartX(e.touches[0].clientX);
+        startX.current = e.touches[0].clientX;
         setIsInteracting(true);
 
         startHold(project);
@@ -194,14 +199,17 @@ export default function Projects(props: {
     const onTouchEnd = (e: React.TouchEvent) => {
         cancelHold();
 
-        if (startX === null) {
+        const touchStartX = startX.current;
+        startX.current = null;
+
+        if (touchStartX === null) {
             setIsInteracting(false);
             advanceIfExpired();
             return;
         }
 
         const endX = e.changedTouches[0].clientX;
-        const diff = startX - endX;
+        const diff = touchStartX - endX;
         const threshold = 50;
 
         if (diff > threshold) {
@@ -212,12 +220,17 @@ export default function Projects(props: {
             advanceIfExpired();
         }
 
-        setStartX(null);
         setIsInteracting(false);
     };
 
     useEffect(() => {
-        if (featuredPool.length <= 3) return;
+        if (
+            isMobile
+                ? featuredPool.length <= 1
+                : featuredPool.length <= 3
+        ) {
+            return;
+        }
 
         // Pause the timer while the modal is open
         if (hoveredProject) {
@@ -262,6 +275,7 @@ export default function Projects(props: {
         featuredPool.length,
         isInteracting,
         hoveredProject,
+        isMobile,
     ]);
 
     useEffect(() => {
@@ -296,18 +310,31 @@ export default function Projects(props: {
         setIsInteracting(true);
     };
 
-    /*
-     * Keep featuredStart valid if projects are deleted while
-     * the carousel is near the end.
-     */
     useEffect(() => {
-        if (featuredStart > maxFeaturedStart) {
+        if (!isMobile && featuredStart > maxFeaturedStart) {
             setFeaturedStart(maxFeaturedStart);
         }
     }, [
         featuredStart,
         maxFeaturedStart,
+        isMobile,
     ]);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 1279px)");
+
+        const update = () => {
+            setIsMobile(mediaQuery.matches);
+        };
+
+        update();
+
+        mediaQuery.addEventListener("change", update);
+
+        return () => {
+            mediaQuery.removeEventListener("change", update);
+        };
+    }, []);
 
     return (
         <>
@@ -352,7 +379,9 @@ export default function Projects(props: {
                             type="button"
                             onClick={goPrev}
                             disabled={
-                                featuredPool.length <= 3
+                                isMobile
+                                    ? featuredPool.length <= 1
+                                    : featuredPool.length <= 3
                             }
                             className="
                                 cursor-pointer
@@ -427,6 +456,8 @@ export default function Projects(props: {
                             {/* Three-project slider */}
                             <div
                                 className="
+                                    hidden
+                                    xl:block
                                     absolute
                                     top-1/2
                                     -translate-y-1/2
@@ -449,7 +480,9 @@ export default function Projects(props: {
                                     type="button"
                                     onClick={() => {
                                         setFeaturedStart(
-                                            Math.min(i, maxFeaturedStart)
+                                            isMobile
+                                                ? i
+                                                : Math.min(i, maxFeaturedStart)
                                         );
 
                                         setTimerDeadline(
@@ -514,11 +547,133 @@ export default function Projects(props: {
             </FadeInOnView>
 
             {/* Project cards */}
+
+            {/* MOBILE / SMALL SCREEN CAROUSEL */}
+
+            <FadeInOnView className="relative overflow-hidden w-full">
+                <div 
+                    className="
+                        flex
+                        xl:hidden
+                        transition-transform
+                        duration-700
+                        ease-in-out
+                    "
+                    style={{
+                        transform: `translateX(-${featuredStart * 100}%)`,
+                    }}
+                    onTouchStart={(e) => {
+                        startX.current = e.touches[0].clientX;
+                    }}
+                    onTouchEnd={onTouchEnd}
+                    onTouchCancel={() => {
+                        cancelHold();
+                        startX.current = null;
+                        setIsInteracting(false);
+                        advanceIfExpired();
+                    }}
+                >
+                    {featuredPool.map((project) => (
+                        <div
+                            key={project.id}
+                            className="
+                                w-full 
+                                shrink-0 
+                                flex 
+                                justify-center 
+                                px-[5%]
+                            "
+                        >
+                            <div className="
+                                flex 
+                                flex-col 
+                                justify-center 
+                                items-center 
+                                gap-8
+                            ">
+                                <div
+                                    className="flex h-full"
+                                    onMouseEnter={() => {
+                                        startHold(project);
+                                        setIsInteracting(true);
+                                    }}
+                                    onMouseLeave={() => {
+                                        cancelHold();
+                                        setIsInteracting(false);
+                                    }}
+                                    onTouchStart={(e) =>
+                                        onTouchStart(e, project)
+                                    }
+                                    onTouchCancel={() => {
+                                        cancelHold();
+                                        startX.current = null;
+                                        setIsInteracting(false);
+                                    }}
+                                >
+                                    <ProjectCard
+                                        project={project}
+                                        condenseTech={true}
+                                        isLoggedIn={props.isLoggedIn}
+                                        position="start"
+                                        className="max-w-full"
+                                        onHoldCancel={
+                                            cancelHoldAndPauseCarousel
+                                        }
+                                        holdProgress={
+                                            holdingProjectId === project.id
+                                                ? holdProgress
+                                                : 0
+                                        }
+                                    />                                
+                                </div>
+
+                                {/* Delete button if logged in */}
+                                {props.isLoggedIn && (
+                                    <div className="w-full max-w-5xl flex justify-between">
+                                        <Button
+                                            text="Edit"
+                                            className="min-w-32"
+                                            onClick={() => {router.push(`add-project/edit?id=${project.id}`)}}
+                                        />
+                                        <DeleteButton
+                                            className="min-w-32"
+                                            text="Project"
+                                            action={async () => {
+                                                const res = await fetch("/api/projects", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ id: project.id }),
+                                                });
+
+                                                if (res.status === 401) {
+                                                    router.push("/login");
+                                                    return;
+                                                }
+                                                
+                                                setProjects((prev) =>
+                                                    prev.filter((p) => p.id !== project.id)
+                                                );
+                                            }}
+                                        />                        
+                                    </div>
+                                )}                                
+                            </div>
+        
+
+                        </div>
+                    ))}
+                </div>       
+    
+            </FadeInOnView>
+
+            {/* LARGE SCREEN 3-COLUMN GRID */}
             <div
                 className="
-                    grid
-                    grid-cols-1
-                    xl:grid-cols-3
+                    hidden
+                    xl:grid
+                    grid-cols-3
                     auto-rows-fr
                     items-stretch
                     px-[5%]
@@ -527,7 +682,7 @@ export default function Projects(props: {
                 onTouchEnd={onTouchEnd}
                 onTouchCancel={() => {
                     cancelHold();
-                    setStartX(null);
+                    startX.current = null;
                     setIsInteracting(false);
                     advanceIfExpired();
                 }}
@@ -810,7 +965,6 @@ export default function Projects(props: {
 
                                     <ProjectCard
                                         project={hoveredProject}
-                                        condenseTech={true}
                                         isLoggedIn={props.isLoggedIn}
                                         childClassName="xl:flex-col! max-w-lg"
                                         position="start"

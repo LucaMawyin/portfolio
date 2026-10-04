@@ -308,7 +308,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                     py-0 
                 ">
                     {certificates.map((cert,index) => (
-                        <FadeInOnView 
+                        <div 
                             key={index}
                             className={`
                                 flex 
@@ -318,10 +318,6 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                 lg:px-[5%]
                                 gap-8
                                 ${index !== 0 ? "md:translate-y-[-10%]" : ""}
-                                ${((experience.length + index) % 2 === 0)
-                                    ? "sm:fade-left"
-                                    : "sm:fade-right"
-                                }
                             `}
                             style={{
                                 zIndex: certificates.length - index
@@ -352,7 +348,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                 " />
 
                         
-                                <div
+                                <FadeInOnView
                                     className={`
                                         flex
                                         flex-col
@@ -363,13 +359,13 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         w-full
                                         h-full
                                         md:w-[45%]
-                                        ${(experience.length % 2 === 1) && (index % 2 === 0 )
-                                            ? "md:self-end" 
-                                            : "md:self-start"
-                                        }
-                                        ${(experience.length % 2 === 0) && (index % 2 === 0 )
-                                            ? "md:self-start" 
+                                        ${((experience.length + index) % 2 === 0)
+                                            ? "md:self-start"
                                             : "md:self-end"
+                                        }
+                                        ${((experience.length + index) % 2 === 0)
+                                            ? "sm:fade-left"
+                                            : "sm:fade-right"
                                         }
                                         squircle-large
                                         pillow
@@ -449,7 +445,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         </ReactMarkdown>
                                     </div>
 
-                                </div>
+                                </FadeInOnView>
                             </div>
 
 
@@ -461,12 +457,8 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                     w-full 
                                     md:w-[45%] 
                                     justify-between
-                                    ${(experience.length % 2 === 1) && (index % 2 === 0 )
-                                        ? "md:self-end" 
-                                        : "md:self-start"
-                                    }
-                                    ${(experience.length % 2 === 0) && (index % 2 === 0 )
-                                        ? "md:self-start" 
+                                    ${((experience.length + index) % 2 === 0)
+                                        ? "md:self-start"
                                         : "md:self-end"
                                     }
                                 `}>
@@ -502,7 +494,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
         
                             )}
                             
-                        </FadeInOnView>
+                        </div>
                         
                     ))}
                 </div>

@@ -77,7 +77,6 @@ export default function AllProjects(props: {
                             project={project}
                             isLoggedIn={props.isLoggedIn}
                             position="start"
-                            childClassName="flex-col!"
                             holdProgress={0}
                         />
 
