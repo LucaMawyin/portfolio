@@ -83,7 +83,7 @@ export default function Button(props: {
             "bg-white text-gray-950 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-md",
 
         secondary:
-            "bg-gray-200 text-gray-800 border border-gray-300 hover:bg-gray-300 hover:border-gray-400 hover:shadow-md",
+            "bg-slate-800 text-white border border-slate-700 hover:bg-slate-900 hover:border-slate-800 hover:shadow-md",
 
         red:
             "bg-red-500 text-white border border-red-600 hover:bg-red-600 hover:border-red-700 hover:shadow-md",

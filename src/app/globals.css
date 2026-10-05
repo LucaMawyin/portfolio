@@ -34,6 +34,8 @@
     --bg: #f1f5f9;
 	--contrast-colour: #000000;
 	--contrast-light: #2a2a2a;
+    --input-colour: #d9dee4;
+    --input-focus-colour: #c4cbd3;
 	--transition-duration: 200ms;
 	--link-scale: 1.1;
 	--subtle-scale: 1.01;
@@ -110,8 +112,12 @@ input,
 textarea,
 select,
 #date-picker {
-    transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
-    background-color: #d5dce6;
+    transition:
+        background-color var(--transition-duration) ease,
+        box-shadow var(--transition-duration) ease;
+
+    background-color: var(--input-colour);
+    border: none;
     border-radius: 0.75rem;
     padding: 0.25rem;
     margin-bottom: 0.5rem;
@@ -120,8 +126,34 @@ select,
 input:focus,
 textarea:focus,
 select:focus {
-	box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
-	outline: none;
+    background-color: var(--input-colour);
+    box-shadow: 0 0 0 2px var(--input-focus-colour);
+    outline: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill {
+    -webkit-text-fill-color: var(--contrast-colour);
+    -webkit-box-shadow:
+        0 0 0 1000px var(--input-colour) inset;
+    box-shadow:
+        0 0 0 1000px var(--input-colour) inset;
+}
+
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow:
+        0 0 0 1000px var(--input-colour) inset,
+        0 0 0 2px var(--input-focus-colour);
+    box-shadow:
+        0 0 0 1000px var(--input-colour) inset,
+        0 0 0 2px var(--input-focus-colour);
 }
 
 textarea {

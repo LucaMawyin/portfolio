@@ -98,22 +98,26 @@ export default function VerifyLoginClient(props : {type : string}) {
 
     return (
         <div className="flex flex-1 justify-center items-center mt-[10vh]">
-            <form 
-                onSubmit={handleSubmit} 
+            <form
+                onSubmit={handleSubmit}
                 className="
-                    flex 
-                    flex-col 
-                    gap-3 
-                    text-center 
-                    pillow
-                    squircle-large
-                    sm:p-[2.5%]
-                    p-[5%]
+                    flex
+                    flex-col
+                    gap-4
+                    text-center
+                    w-full
+                    max-w-lg
+                    px-6
+                    py-8
                     mx-4
+                    pillow
+                    squircle
                 "
             >
                 
-                <h2 className="text-3xl font-semibold">Enter verification code</h2>
+                <h2 className="text-3xl font-bold">
+                    Enter verification code
+                </h2>
 
                 <p className="text-sm text-gray-500">
                     Check your email for the 6-digit verification code.
@@ -138,9 +142,11 @@ export default function VerifyLoginClient(props : {type : string}) {
                 <Button 
                     text={loading ? "Verifying..." : "Verify"} 
                     type="submit" 
-                    variant="secondary"
+                    variant="primary"
                     disabled={loading}
                     className="self-center"
+                    x={8}
+                    y={3}
                 />
             </form>
         </div>
