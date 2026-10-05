@@ -98,7 +98,7 @@ export default function DeleteButton({
                                 p-8
                                 shadow-2xl
                                 pillow
-                                squircle
+                                squircle-large
                             "
                             onClick={(e) => e.stopPropagation()}
                         >
@@ -150,7 +150,7 @@ export default function DeleteButton({
                             <div className="mt-9 flex justify-between gap-4">
                                 <Button
                                     text="Cancel"
-                                    variant="secondary"
+                                    variant="primary"
                                     x={4}
                                     y={2}
                                     onClick={() => setOpen(false)}

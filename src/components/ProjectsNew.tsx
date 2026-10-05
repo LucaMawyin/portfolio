@@ -841,7 +841,12 @@ export default function Projects(props: {
                             overscroll-contain
                             bg-black/50
                             backdrop-blur-[2px]
+
+                            flex items-center justify-center
+                            p-4
+                            touch-none
                         "
+                        onClick={closeModal}
                     >
                         {/* Scrollable portal content */}
                         <div
@@ -900,12 +905,34 @@ export default function Projects(props: {
                                         &times;
                                     </button>
 
+
                                     <ProjectCard
                                         project={hoveredProject}
                                         isLoggedIn={props.isLoggedIn}
                                         childClassName="xl:flex-col! xl:max-w-lg!"
                                         position="start"
                                         holdProgress={0}
+                                        onEdit={() => {
+                                            router.push(`add-project/edit?id=${hoveredProject.id}`);
+                                        }}
+                                        onDelete={async () => {
+                                            const res = await fetch("/api/projects", {
+                                                method: "DELETE",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                },
+                                                body: JSON.stringify({ id: hoveredProject.id }),
+                                            });
+
+                                            if (res.status === 401) {
+                                                router.push("/login");
+                                                return;
+                                            }
+                                            
+                                            setProjects((prev) =>
+                                                prev.filter((p) => p.id !== hoveredProject.id)
+                                            );
+                                        }}
                                     />
                                 </div>
                             </div>
