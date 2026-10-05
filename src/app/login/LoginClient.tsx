@@ -113,7 +113,7 @@ export default function Login(props : {isLoggedIn : boolean}){
                     md:p-10
                     rounded-3xl
                     pillow
-                    squircle
+                    squircle-large
                 "
             >
                 <div className="text-center">
