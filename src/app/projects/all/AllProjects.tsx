@@ -29,6 +29,27 @@ export default function AllProjects(props: {
         });
     }, []);
 
+    const [columns, setColumns] = useState(1);
+
+    useEffect(() => {
+        const updateColumns = () => {
+            if (window.innerWidth >= 1280) {
+                setColumns(3);
+            } else if (window.innerWidth >= 1024) {
+                setColumns(2);
+            } else {
+                setColumns(1);
+            }
+        };
+
+        updateColumns();
+        window.addEventListener("resize", updateColumns);
+
+        return () => {
+            window.removeEventListener("resize", updateColumns);
+        };
+    }, []);
+
     return (
         <div className="w-full mt-[10vh]">
             <h1 className="text-center pb-4 px-8">
@@ -58,7 +79,7 @@ export default function AllProjects(props: {
                             h-full 
                             justify-center
                         "
-                        delay={i * 150}
+                        delay={(i % columns) * 150}
                     >
                         <ProjectCard
                             project={project}

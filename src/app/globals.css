@@ -156,19 +156,72 @@ textarea {
   	animation: fade-in 0.8s ease-out 1s forwards, bounce-slow 2s 1.8s infinite;
 }
 
+@keyframes newBadge {
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 5px 14px rgba(234, 179, 8, 0.4);
+    }
+}
+
+.animate-new-badge {
+    animation: newBadge 2s ease-in-out infinite;
+}
+
+@keyframes updatedBadge {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    50% {
+        transform: scale(1.04);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+}
+
+.animate-updated-badge {
+    animation: updatedBadge 2.5s ease-in-out infinite;
+}
+
+@keyframes tagTextPulse {
+    0% {
+        filter: brightness(1);
+    }
+
+    50% {
+        filter: brightness(1.08);
+    }
+
+    100% {
+        filter: brightness(1);
+    }
+}
+
+.animate-tag-text {
+    animation: tagTextPulse 2.5s ease-in-out infinite;
+}
+
 @keyframes tagPulse {
-	0% {
-		opacity: 1;
-		box-shadow: 0 0 3px rgba(var(--glow),0.1);
-	}
-	50% {
-		opacity: 0.7;
-		box-shadow: 0 0 12px rgba(var(--glow), 0.3);
-	}
-	100% {
-		opacity: 1;
-		box-shadow: 0 0 3px rgba(var(--glow),0.1);
-	}
+    0% {
+        box-shadow: 0 0 3px rgba(var(--glow), 0.1);
+        filter: brightness(1);
+    }
+
+    50% {
+        box-shadow: 0 0 10px rgba(var(--glow), 0.3);
+        filter: brightness(1.06);
+    }
+
+    100% {
+        box-shadow: 0 0 3px rgba(var(--glow), 0.1);
+        filter: brightness(1);
+    }
 }
 
 .animate-tag-pulse {

@@ -51,6 +51,21 @@ export default function ProjectCard( props : {
 
     const [isPressed, setIsPressed] = React.useState(false);
 
+    const isNew = new Date(props.project.created_at) >= (() => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - 1);
+        return date;
+    })();
+
+    const isUpdated =
+        !isNew &&
+        props.project.updated_at &&
+        new Date(props.project.updated_at) >= (() => {
+            const date = new Date();
+            date.setDate(date.getDate() - 7);
+            return date;
+        })();
+
     return (
         <a
             href={props.project.link}
@@ -132,6 +147,7 @@ export default function ProjectCard( props : {
                         className="
                             border
                             animate-tag-pulse
+                            animate-tag-text
                         "
                     />
                 )}
@@ -179,24 +195,6 @@ export default function ProjectCard( props : {
                 gap-4
             `}>
                 
-                {/* STATUS */}
-                {props.project.status && (
-                    <Badge
-                        text={props.project.status}
-                        style={{
-                            "--glow" : statusGlowRGB,
-                            backgroundColor: props.project.status_colour,
-                            borderColor: statusBorderColour,
-                            color: statusGlowColour,
-                        } as React.CSSProperties}
-                        className="
-                            border
-                            animate-tag-pulse
-                        "
-                    />
-                        
-                )}
-                
                 {(props.project.pinned === 1|| props.project.hidden === 1) && props.isLoggedIn &&(
                     <div className="flex flex-row gap-4">
                         {/* PIN */}
@@ -236,20 +234,78 @@ export default function ProjectCard( props : {
             >
 
                 
-                {/* Image */}
-                <div className="flex-1 min-w-70! lg:min-w-0 max-w-full flex justify-center">
-                    {props.project.image && 
-                        <div className="flex items-center justify-center">
-                            <img
-                                src={props.project.image}
-                                alt={`Project ${props.project.id}`}
-                                className="w-[90%] h-auto rounded-xl"
-                                loading="lazy"
-                            />                                   
-                        </div>
-                 
-                    }
-                </div>
+            {/* Image */}
+            <div className="relative w-fit max-w-full">
+                <img
+                    src={props.project.image ?? ""}
+                    alt={`Project ${props.project.id}`}
+                    className="block w-full max-w-full rounded-xl"
+                    loading="lazy"
+                />
+
+                {isNew && (
+                    <Badge
+                        text="NEW"
+                        animateText
+                        className="
+                            absolute
+                            top-3
+                            left-3
+                            z-10
+                            bg-yellow-300
+                            text-yellow-950
+                            border-2
+                            border-yellow-400
+                            shadow-lg
+                            animate-new-badge
+                        "
+                        px={3}
+                        py={1}
+                    />
+                )}
+
+                {isUpdated && (
+                    <Badge
+                        text="UPDATED"
+                        animateText
+                        className="
+                            absolute
+                            top-3
+                            left-3
+                            z-10
+                            bg-blue-300
+                            text-blue-950
+                            border-2
+                            border-blue-400
+                            shadow-lg
+                            animate-updated-badge
+                        "
+                        px={3}
+                        py={1}
+                    />
+                )}
+
+                {props.project.status && (
+                    <Badge
+                        text={props.project.status}
+                        style={{
+                            "--glow": statusGlowRGB,
+                            backgroundColor: props.project.status_colour,
+                            borderColor: statusBorderColour,
+                            color: statusGlowColour,
+                        } as React.CSSProperties}
+                        className="
+                            absolute
+                            top-3
+                            right-3
+                            z-10
+                            border
+                            animate-tag-pulse
+                            animate-tag-text
+                        "
+                    />
+                )}
+            </div>
 
                 {/* Text Content */}
                 <div className="
@@ -345,6 +401,7 @@ export default function ProjectCard( props : {
                                 hover:scale-105
                                 border-2
                                 animate-tag-pulse
+                                animate-tag-text
                             "
                         >
                             <span>{isGithub ? "View Code" : "Visit Website"}</span>

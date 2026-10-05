@@ -47,6 +47,7 @@ export default function Badge(props: {
     fontWeight?: keyof typeof fontWeightClasses;
     borderRadius?: keyof typeof borderRadiusClasses;
     shadow?: keyof typeof shadowClasses;
+    animateText?: boolean;
     children?: React.ReactNode;
 }) {
     const px = props.px ?? 3;
@@ -78,7 +79,11 @@ export default function Badge(props: {
             `}
         >
             {props.children}
-            {props.text}
+            {props.text && (
+                <span className={props.animateText ? "animate-tag-text" : ""}>
+                    {props.text}
+                </span>
+            )}
         </div>
     );
 }
