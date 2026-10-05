@@ -760,7 +760,6 @@ export default function SettingsClient(props : {
                                     key={session.id} 
                                     className="
                                         bg-gray-100 
-                                        rounded-lg 
                                         wrap-break-word 
                                         pillow
                                         squircle
