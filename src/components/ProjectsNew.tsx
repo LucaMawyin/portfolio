@@ -841,6 +841,7 @@ export default function Projects(props: {
                             overscroll-contain
                             bg-black/50
                             backdrop-blur-[2px]
+                            min-h-screen!
                         "
                         onClick={closeModal}
                     >
