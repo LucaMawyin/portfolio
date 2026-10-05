@@ -762,7 +762,7 @@ export default function SettingsClient(props : {
                                         bg-gray-100 
                                         wrap-break-word 
                                         pillow
-                                        squircle
+                                        squircle-large
                                     "
                                 >
                                     <summary className="
@@ -772,7 +772,7 @@ export default function SettingsClient(props : {
                                         items-center
                                         justify-between
                                         p-4
-                                        squircle
+                                        squircle-large
                                         pillow-hover-dark
                                         transition-all
                                         duration-(--transition-duration)
