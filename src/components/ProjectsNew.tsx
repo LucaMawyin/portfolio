@@ -841,10 +841,6 @@ export default function Projects(props: {
                             overscroll-contain
                             bg-black/50
                             backdrop-blur-[2px]
-
-                            flex items-center justify-center
-                            p-4
-                            touch-none
                         "
                         onClick={closeModal}
                     >
