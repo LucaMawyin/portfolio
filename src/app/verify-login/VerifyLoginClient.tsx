@@ -111,7 +111,7 @@ export default function VerifyLoginClient(props : {type : string}) {
                     py-8
                     mx-4
                     pillow
-                    squircle
+                    squircle-large
                 "
             >
                 
