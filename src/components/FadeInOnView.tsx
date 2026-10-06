@@ -71,31 +71,31 @@ export default function FadeInOnView({
     } else if (smDirection === "up") {
         animationClasses =
             baseDirection === "right"
-                ? "opacity-0 translate-x-8 sm:translate-x-0 sm:translate-y-4"
+                ? "opacity-[0.01] translate-x-8 sm:translate-x-0 sm:translate-y-4"
                 : baseDirection === "left"
-                    ? "opacity-0 -translate-x-8 sm:translate-x-0 sm:translate-y-4"
-                    : "opacity-0 translate-y-4";
+                    ? "opacity-[0.01] -translate-x-8 sm:translate-x-0 sm:translate-y-4"
+                    : "opacity-[0.01] translate-y-4";
     } else if (smDirection === "right") {
         animationClasses =
             baseDirection === "up"
-                ? "opacity-0 translate-y-4 sm:translate-y-0 sm:translate-x-8"
+                ? "opacity-[0.01] translate-y-4 sm:translate-y-0 sm:translate-x-8"
                 : baseDirection === "left"
-                    ? "opacity-0 -translate-x-8 sm:translate-x-8"
-                    : "opacity-0 translate-x-8";
+                    ? "opacity-[0.01] -translate-x-8 sm:translate-x-8"
+                    : "opacity-[0.01] translate-x-8";
     } else if (smDirection === "left") {
         animationClasses =
             baseDirection === "up"
-                ? "opacity-0 translate-y-4 sm:translate-y-0 sm:-translate-x-8"
+                ? "opacity-[0.01] translate-y-4 sm:translate-y-0 sm:-translate-x-8"
                 : baseDirection === "right"
-                    ? "opacity-0 translate-x-8 sm:-translate-x-8"
-                    : "opacity-0 -translate-x-8";
+                    ? "opacity-[0.01] translate-x-8 sm:-translate-x-8"
+                    : "opacity-[0.01] -translate-x-8";
     } else {
         animationClasses =
             baseDirection === "right"
-                ? "opacity-0 translate-x-8"
+                ? "opacity-[0.01] translate-x-8"
                 : baseDirection === "left"
-                    ? "opacity-0 -translate-x-8"
-                    : "opacity-0 translate-y-4";
+                    ? "opacity-[0.01] -translate-x-8"
+                    : "opacity-[0.01] translate-y-4";
     }
 
     return (
