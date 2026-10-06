@@ -2,11 +2,9 @@
 
 import { Tech } from "@/lib/types";
 import FadeInOnView from "./FadeInOnView";
-import Button from "./Button";
 import { useRouter } from "next/navigation";
 import Badge from "./Badge";
 import { useEffect, useState } from "react";
-import { getTechIcon } from "@/lib/techIcons";
 import { getInitials } from "@/lib/getInitials";
 import EditButton from "./EditButton";
 
@@ -14,7 +12,6 @@ export default function TechStack(props: {
     isLoggedIn: boolean;
     tech: Tech[];
 }) {
-
     const [highlighted, setHighlighted] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -36,24 +33,20 @@ export default function TechStack(props: {
         const updateHighlight = () => {
             if (!categories.length) return;
 
-            // Pick a random section
             const category =
                 categories[Math.floor(Math.random() * categories.length)];
 
             const items = grouped[category];
 
-            // Pick a random technology from that section
             const item =
                 items[Math.floor(Math.random() * items.length)];
 
-            // Only update the selected section
             setHighlighted((current) => ({
                 ...current,
                 [category]: item,
             }));
         };
 
-        // Pick an initial technology for every section
         setHighlighted(() => {
             const initial: Record<string, string> = {};
 
@@ -72,10 +65,11 @@ export default function TechStack(props: {
         return () => clearInterval(interval);
     }, [props.tech]);
 
+    // Keep the full Tech objects here so we have access to iconPath.
     const grouped = props.tech.reduce(
-        (acc: Record<string, string[]>, item) => {
+        (acc: Record<string, Tech[]>, item) => {
             acc[item.category] ??= [];
-            acc[item.category].push(item.name);
+            acc[item.category].push(item);
             return acc;
         },
         {}
@@ -130,13 +124,13 @@ export default function TechStack(props: {
                 <h1>
                     Tech I Use
                 </h1>
+
                 {props.isLoggedIn && (
                     <EditButton
                         action={() => router.push("/edit-tech")}
                     />
                 )}
             </FadeInOnView>
-            
 
             <div
                 className="
@@ -147,20 +141,25 @@ export default function TechStack(props: {
                 "
             >
                 {sections.map((section, index) => {
-                    const items = [...(grouped[section.key] ?? [])].sort();
+                    const items = [...(grouped[section.key] ?? [])].sort(
+                        (a, b) => a.name.localeCompare(b.name)
+                    );
 
                     return (
                         <FadeInOnView
                             key={section.key}
-                            className={`fade-left`}
+                            className="fade-left"
                         >
                             <div
                                 className={`
                                     py-8
-                                    ${index !== 0 ? "border-t border-gray-200" : ""}
+                                    ${
+                                        index !== 0
+                                            ? "border-t border-gray-200"
+                                            : ""
+                                    }
                                 `}
                             >
-                                
                                 <div
                                     className="
                                         flex
@@ -170,7 +169,6 @@ export default function TechStack(props: {
                                         gap-5
                                     "
                                 >
-
                                     {/* TITLE */}
                                     <div
                                         className="
@@ -209,17 +207,28 @@ export default function TechStack(props: {
                                         "
                                     >
                                         {items.map((item) => {
-                                            const isHighlighted = highlighted[section.key] === item;
-                                            const icon = getTechIcon(item);
-                                            const initials = getInitials(item);
+                                            const isHighlighted =
+                                                highlighted[section.key] ===
+                                                item.name;
+
+                                            const initials =
+                                                getInitials(item.name);
 
                                             return (
                                                 <Badge
-                                                    key={item}
+                                                    key={item.id}
                                                     textSize="sm"
                                                     borderRadius="xl"
-                                                    shadow={isHighlighted ? "md" : "none"}
-                                                    fontWeight={isHighlighted ? "semibold" : "normal"}
+                                                    shadow={
+                                                        isHighlighted
+                                                            ? "md"
+                                                            : "none"
+                                                    }
+                                                    fontWeight={
+                                                        isHighlighted
+                                                            ? "semibold"
+                                                            : "normal"
+                                                    }
                                                     px={2}
                                                     className={`
                                                         transition-all
@@ -240,7 +249,7 @@ export default function TechStack(props: {
                                                                 `
                                                         }
                                                     `}
-                                                    text={item}
+                                                    text={item.name}
                                                 >
                                                     <div
                                                         className={`
@@ -259,13 +268,17 @@ export default function TechStack(props: {
                                                             }
                                                         `}
                                                     >
-                                                        {icon ? (
+                                                        {item.iconPath ? (
                                                             <svg
                                                                 viewBox="0 0 24 24"
                                                                 className="w-4 h-4 fill-current"
                                                                 aria-hidden="true"
                                                             >
-                                                                <path d={icon.path} />
+                                                                <path
+                                                                    d={
+                                                                        item.iconPath
+                                                                    }
+                                                                />
                                                             </svg>
                                                         ) : (
                                                             initials

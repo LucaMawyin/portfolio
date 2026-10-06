@@ -115,6 +115,7 @@ export type Tech = {
     id : number; 
     name : string;
     category : "tools" | "libraries" | "languages";
+    iconPath?: string;
 }
 
 export type TechBody = {
