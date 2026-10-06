@@ -50,7 +50,10 @@ export default function FadeInOnView({
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                setVisible(entry.isIntersecting);
+                if (entry.isIntersecting) {
+                    setVisible(true);
+                    observer.disconnect();
+                }
             },
             {
                 threshold: 0,
