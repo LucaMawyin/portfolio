@@ -246,12 +246,72 @@ export default function ProjectCard( props : {
                 ">
                     {props.project.image && 
                         <div className="relative flex h-fit w-fit">
-                            <img
-                                src={props.project.image}
-                                alt={`Project ${props.project.id}`}
-                                className="w-full h-auto rounded-xl"
-                                loading="lazy"
-                            />           
+                            <div 
+                                className="
+                                    relative 
+                                    overflow-hidden 
+                                    rounded-xl 
+                                    group
+                                "
+                                onMouseEnter={() => {
+                                    props.onHoldCancel?.();
+                                    props.onButtonHoverStart?.();
+                                }}
+                                onMouseLeave={props.onButtonHoverEnd}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    window.open(
+                                        props.project.link,
+                                        "_blank",
+                                        "noopener,noreferrer"
+                                    );
+                                }}
+                            >
+                                <img
+                                    src={props.project.image}
+                                    alt={`Project ${props.project.id}`}
+                                    className="
+                                        w-full
+                                        h-auto
+                                        rounded-xl
+                                        transition-transform
+                                        duration-300
+                                        group-hover:scale-105
+                                    "
+                                />
+
+                                <div
+                                    className="
+                                        absolute
+                                        inset-0
+                                        flex
+                                        items-center
+                                        justify-center
+                                        bg-black/0
+                                        transition-colors
+                                        duration-300
+                                        group-hover:bg-black/50
+                                    "
+                                >
+                                    <span
+                                        className="
+                                            text-white
+                                            font-semibold
+                                            text-lg
+                                            opacity-0
+                                            translate-y-2
+                                            transition-all
+                                            duration-300
+                                            group-hover:opacity-100
+                                            group-hover:translate-y-0
+                                        "
+                                    >
+                                        View Code ↗
+                                    </span>
+                                </div>
+                            </div>       
 
                             {isNew && (
                                 <Badge

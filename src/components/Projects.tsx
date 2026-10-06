@@ -864,7 +864,7 @@ export default function Projects(props: {
                                 "
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <div className="relative group">
+                                <div className="relative">
                                     <button
                                         type="button"
                                         onClick={closeModal}
@@ -901,7 +901,7 @@ export default function Projects(props: {
                                     <ProjectCard
                                         project={hoveredProject}
                                         isLoggedIn={props.isLoggedIn}
-                                        childClassName=""
+                                        childClassName="xl:flex-col! xl:max-w-lg!"
                                         position="start"
                                         holdProgress={0}
                                         onEdit={() => {
