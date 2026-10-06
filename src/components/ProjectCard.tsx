@@ -398,7 +398,9 @@ export default function ProjectCard( props : {
                     justify-evenly
                     text-sm
                 ">
-                    <ReactMarkdown>{props.project.description}</ReactMarkdown> 
+                    <div className={props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}>
+                        <ReactMarkdown>{props.project.description}</ReactMarkdown>
+                    </div>
                     <div>
 
                         <TechBadges
