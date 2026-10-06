@@ -85,43 +85,49 @@ export default function ProjectPageClient({
                 {/* PROJECT */}
                 {project.image && (
                     <div className="relative">
-                        <Badge
-                            text={project.status}
-                            style={{
-                                "--glow" : statusGlowRGB,
-                                backgroundColor: project.status_colour,
-                                borderColor: statusBorderColour,
-                                color: statusGlowColour,
-                            } as React.CSSProperties}
-                            className="
-                                absolute
-                                left-0
-                                bottom-0
-                                m-2
-                                border
-                                animate-tag-pulse
-                            "
-                        />
-                        <Badge
-                            text={project.tag}
-                            style={{
-                                "--glow" : glowRGB,
-                                backgroundColor: project.colour,
-                                borderColor: borderColour,
-                                color: glowColour,
-                            } as React.CSSProperties}
-                            textSize="xl"
-                            px={3}
-                            py={0}
-                            className="
-                                absolute
-                                left-0
-                                top-0
-                                m-2
-                                border
-                                animate-tag-pulse
-                            "
-                        />
+                        {project.status && (
+                            <Badge
+                                text={project.status}
+                                style={{
+                                    "--glow" : statusGlowRGB,
+                                    backgroundColor: project.status_colour,
+                                    borderColor: statusBorderColour,
+                                    color: statusGlowColour,
+                                } as React.CSSProperties}
+                                className="
+                                    absolute
+                                    left-0
+                                    bottom-0
+                                    m-2
+                                    border
+                                    animate-tag-pulse
+                                "
+                            />                            
+                        )}
+
+                        {project.tag && (
+                            <Badge
+                                text={project.tag}
+                                style={{
+                                    "--glow" : glowRGB,
+                                    backgroundColor: project.colour,
+                                    borderColor: borderColour,
+                                    color: glowColour,
+                                } as React.CSSProperties}
+                                textSize="xl"
+                                px={3}
+                                py={0}
+                                className="
+                                    absolute
+                                    left-0
+                                    top-0
+                                    m-2
+                                    border
+                                    animate-tag-pulse
+                                "
+                            />                            
+                        )}
+
                         <img
                             src={project.image}
                             alt={project.name}
