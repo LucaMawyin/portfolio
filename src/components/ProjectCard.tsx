@@ -23,8 +23,10 @@ export default function ProjectCard( props : {
     holdProgress?: number;
     onEdit?: () => void;
     onDelete?: () => void;
+    imageHoverText?: string;
 }){
     const [isTouching, setIsTouching] = React.useState(false);
+    const [isImageHovered, setIsImageHovered] = React.useState(false);
 
     const tools = (
     typeof props.project.tools === "string"
@@ -263,8 +265,14 @@ export default function ProjectCard( props : {
                                     h-fit
                                     w-fit
                                 "
-                                onMouseEnter={props.onHoverStart}
-                                onMouseLeave={props.onHoverEnd}
+                                onMouseEnter={() => {
+                                    setIsImageHovered(true);
+                                    props.onHoverStart?.();
+                                }}
+                                onMouseLeave={() => {
+                                    setIsImageHovered(false);
+                                    props.onHoverEnd?.();
+                                }}
                             >
                                 <div 
                                     className={`
@@ -318,7 +326,13 @@ export default function ProjectCard( props : {
                                                 ${isTouching ? "opacity-100 translate-y-0" : ""}
                                             `}
                                         >
-                                            {isGithub ? "View Code" : "Visit Website"} ↗
+                                            {props.imageHoverText 
+                                                ? (props.imageHoverText) 
+                                                : (isImageHovered
+                                                    ? ("View Preview")
+                                                    : (isGithub ? "View Code" : "Visit Website")
+                                                )
+                                            } ↗
                                         </span>
                                     </div>
                                 </div>       
