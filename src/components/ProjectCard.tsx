@@ -232,79 +232,83 @@ export default function ProjectCard( props : {
                     ${props.childClassName}
                 `}
             >
-
                 
             {/* Image */}
-            <div className="relative w-fit max-w-full">
-                <img
-                    src={props.project.image ?? ""}
-                    alt={`Project ${props.project.id}`}
-                    className="block w-full max-w-full rounded-xl"
-                    loading="lazy"
-                />
+            <div className="relative flex-1 min-w-70! lg:min-w-0 max-w-full flex justify-center items-center">
+                {props.project.image && 
+                    <div className="relative flex h-fit w-fit">
+                        <img
+                            src={props.project.image}
+                            alt={`Project ${props.project.id}`}
+                            className="w-full h-auto rounded-xl"
+                            loading="lazy"
+                        />           
 
-                {isNew && (
-                    <Badge
-                        text="NEW"
-                        animateText
-                        className="
-                            absolute
-                            top-3
-                            left-3
-                            z-10
-                            bg-yellow-300
-                            text-yellow-950
-                            border-2
-                            border-yellow-400
-                            shadow-lg
-                            animate-new-badge
-                        "
-                        px={3}
-                        py={1}
-                    />
-                )}
+                        {isNew && (
+                            <Badge
+                                text="NEW"
+                                animateText
+                                className="
+                                    absolute
+                                    top-3
+                                    left-3
+                                    z-10
+                                    bg-yellow-300
+                                    text-yellow-950
+                                    border-2
+                                    border-yellow-400
+                                    shadow-lg
+                                    animate-new-badge
+                                "
+                                px={3}
+                                py={1}
+                            />
+                        )}
 
-                {isUpdated && (
-                    <Badge
-                        text="UPDATED"
-                        animateText
-                        className="
-                            absolute
-                            top-3
-                            left-3
-                            z-10
-                            bg-blue-300
-                            text-blue-950
-                            border-2
-                            border-blue-400
-                            shadow-lg
-                            animate-updated-badge
-                        "
-                        px={3}
-                        py={1}
-                    />
-                )}
+                        {isUpdated && (
+                            <Badge
+                                text="UPDATED"
+                                animateText
+                                className="
+                                    absolute
+                                    top-3
+                                    left-3
+                                    z-10
+                                    bg-blue-300
+                                    text-blue-950
+                                    border-2
+                                    border-blue-400
+                                    shadow-lg
+                                    animate-updated-badge
+                                "
+                                px={3}
+                                py={1}
+                            />
+                        )}
 
-                {props.project.status && (
-                    <Badge
-                        text={props.project.status}
-                        style={{
-                            "--glow": statusGlowRGB,
-                            backgroundColor: props.project.status_colour,
-                            borderColor: statusBorderColour,
-                            color: statusGlowColour,
-                        } as React.CSSProperties}
-                        className="
-                            absolute
-                            top-3
-                            right-3
-                            z-10
-                            border
-                            animate-tag-pulse
-                            animate-tag-text
-                        "
-                    />
-                )}
+                        {props.project.status && (
+                            <Badge
+                                text={props.project.status}
+                                style={{
+                                    "--glow": statusGlowRGB,
+                                    backgroundColor: props.project.status_colour,
+                                    borderColor: statusBorderColour,
+                                    color: statusGlowColour,
+                                } as React.CSSProperties}
+                                className="
+                                    absolute
+                                    top-3
+                                    right-3
+                                    z-10
+                                    border
+                                    animate-tag-pulse
+                                    animate-tag-text
+                                "
+                            />
+                        )}                        
+                    </div>
+                
+                }
             </div>
 
                 {/* Text Content */}
