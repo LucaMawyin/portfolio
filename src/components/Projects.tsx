@@ -858,8 +858,6 @@ export default function Projects(props: {
                             <div
                                 className="
                                     relative
-                                    w-full
-                                    max-w-lg
                                     my-auto
                                     h-fit
                                     animate-modal-fade-up
@@ -903,7 +901,7 @@ export default function Projects(props: {
                                     <ProjectCard
                                         project={hoveredProject}
                                         isLoggedIn={props.isLoggedIn}
-                                        childClassName="xl:flex-col! xl:max-w-lg!"
+                                        childClassName=""
                                         position="start"
                                         holdProgress={0}
                                         onEdit={() => {
