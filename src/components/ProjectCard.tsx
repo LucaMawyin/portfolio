@@ -106,15 +106,12 @@ export default function ProjectCard( props : {
             `}
             onTouchStart={() => {
                 props.onHoverStart?.();
-                setIsTouching(true);
             }}
             onTouchEnd={() => {
                 props.onHoverEnd?.();
-                setIsTouching(false);
             }}
             onTouchCancel={() => {
                 props.onHoverEnd?.();
-                setIsTouching(false);
             }}
         >   
 
