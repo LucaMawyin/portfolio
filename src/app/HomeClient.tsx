@@ -2,7 +2,7 @@
 
 import ExperienceClient from "@/components/Experience";
 import FadeInOnView from "@/components/FadeInOnView";
-import Projects from "@/components/ProjectsNew";
+import Projects from "@/components/Projects";
 import TechStack from "@/components/Tech";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { getHref } from "@/lib/getHref";

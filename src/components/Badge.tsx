@@ -80,7 +80,10 @@ export default function Badge(props: {
         >
             {props.children}
             {props.text && (
-                <span className={props.animateText ? "animate-tag-text" : ""}>
+                <span
+                    className={props.animateText ? "animate-tag-text" : ""}
+                    style={{ color: "inherit" }}
+                >
                     {props.text}
                 </span>
             )}

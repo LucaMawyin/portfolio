@@ -289,24 +289,26 @@ textarea {
         inset -10px -10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.pillow-hover-dark {    
+.pillow-hover-dark {
     transition:
         background 300ms ease,
         box-shadow 300ms ease;
 }
 
-.pillow-hover-dark:hover {
-    background: linear-gradient(
-        180deg,
-        #b8b8b8 0%,
-        #dedede 100%
-    );
+@media (hover: hover) and (pointer: fine) {
+    .pillow-hover-dark:hover {
+        background: linear-gradient(
+            180deg,
+            #b8b8b8 0%,
+            #dedede 100%
+        );
 
-    box-shadow:
-        0 14px 22px rgba(0, 0, 0, 0.32),
+        box-shadow:
+            0 14px 22px rgba(0, 0, 0, 0.32),
 
-        inset 10px 10px 20px rgba(255, 255, 255, 0.8),
-        inset -10px -10px 20px rgba(0, 0, 0, 0.1);
+            inset 10px 10px 20px rgba(255, 255, 255, 0.8),
+            inset -10px -10px 20px rgba(0, 0, 0, 0.1);
+    }
 }
 
 .squircle {
