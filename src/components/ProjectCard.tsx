@@ -250,7 +250,19 @@ export default function ProjectCard( props : {
                 ">
                     {props.project.image && (() => {
                         return (
-                            <div className="relative flex h-fit w-fit">
+                            <div 
+                                className="
+                                    relative 
+                                    flex 
+                                    h-fit
+                                    w-fit
+                                "
+                                onMouseEnter={props.onHoverStart}
+                                onMouseLeave={props.onHoverEnd}
+                                onTouchStart={props.onHoverStart}
+                                onTouchEnd={props.onHoverEnd}
+                                onTouchCancel={props.onHoverEnd}
+                            >
                                 <div 
                                     className={`
                                         relative
@@ -260,11 +272,6 @@ export default function ProjectCard( props : {
                                         duration-300
                                         ${isTouching ? "scale-105" : ""}
                                     `}
-                                    onMouseEnter={props.onHoverStart}
-                                    onMouseLeave={props.onHoverEnd}
-                                    onTouchStart={props.onHoverStart}
-                                    onTouchEnd={props.onHoverEnd}
-                                    onTouchCancel={props.onHoverEnd}
                                 >
                                     <img
                                         src={props.project.image}
@@ -280,20 +287,20 @@ export default function ProjectCard( props : {
                                         `}
                                     />
 
-                                        <div
-                                            className={`
-                                                absolute
-                                                inset-0
-                                                flex
-                                                items-center
-                                                justify-center
-                                                bg-black/0
-                                                transition-colors
-                                                duration-300
-                                                group-hover/card:bg-black/50
-                                                ${isTouching ? "bg-black/50" : ""}
-                                            `}
-                                        >
+                                    <div
+                                        className={`
+                                            absolute
+                                            inset-0
+                                            flex
+                                            items-center
+                                            justify-center
+                                            bg-black/0
+                                            transition-colors
+                                            duration-300
+                                            group-hover/card:bg-black/50
+                                            ${isTouching ? "bg-black/50" : ""}
+                                        `}
+                                    >
                                         <span
                                             className={`
                                                 text-white
