@@ -62,7 +62,7 @@ export default function Projects(props: {
     const holdStartTime = useRef<number | null>(null);
     const holdingProject = useRef<Project | null>(null);
 
-    const HOLD_DURATION = 750;
+    const HOLD_DURATION = 500;
 
     const cancelModalClose = () => {
         if (closeTimeout.current) {
