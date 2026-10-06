@@ -277,10 +277,11 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                     <h2 className="
                         relative
                         text-center
-                        text-2xl
+                        text-4xl
+                        md:text-2xl
                         font-bold
                         md:translate-y-[-2vh]
-                        my-[5%]
+                        my-12
                         md:my-0
                         bg-(--bg)
                     ">
