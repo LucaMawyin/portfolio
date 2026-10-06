@@ -227,7 +227,7 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body className={GeistMono.className}>
-                <SmoothScroll/>
+                
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
