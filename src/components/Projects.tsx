@@ -62,7 +62,7 @@ export default function Projects(props: {
     const holdStartTime = useRef<number | null>(null);
     const holdingProject = useRef<Project | null>(null);
 
-    const HOLD_DURATION = 1500;
+    const HOLD_DURATION = 750;
 
     const cancelModalClose = () => {
         if (closeTimeout.current) {
@@ -91,7 +91,6 @@ export default function Projects(props: {
 
         setHoldProgress(0);
         setHoldingProjectId(null);
-        setIsInteracting(false);
     };
 
     const startHold = (project: Project) => {
@@ -590,16 +589,15 @@ export default function Projects(props: {
                             <div
                                 className="flex h-full"
                                 onMouseEnter={() => {
-                                    startHold(project);
                                     setIsInteracting(true);
                                 }}
                                 onMouseLeave={() => {
                                     cancelHold();
                                     setIsInteracting(false);
                                 }}
-                                onTouchStart={(e) =>
-                                    onTouchStart(e, project)
-                                }
+                                onTouchStart={() => {
+                                    setIsInteracting(true);
+                                }}
                                 onTouchCancel={() => {
                                     cancelHold();
                                     startX.current = null;
@@ -612,13 +610,11 @@ export default function Projects(props: {
                                     isLoggedIn={props.isLoggedIn}
                                     position="start"
                                     className="max-w-full"
-                                    onHoldCancel={cancelHoldAndPauseCarousel}
-                                    onButtonHoverStart={() => {
-                                        setIsInteracting(true);
+                                    onHoverStart={() => {
+                                        startHold(project);
                                     }}
-                                    onButtonHoverEnd={() => {
-                                        setIsInteracting(false);
-                                        setTimerDeadline(Date.now() + 10000);
+                                    onHoverEnd={() => {
+                                        cancelHold();
                                     }}
                                     holdProgress={
                                         holdingProjectId === project.id
@@ -697,19 +693,20 @@ export default function Projects(props: {
                                     z-10
                                 "
                                 onMouseEnter={() => {
-                                    startHold(project);
                                     setIsInteracting(true);
                                 }}
                                 onMouseLeave={() => {
                                     cancelHold();
                                     setIsInteracting(false);
                                 }}
-                                onTouchStart={(e) =>
-                                    onTouchStart(
-                                        e,
-                                        project
-                                    )
-                                }
+                                onTouchStart={() => {
+                                    setIsInteracting(true);
+                                }}
+                                onTouchCancel={() => {
+                                    cancelHold();
+                                    startX.current = null;
+                                    setIsInteracting(false);
+                                }}
                             >
 
                                 <ProjectCard
@@ -718,13 +715,11 @@ export default function Projects(props: {
                                     isLoggedIn={props.isLoggedIn}
                                     position="start"
                                     className="max-w-full"
-                                    onHoldCancel={cancelHoldAndPauseCarousel}
-                                    onButtonHoverStart={() => {
-                                        setIsInteracting(true);
+                                    onHoverStart={() => {
+                                        startHold(project);
                                     }}
-                                    onButtonHoverEnd={() => {
-                                        setIsInteracting(false);
-                                        setTimerDeadline(Date.now() + 10000);
+                                    onHoverEnd={() => {
+                                        cancelHold();
                                     }}
                                     holdProgress={
                                         holdingProjectId === project.id

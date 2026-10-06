@@ -24,6 +24,8 @@ export default function ProjectCard( props : {
     onEdit?: () => void;
     onDelete?: () => void;
 }){
+    const [isTouching, setIsTouching] = React.useState(false);
+
     const tools = (
     typeof props.project.tools === "string"
         ? JSON.parse(props.project.tools || "[]")
@@ -66,6 +68,14 @@ export default function ProjectCard( props : {
             return date;
         })();
 
+        let isGithub = false;
+
+        try {
+            const hostname = new URL(props.project.link).hostname;
+            isGithub = hostname === "github.com" || hostname.endsWith(".github.com");
+        } catch {
+        }
+
     return (
         <a
             href={props.project.link}
@@ -91,18 +101,12 @@ export default function ProjectCard( props : {
                 squircle-large
                 pillow
                 pillow-hover
+                group/card
                 ${props.className}
             `}
-            onMouseEnter={props.onHoverStart}
-            onMouseLeave={props.onHoverEnd}
-            onTouchStart={() => {
-                setIsPressed(true)
-                props.onHoverStart?.();
-            }}
-            onTouchEnd={() => {
-                setIsPressed(false);
-                props.onHoverEnd?.();
-            }}
+            onTouchStart={() => setIsTouching(true)}
+            onTouchEnd={() => setIsTouching(false)}
+            onTouchCancel={() => setIsTouching(false)}
         >   
 
             {/* Tile title */}
@@ -244,138 +248,137 @@ export default function ProjectCard( props : {
                     justify-center 
                     items-center
                 ">
-                    {props.project.image && 
-                        <div className="relative flex h-fit w-fit">
-                            <div 
-                                className="
-                                    relative 
-                                    overflow-hidden 
-                                    rounded-xl 
-                                    group
-                                "
-                                onMouseEnter={() => {
-                                    props.onHoldCancel?.();
-                                    props.onButtonHoverStart?.();
-                                }}
-                                onMouseLeave={props.onButtonHoverEnd}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-
-                                    window.open(
-                                        props.project.link,
-                                        "_blank",
-                                        "noopener,noreferrer"
-                                    );
-                                }}
-                            >
-                                <img
-                                    src={props.project.image}
-                                    alt={`Project ${props.project.id}`}
-                                    className="
-                                        w-full
-                                        h-auto
+                    {props.project.image && (() => {
+                        return (
+                            <div className="relative flex h-fit w-fit">
+                                <div 
+                                    className={`
+                                        relative
+                                        overflow-hidden
                                         rounded-xl
                                         transition-transform
                                         duration-300
-                                        group-hover:scale-105
-                                    "
-                                />
-
-                                <div
-                                    className="
-                                        absolute
-                                        inset-0
-                                        flex
-                                        items-center
-                                        justify-center
-                                        bg-black/0
-                                        transition-colors
-                                        duration-300
-                                        group-hover:bg-black/50
-                                    "
+                                        ${isTouching ? "scale-105" : ""}
+                                    `}
+                                    onMouseEnter={props.onHoverStart}
+                                    onMouseLeave={props.onHoverEnd}
+                                    onTouchStart={props.onHoverStart}
+                                    onTouchEnd={props.onHoverEnd}
+                                    onTouchCancel={props.onHoverEnd}
                                 >
-                                    <span
-                                        className="
-                                            text-white
-                                            font-semibold
-                                            text-lg
-                                            opacity-0
-                                            translate-y-2
-                                            transition-all
+                                    <img
+                                        src={props.project.image}
+                                        alt={`Project ${props.project.id}`}
+                                        className={`
+                                            w-full
+                                            h-auto
+                                            rounded-xl
+                                            transition-transform
                                             duration-300
-                                            group-hover:opacity-100
-                                            group-hover:translate-y-0
+                                            group-hover/card:scale-105
+                                            ${isTouching ? "scale-105" : ""}
+                                        `}
+                                    />
+
+                                        <div
+                                            className={`
+                                                absolute
+                                                inset-0
+                                                flex
+                                                items-center
+                                                justify-center
+                                                bg-black/0
+                                                transition-colors
+                                                duration-300
+                                                group-hover/card:bg-black/50
+                                                ${isTouching ? "bg-black/50" : ""}
+                                            `}
+                                        >
+                                        <span
+                                            className={`
+                                                text-white
+                                                font-semibold
+                                                text-lg
+                                                opacity-0
+                                                translate-y-2
+                                                transition-all
+                                                duration-300
+                                                group-hover/card:opacity-100
+                                                group-hover/card:translate-y-0
+                                                ${isTouching ? "opacity-100 translate-y-0" : ""}
+                                            `}
+                                        >
+                                            {isGithub ? "View Code" : "Visit Website"} ↗
+                                        </span>
+                                    </div>
+                                </div>       
+
+                                {isNew && (
+                                    <Badge
+                                        text="NEW"
+                                        animateText
+                                        className="
+                                            absolute
+                                            top-3
+                                            left-3
+                                            z-10
+                                            bg-yellow-300
+                                            text-yellow-950
+                                            border-2
+                                            border-yellow-400
+                                            shadow-lg
+                                            animate-new-badge
                                         "
-                                    >
-                                        View Code ↗
-                                    </span>
-                                </div>
-                            </div>       
+                                        px={3}
+                                        py={1}
+                                    />
+                                )}
 
-                            {isNew && (
-                                <Badge
-                                    text="NEW"
-                                    animateText
-                                    className="
-                                        absolute
-                                        top-3
-                                        left-3
-                                        z-10
-                                        bg-yellow-300
-                                        text-yellow-950
-                                        border-2
-                                        border-yellow-400
-                                        shadow-lg
-                                        animate-new-badge
-                                    "
-                                    px={3}
-                                    py={1}
-                                />
-                            )}
+                                {isUpdated && (
+                                    <Badge
+                                        text="UPDATED"
+                                        animateText
+                                        className="
+                                            absolute
+                                            top-3
+                                            left-3
+                                            z-10
+                                            bg-blue-300
+                                            text-blue-950
+                                            border-2
+                                            border-blue-400
+                                            shadow-lg
+                                            animate-updated-badge
+                                        "
+                                        px={3}
+                                        py={1}
+                                    />
+                                )}
 
-                            {isUpdated && (
-                                <Badge
-                                    text="UPDATED"
-                                    animateText
-                                    className="
-                                        absolute
-                                        top-3
-                                        left-3
-                                        z-10
-                                        bg-blue-300
-                                        text-blue-950
-                                        border-2
-                                        border-blue-400
-                                        shadow-lg
-                                        animate-updated-badge
-                                    "
-                                    px={3}
-                                    py={1}
-                                />
-                            )}
+                                {props.project.status && (
+                                    <Badge
+                                        text={props.project.status}
+                                        style={{
+                                            "--glow": statusGlowRGB,
+                                            backgroundColor: props.project.status_colour,
+                                            borderColor: statusBorderColour,
+                                            color: statusGlowColour,
+                                        } as React.CSSProperties}
+                                        className="
+                                            absolute
+                                            top-3
+                                            right-3
+                                            z-10
+                                            border
+                                            animate-tag-pulse
+                                            animate-tag-text
+                                        "
+                                    />
+                                )}                        
+                            </div>                            
+                        );
+                    })()
 
-                            {props.project.status && (
-                                <Badge
-                                    text={props.project.status}
-                                    style={{
-                                        "--glow": statusGlowRGB,
-                                        backgroundColor: props.project.status_colour,
-                                        borderColor: statusBorderColour,
-                                        color: statusGlowColour,
-                                    } as React.CSSProperties}
-                                    className="
-                                        absolute
-                                        top-3
-                                        right-3
-                                        z-10
-                                        border
-                                        animate-tag-pulse
-                                        animate-tag-text
-                                    "
-                                />
-                            )}                        
-                        </div>
                     
                     }
                 </div>
@@ -419,77 +422,66 @@ export default function ProjectCard( props : {
 
             </div>
 
-            {props.project.link && (() => {
-                let isGithub = false;
+            {props.project.link && (
 
-                try {
-                    const hostname = new URL(props.project.link).hostname;
-                    isGithub = hostname === "github.com" || hostname.endsWith(".github.com");
-                } catch {
-                }
+                <div className="cursor-pointer ml-auto mt-4 w-fit"
+                    onMouseEnter={() => {
+                        props.onHoldCancel?.();
+                        props.onButtonHoverStart?.();
+                    }}
+                    onMouseLeave={props.onButtonHoverEnd}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                return (
-
-  
-                    <div className="cursor-pointer ml-auto mt-4 w-fit"
-                        onMouseEnter={() => {
-                            props.onHoldCancel?.();
-                            props.onButtonHoverStart?.();
-                        }}
-                        onMouseLeave={props.onButtonHoverEnd}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-
-                            window.open(
-                                props.project.link,
-                                "_blank",
-                                "noopener,noreferrer"
-                            );
-                        }}
-                        aria-label={
-                            isGithub
-                                ? `View ${props.project.name} source code`
-                                : `Visit ${props.project.name} website`
-                        }
+                        window.open(
+                            props.project.link,
+                            "_blank",
+                            "noopener,noreferrer"
+                        );
+                    }}
+                    aria-label={
+                        isGithub
+                            ? `View ${props.project.name} source code`
+                            : `Visit ${props.project.name} website`
+                    }
+                >
+                    <Badge
+                        style={{
+                            "--glow": glowRGB,
+                            "--project-colour": props.project.colour,
+                            color: glowColour,
+                            borderColor: borderColour,
+                        } as React.CSSProperties}      
+                        textSize="sm"
+                        px={4}
+                        py={2}
+                        className="
+                            group
+                            gap-2!
+                            bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
+                            hover:bg-(--project-colour)
+                            transition-all
+                            duration-200
+                            active:scale-95
+                            hover:scale-105
+                            border-2
+                            animate-tag-pulse
+                            animate-tag-text
+                        "
                     >
-                        <Badge
-                            style={{
-                                "--glow": glowRGB,
-                                "--project-colour": props.project.colour,
-                                color: glowColour,
-                                borderColor: borderColour,
-                            } as React.CSSProperties}      
-                            textSize="sm"
-                            px={4}
-                            py={2}
-                            className="
-                                group
-                                gap-2!
-                                bg-[color-mix(in_srgb,var(--project-colour)_25%,transparent)]
-                                hover:bg-(--project-colour)
-                                transition-all
-                                duration-200
-                                active:scale-95
-                                hover:scale-105
-                                border-2
-                                animate-tag-pulse
-                                animate-tag-text
-                            "
-                        >
-                            <span>{isGithub ? "View Code" : "Visit Website"}</span>
-                            <span className="
-                                animate-[arrow-idle_1.2s_ease-in-out_infinite]
-                                transition-transform
-                                duration-200
-                            ">
-                                ↗
-                            </span>
-                        </Badge>                              
-                    </div>
-             
-                );
-            })()}
+                        <span>{isGithub ? "View Code" : "Visit Website"}</span>
+                        <span className="
+                            animate-[arrow-idle_1.2s_ease-in-out_infinite]
+                            transition-transform
+                            duration-200
+                        ">
+                            ↗
+                        </span>
+                    </Badge>                              
+                </div>
+            
+            )}
             
             {props.isLoggedIn && (
                 <div
