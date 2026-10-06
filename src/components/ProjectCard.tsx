@@ -104,9 +104,18 @@ export default function ProjectCard( props : {
                 group/card
                 ${props.className}
             `}
-            onTouchStart={() => setIsTouching(true)}
-            onTouchEnd={() => setIsTouching(false)}
-            onTouchCancel={() => setIsTouching(false)}
+            onTouchStart={() => {
+                props.onHoverStart?.();
+                setIsTouching(true);
+            }}
+            onTouchEnd={() => {
+                props.onHoverEnd?.();
+                setIsTouching(false);
+            }}
+            onTouchCancel={() => {
+                props.onHoverEnd?.();
+                setIsTouching(false);
+            }}
         >   
 
             {/* Tile title */}
@@ -259,9 +268,6 @@ export default function ProjectCard( props : {
                                 "
                                 onMouseEnter={props.onHoverStart}
                                 onMouseLeave={props.onHoverEnd}
-                                onTouchStart={props.onHoverStart}
-                                onTouchEnd={props.onHoverEnd}
-                                onTouchCancel={props.onHoverEnd}
                             >
                                 <div 
                                     className={`
