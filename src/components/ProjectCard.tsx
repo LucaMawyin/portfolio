@@ -107,12 +107,15 @@ export default function ProjectCard( props : {
                 ${props.className}
             `}
             onTouchStart={() => {
+                setIsTouching(true);
                 props.onHoverStart?.();
             }}
             onTouchEnd={() => {
+                setIsTouching(false);
                 props.onHoverEnd?.();
             }}
             onTouchCancel={() => {
+                setIsTouching(false);
                 props.onHoverEnd?.();
             }}
         >   
@@ -326,12 +329,15 @@ export default function ProjectCard( props : {
                                                 ${isTouching ? "opacity-100 translate-y-0" : ""}
                                             `}
                                         >
-                                            {props.imageHoverText 
-                                                ? (props.imageHoverText) 
-                                                : (isImageHovered
-                                                    ? ("View Preview")
-                                                    : (isGithub ? "View Code" : "Visit Website")
-                                                )
+                                            {props.imageHoverText
+                                                ? props.imageHoverText
+                                                : isTouching
+                                                    ? "View Preview"
+                                                    : isImageHovered
+                                                        ? "View Preview"
+                                                        : isGithub
+                                                            ? "View Code"
+                                                            : "Visit Website"
                                             } ↗
                                         </span>
                                     </div>

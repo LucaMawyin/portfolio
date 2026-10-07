@@ -18,6 +18,8 @@ import Badge from "@/components/Badge";
 import { shadow } from "@/lib/tags";
 import { slugify } from "@/lib/slugify";
 import DayPickerClient from "@/components/DayPicker";
+import Switch from "@/components/Switch";
+import { Eye, EyeOff, Pin, PinOff } from "lucide-react";
 
 export default function CreateProjectPage(props : {
     initialData? : any;
@@ -883,37 +885,55 @@ export default function CreateProjectPage(props : {
                                         </>
                                     )}
                                     {/* PIN & HIDE */}
-                                    <div className="flex flex-wrap justify-evenly">
+                                    <div className="
+                                        flex
+                                        items-center
+                                        gap-8
+                                        pt-5
+                                        mt-2
+                                        border-t
+                                        border-gray-200
+                                    ">
                                         <label className="flex gap-2 items-center cursor-pointer">
-                                            <span>Pin Project</span>
-                                            <input
+                                            {form.pinned ? (
+                                                <Pin className="w-5 h-5" />
+                                            ) : (
+                                                <PinOff className="w-5 h-5" />
+                                            )}
+
+                                            <span className="text-sm">Pinned</span>
+
+                                            <Switch
                                                 name="pinned"
-                                                type="checkbox"
-                                                className="mb-0!"
                                                 checked={form.pinned}
-                                                    onChange={(e) =>
-                                                        setForm({
-                                                            ...form,
-                                                            pinned: e.target.checked,
-                                                        })
-                                                    }
-                                            />                            
+                                                onChange={(pinned) =>
+                                                    setForm({
+                                                        ...form,
+                                                        pinned,
+                                                    })
+                                                }
+                                            />
                                         </label>
-                                        
+
                                         <label className="flex gap-2 items-center cursor-pointer">
-                                            <span>Hide Project</span>
-                                            <input
+                                            {form.hidden ? (
+                                                <EyeOff className="w-5 h-5" />
+                                            ) : (
+                                                <Eye className="w-5 h-5" />
+                                            )}
+
+                                            <span className="text-sm">Hidden</span>
+
+                                            <Switch
                                                 name="hidden"
-                                                type="checkbox"
-                                                className="mb-0!"
                                                 checked={form.hidden}
-                                                    onChange={(e) =>
-                                                        setForm({
-                                                            ...form,
-                                                            hidden: e.target.checked,
-                                                        })
-                                                    }
-                                            />                            
+                                                onChange={(hidden) =>
+                                                    setForm({
+                                                        ...form,
+                                                        hidden,
+                                                    })
+                                                }
+                                            />
                                         </label>
                                     </div>
                                 </Tile>
@@ -1142,19 +1162,23 @@ export default function CreateProjectPage(props : {
                                             <div>
                                                 <h4 className="font-semibold">Languages</h4>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {form.languages.split(",").map((lang: string, i: number) => (
-                                                        <Badge
-                                                            key={i}
-                                                            fontWeight="normal"
-                                                            borderRadius="lg"
-                                                            textSize="xs"
-                                                            shadow="sm"
-                                                            px={2}
-                                                            py={1}
-                                                            className="bg-gray-200 border border-gray-300"
-                                                            text={lang}
-                                                        />
-                                                    ))}
+                                                    {form.languages
+                                                        .split(",")
+                                                        .map((lang : string) => lang.trim())
+                                                        .filter(Boolean)
+                                                        .map((lang: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-200 border border-gray-300"
+                                                                text={lang}
+                                                            />
+                                                        ))}
                                                 </div>
                                             </div>
                                         )}
@@ -1162,19 +1186,23 @@ export default function CreateProjectPage(props : {
                                             <div>
                                                 <h4 className="font-semibold">Libraries</h4>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {form.libraries.split(",").map((lib: string, i: number) => (
-                                                        <Badge
-                                                            key={i}
-                                                            fontWeight="normal"
-                                                            borderRadius="lg"
-                                                            textSize="xs"
-                                                            shadow="sm"
-                                                            px={2}
-                                                            py={1}
-                                                            className="bg-gray-100 border border-gray-300"
-                                                            text={lib}
-                                                        />
-                                                    ))}
+                                                    {form.libraries
+                                                        .split(",")
+                                                        .map((lib: string) => lib.trim())
+                                                        .filter(Boolean)
+                                                        .map((lib: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-100 border border-gray-300"
+                                                                text={lib}
+                                                            />
+                                                        ))}
                                                 </div>
                                             </div>
                                         )}
@@ -1182,19 +1210,23 @@ export default function CreateProjectPage(props : {
                                             <div>
                                                 <h4 className="font-semibold">Tools</h4>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {form.tools.split(",").map((tool: string, i: number) => (
-                                                        <Badge
-                                                            key={i}
-                                                            fontWeight="normal"
-                                                            borderRadius="lg"
-                                                            textSize="xs"
-                                                            shadow="sm"
-                                                            px={2}
-                                                            py={1}
-                                                            className="bg-gray-300 border border-gray-400"
-                                                            text={tool}
-                                                        />
-                                                    ))}
+                                                    {form.tools
+                                                        .split(",")
+                                                        .map((tool: string) => tool.trim())
+                                                        .filter(Boolean)
+                                                        .map((tool: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-300 border border-gray-400"
+                                                                text={tool}
+                                                            />
+                                                        ))}
                                                 </div>
                                             </div>
                                         )}

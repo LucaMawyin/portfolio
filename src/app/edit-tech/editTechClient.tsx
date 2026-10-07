@@ -384,28 +384,25 @@ export default function EditTechClient(props: {
                                             <div className="flex flex-wrap gap-2">
                                                 {form.languages
                                                     .split(",")
-                                                    .map(
-                                                        (
-                                                            language: string,
-                                                            index: number
-                                                        ) => (
-                                                            <Badge
-                                                                key={index}
-                                                                fontWeight="normal"
-                                                                borderRadius="lg"
-                                                                textSize="xs"
-                                                                shadow="sm"
-                                                                px={2}
-                                                                py={1}
-                                                                className="
-                                                                    bg-gray-200
-                                                                    border
-                                                                    border-gray-300
-                                                                "
-                                                                text={language.trim()}
-                                                            />
-                                                        )
-                                                    )}
+                                                    .map((language) => language.trim())
+                                                    .filter(Boolean)
+                                                    .map((language, index) => (
+                                                        <Badge
+                                                            key={index}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="
+                                                                bg-gray-200
+                                                                border
+                                                                border-gray-300
+                                                            "
+                                                            text={language}
+                                                        />
+                                                    ))}
                                             </div>
                                         )}
                                     </div>
@@ -433,28 +430,25 @@ export default function EditTechClient(props: {
                                             <div className="flex flex-wrap gap-2">
                                                 {form.libraries
                                                     .split(",")
-                                                    .map(
-                                                        (
-                                                            library: string,
-                                                            index: number
-                                                        ) => (
-                                                            <Badge
-                                                                key={index}
-                                                                fontWeight="normal"
-                                                                borderRadius="lg"
-                                                                textSize="xs"
-                                                                shadow="sm"
-                                                                px={2}
-                                                                py={1}
-                                                                className="
-                                                                    bg-gray-100
-                                                                    border
-                                                                    border-gray-300
-                                                                "
-                                                                text={library.trim()}
-                                                            />
-                                                        )
-                                                    )}
+                                                    .map((library) => library.trim())
+                                                    .filter(Boolean)
+                                                    .map((library, index) => (
+                                                        <Badge
+                                                            key={index}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="
+                                                                bg-gray-100
+                                                                border
+                                                                border-gray-300
+                                                            "
+                                                            text={library}
+                                                        />
+                                                    ))}
                                             </div>
                                         )}
                                     </div>
@@ -482,28 +476,25 @@ export default function EditTechClient(props: {
                                             <div className="flex flex-wrap gap-2">
                                                 {form.tools
                                                     .split(",")
-                                                    .map(
-                                                        (
-                                                            tool: string,
-                                                            index: number
-                                                        ) => (
-                                                            <Badge
-                                                                key={index}
-                                                                fontWeight="normal"
-                                                                borderRadius="lg"
-                                                                textSize="xs"
-                                                                shadow="sm"
-                                                                px={2}
-                                                                py={1}
-                                                                className="
-                                                                    bg-gray-300
-                                                                    border
-                                                                    border-gray-400
-                                                                "
-                                                                text={tool.trim()}
-                                                            />
-                                                        )
-                                                    )}
+                                                    .map((tool) => tool.trim())
+                                                    .filter(Boolean)
+                                                    .map((tool, index) => (
+                                                        <Badge
+                                                            key={index}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="
+                                                                bg-gray-300
+                                                                border
+                                                                border-gray-400
+                                                            "
+                                                            text={tool}
+                                                        />
+                                                    ))}
                                             </div>
                                         )}
                                     </div>
