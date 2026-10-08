@@ -896,7 +896,7 @@ export default function Projects(props: {
                                     <ProjectCard
                                         project={hoveredProject}
                                         isLoggedIn={props.isLoggedIn}
-                                        imageHoverText={hoveredProject.link.startsWith("https://github.com") ? "View Source" : "Visit Website"}
+                                        imageHoverText={hoveredProject.link?.startsWith("https://github.com") ? "View Source" : "Visit Website"}
                                         childClassName="xl:flex-col! xl:max-w-lg!"
                                         position="start"
                                         holdProgress={0}
