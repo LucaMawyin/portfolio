@@ -15,6 +15,30 @@ import { RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
+const formatDate = (date: string | Date | null | undefined) => {
+    if (!date) return "Unknown";
+
+    const value = date instanceof Date
+        ? date
+        : new Date(
+            typeof date === "string" && !date.includes("T")
+                ? date.replace(" ", "T") + "Z"
+                : date
+        );
+
+    if (isNaN(value.getTime())) {
+        return "Invalid date";
+    }
+
+    return value.toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+    });
+};
+
 export default function SettingsClient(props : {
     user : User, 
     content : SiteContent,
@@ -1005,13 +1029,7 @@ export default function SettingsClient(props : {
 
                                         <p>
                                             <span>Created: </span>
-                                            {new Date(project.created_at.replace(" ", "T") + "Z").toLocaleString("en-US", {
-                                                year: "numeric",
-                                                month: "short",
-                                                day: "numeric",
-                                                hour: "numeric",
-                                                minute: "2-digit",
-                                            })}
+                                            {formatDate(project.created_at)}
                                         </p>
                                         <p>
                                             <span>Updated: </span>
@@ -1332,13 +1350,7 @@ export default function SettingsClient(props : {
 
                                             <p>
                                                 <span>Created: </span>
-                                                {new Date(project.created_at.replace(" ", "T") + "Z").toLocaleString("en-US", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    hour: "numeric",
-                                                    minute: "2-digit",
-                                                })}
+                                                {formatDate(project.created_at)}
                                             </p>
                                             <p>
                                                 <span>Updated: </span>
