@@ -49,16 +49,19 @@ export default function EditTechClient(props: {
         "Review",
     ];
 
+    // Resize textareas when they first appear
     useEffect(() => {
         requestAnimationFrame(() => {
-            const textareas = document.querySelectorAll("textarea");
+            const textareas = document.querySelectorAll<HTMLTextAreaElement>(
+                "textarea"
+            );
 
             textareas.forEach((textarea) => {
                 textarea.style.height = "auto";
                 textarea.style.height = `${textarea.scrollHeight}px`;
             });
         });
-    }, [form, step]);
+    }, [step]);
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -84,6 +87,18 @@ export default function EditTechClient(props: {
             ...prev,
             [name]: formattedValue,
         }));
+
+        if (e.target instanceof HTMLTextAreaElement) {
+            const scrollY = window.scrollY;
+
+            e.target.style.height = "auto";
+            e.target.style.height = `${e.target.scrollHeight}px`;
+
+            window.scrollTo({
+                top: scrollY,
+                behavior: "instant",
+            });
+        }
     };
 
     const validateStep = (stepToValidate: number) => {

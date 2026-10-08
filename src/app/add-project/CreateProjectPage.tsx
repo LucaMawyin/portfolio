@@ -85,16 +85,19 @@ export default function CreateProjectPage(props : {
         
     }, [props.initialData]); 
 
+    // Resize textareas when they first appear
     useEffect(() => {
         requestAnimationFrame(() => {
-            const textareas = document.querySelectorAll("textarea");
+            const textareas = document.querySelectorAll<HTMLTextAreaElement>(
+                "textarea"
+            );
 
             textareas.forEach((textarea) => {
                 textarea.style.height = "auto";
                 textarea.style.height = `${textarea.scrollHeight}px`;
             });
         });
-    }, [form, step]);
+    }, [step]);
 
     // Auto capitalize project name, tools and languages
     const handleChange = (
@@ -132,6 +135,18 @@ export default function CreateProjectPage(props : {
                 ...prev,
                 [name]: formattedValue,
             }));
+        }
+
+        if (e.target instanceof HTMLTextAreaElement) {
+            const scrollY = window.scrollY;
+
+            e.target.style.height = "auto";
+            e.target.style.height = `${e.target.scrollHeight}px`;
+
+            window.scrollTo({
+                top: scrollY,
+                behavior: "instant",
+            });
         }
     };
   
