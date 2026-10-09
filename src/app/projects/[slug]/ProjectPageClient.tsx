@@ -96,8 +96,12 @@ export default function ProjectPageClient({
                                 } as React.CSSProperties}
                                 className="
                                     absolute
-                                    right-0
-                                    top-0
+                                    left-0
+                                    bottom-0
+                                    md:left-auto
+                                    md:bottom-auto
+                                    md:right-0
+                                    md:top-0
                                     m-2
                                     border
                                     animate-tag-pulse
@@ -137,7 +141,7 @@ export default function ProjectPageClient({
 
                 )}
                 
-                <div>
+                <div className="flex flex-col gap-4">
                     <a
                         href={project.link}
                         target="_blank"
@@ -147,7 +151,6 @@ export default function ProjectPageClient({
                             flex-wrap
                             w-full
                             justify-between
-                            mb-4
                             gap-4
                             transition-colors
                             duration-200
@@ -231,6 +234,32 @@ export default function ProjectPageClient({
                         })()}
                     </a>
 
+                    {project.subtitle && (
+                        <div className="
+                            min-w-full
+                            prose
+                            prose-sm
+                            text-(--contrast-colour)
+                            prose-a:text-blue-400
+                            prose-a:transition-colors
+                            prose-a:duration-100
+                            prose-a:no-underline
+                            prose-a:hover:text-blue-800
+                            prose-h1:mb-0
+                            prose-h1:text-6xl!
+                            prose-h2:mt-0
+                            prose-h2:mb-4
+                            prose-h2:text-4xl!
+                            prose-h3:mt-0
+                            prose-h3:text-2xl!
+                            prose-p:text-2xl!
+                        ">
+                            <ReactMarkdown>
+                                {project.subtitle}
+                            </ReactMarkdown>
+                        </div>
+                    )}
+
                     <div className="
                         text-gray-400 
                         text-sm
@@ -258,33 +287,6 @@ export default function ProjectPageClient({
                     </div>                    
                 </div>
 
-
-                
-
-                {project.subtitle && (
-                    <h2 className="
-                        min-w-full
-                        prose
-                        prose-sm
-                        prose-a:text-blue-400
-                        prose-a:transition-colors
-                        prose-a:duration-100
-                        prose-a:no-underline
-                        prose-a:hover:text-blue-800
-                        prose-h1:mb-0
-                        prose-h1:text-6xl!
-                        prose-h2:mt-0
-                        prose-h2:mb-4
-                        prose-h2:text-4xl!
-                        prose-h3:mt-0
-                        prose-h3:text-2xl!
-                    ">
-                        <ReactMarkdown>
-                            {project.subtitle}
-                        </ReactMarkdown>
-                    </h2>  
-                )}
-                
                 <div className="
                     min-w-full
                     prose
