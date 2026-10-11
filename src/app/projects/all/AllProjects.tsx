@@ -64,7 +64,7 @@ export default function AllProjects(props: {
                 auto-rows-fr
                 items-stretch
                 px-[5%]
-                pb-4
+                pb-8
                 gap-16
             ">
                 {projects.map((project, i) => (

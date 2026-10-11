@@ -108,15 +108,12 @@ export default function ProjectCard( props : {
             `}
             onTouchStart={() => {
                 setIsTouching(true);
-                props.onHoverStart?.();
             }}
             onTouchEnd={() => {
                 setIsTouching(false);
-                props.onHoverEnd?.();
             }}
             onTouchCancel={() => {
                 setIsTouching(false);
-                props.onHoverEnd?.();
             }}
         >   
 
@@ -276,6 +273,18 @@ export default function ProjectCard( props : {
                                     setIsImageHovered(false);
                                     props.onHoverEnd?.();
                                 }}
+                                onTouchStart={() => {
+                                    setIsImageHovered(true);
+                                    props.onHoverStart?.();
+                                }}
+                                onTouchEnd={() => {
+                                    setIsImageHovered(false);
+                                    props.onHoverEnd?.();
+                                }}
+                                onTouchCancel={() => {
+                                    setIsImageHovered(false);
+                                    props.onHoverEnd?.();
+                                }}
                             >
                                 <div 
                                     className={`
@@ -331,13 +340,11 @@ export default function ProjectCard( props : {
                                         >
                                             {props.imageHoverText
                                                 ? props.imageHoverText
-                                                : isTouching
+                                                : isImageHovered 
                                                     ? "View Preview"
-                                                    : isImageHovered
-                                                        ? "View Preview"
-                                                        : isGithub
-                                                            ? "View Code"
-                                                            : "Visit Website"
+                                                    : isGithub 
+                                                        ? "View Code"
+                                                        : "View Website"
                                             } ↗
                                         </span>
                                     </div>
