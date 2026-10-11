@@ -86,7 +86,7 @@ export default function AllProjects(props: {
                             isLoggedIn={props.isLoggedIn}
                             position="start"
                             holdProgress={0}
-                            imageHoverText={project.link?.startsWith("https://github.com") ? "View Source" : "Visit Website"}
+                            imageHoverText={project.link?.startsWith("https://github.com") ? "View Code" : "Visit Website"}
                             onEdit={() => {router.push(`/add-project/edit?id=${project.id}`)}}
                             onDelete={async () => {
                                 const res = await fetch("/api/projects", {
