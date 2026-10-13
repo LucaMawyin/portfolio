@@ -525,6 +525,7 @@ export default function EditTechClient(props: {
                             w-full
                             justify-between
                             px-4
+                            pb-4
                         "
                     >
                         <Button

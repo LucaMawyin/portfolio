@@ -3,14 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Project, Tech } from "@/lib/types";
 import ProjectCard from "./ProjectCard";
-import Button from "./Button";
 import { useRouter } from "next/navigation";
-import DeleteButton from "./DeleteButton";
 import FadeInOnView from "./FadeInOnView";
 import { useNotifications } from "./NotificationProvider";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import EditButton from "./EditButton";
 import AddButton from "./AddButton";
 
 export default function Projects(props: {

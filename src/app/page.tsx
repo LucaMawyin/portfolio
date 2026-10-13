@@ -8,10 +8,14 @@ import { getExperience } from "@/lib/getExperience";
 export default async function Home() {
 
     const session = await validateSession() as Session;
-    const projects = await getProjects(session);
-    const tech = await getTech();
-    const content = await getContent();
-    const experience = await getExperience();
+
+    const [projects, tech, content, experience ] = await Promise.all([
+        getProjects(session),
+        getTech(),
+        getContent(),
+        getExperience(),
+    ]);
+
 
     return (
         <HomeClient 

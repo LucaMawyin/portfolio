@@ -1,17 +1,15 @@
 "use client";
 
 import Badge from "@/components/Badge";
-import Button from "@/components/Button";
 import DeleteButton from "@/components/DeleteButton";
 import EditButton from "@/components/EditButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import TechBadges from "@/components/TechBadges";
-import { getProject } from "@/lib/getProjects";
 import { shadow } from "@/lib/tags";
 import { parseTechName } from "@/lib/techIcons";
 import { Project, Tech } from "@/lib/types";
 import Link from "next/link";
-import { notFound, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
 export default function ProjectPageClient({

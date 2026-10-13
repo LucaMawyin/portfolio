@@ -4,18 +4,21 @@ import { Tag } from "@/lib/types";
 import { headers } from "next/headers";
 
 export default async function Page() {
-    const tagOptions = await getTags("project") as Tag[];
-    const statuses = await getTags("status") as Tag[];
 
-    const headersList = await headers();
+    const [tagOptions , statuses, headersList] = await Promise.all([
+        getTags("project"),
+        getTags("status"),
+        headers(),
+    ]);
+
     const referrer = headersList.get("referer")
         ? new URL(headersList.get("referer")!).pathname
         : null;
 
     return (
         <CreateProjectPage 
-            tags={tagOptions} 
-            statuses={statuses}
+            tags={tagOptions as Tag[]} 
+            statuses={statuses as Tag[]}
             referrer={referrer}
         />
     );

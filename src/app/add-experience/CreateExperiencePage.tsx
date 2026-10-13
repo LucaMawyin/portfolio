@@ -894,6 +894,7 @@ export default function CreateExperiencePage(props: {
                         w-full
                         justify-between
                         px-4
+                        pb-4
                     ">
                         <Button
                             text="Back"

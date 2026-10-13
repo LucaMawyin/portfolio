@@ -2,7 +2,6 @@
 
 import { Experience } from "@/lib/types";
 import FadeInOnView from "./FadeInOnView";
-import Button from "./Button";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { formatToMonthYear } from "@/lib/formatMonthYear";

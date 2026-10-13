@@ -7,11 +7,15 @@ import { getProjects } from "@/lib/getProjects";
 export default async function DashboardPage() {
     const session = await requireSession();
 
-    const user = await getUserById(session.user_id);
-    const content = await getContent();
-    const { currentSession, activeSessions} = await getActiveSessions();
-    const projects = await getProjects(session);
+    const [user, content, sessions, projects] = await Promise.all([
+        getUserById(session.user_id),
+        getContent(),
+        getActiveSessions(),
+        getProjects(session),
+    ]);
 
+    const { currentSession, activeSessions } = sessions;
+    
     if (user){
         return (
             <SettingsClient 

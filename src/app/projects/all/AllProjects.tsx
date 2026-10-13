@@ -1,7 +1,5 @@
 "use client";
 
-import Button from "@/components/Button";
-import DeleteButton from "@/components/DeleteButton";
 import FadeInOnView from "@/components/FadeInOnView";
 import { useNotifications } from "@/components/NotificationProvider";
 import ProjectCard from "@/components/ProjectCard";

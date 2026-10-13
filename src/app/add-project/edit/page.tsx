@@ -45,8 +45,11 @@ export default async function Page({
         redirect("/add-project");
     }
 
-    const tags = await getTags("project") as Tag[];
-    const statuses = await getTags("status") as Tag[];
+    const [tags , statuses, headersList] = await Promise.all([
+        getTags("project"),
+        getTags("status"),
+        headers(),
+    ]);
 
     const data = draft as Project;
 
@@ -54,7 +57,6 @@ export default async function Page({
         ? `/images/projects/${data.id}?v=${encodeURIComponent(data.updated_at)}`
         : null;
 
-    const headersList = await headers();
     const referrer = headersList.get("referer")
         ? new URL(headersList.get("referer")!).pathname
         : null;
@@ -62,8 +64,8 @@ export default async function Page({
     return (
         <CreateProjectPage
             initialData={{ ...data, imageUrl }}
-            tags={tags}
-            statuses={statuses}
+            tags={tags as Tag[]}
+            statuses={statuses as Tag[]}
             referrer={referrer}
         />
     );

@@ -34,11 +34,13 @@ export default async function Page({
         redirect("/add-experience");
     }
 
-    const tags = await getTags("experience") as Tag[];
+    const [tags, headersList] = await Promise.all([
+        getTags("experience"),
+        headers(),
+    ]);
 
     const data = draft;
 
-    const headersList = await headers();
     const referrer = headersList.get("referer")
         ? new URL(headersList.get("referer")!).pathname
         : null;
@@ -46,7 +48,7 @@ export default async function Page({
     return (
         <CreateExperiencePage
             initialData={{ ...data }}
-            tags={tags}
+            tags={tags as Tag[]}
             referrer={referrer}
         />
     );
