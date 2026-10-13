@@ -5,9 +5,11 @@ import Button from "@/components/Button";
 import DeleteButton from "@/components/DeleteButton";
 import EditButton from "@/components/EditButton";
 import { useNotifications } from "@/components/NotificationProvider";
+import TechBadges from "@/components/TechBadges";
 import { getProject } from "@/lib/getProjects";
 import { shadow } from "@/lib/tags";
-import { Project } from "@/lib/types";
+import { parseTechName } from "@/lib/techIcons";
+import { Project, Tech } from "@/lib/types";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -15,9 +17,11 @@ import ReactMarkdown from "react-markdown";
 export default function ProjectPageClient({
     project,
     isLoggedIn,
+    tech,
 }: {
     project: Project;
     isLoggedIn: boolean;
+    tech: Tech[];
 }) {
 
     const router = useRouter();
@@ -40,6 +44,28 @@ export default function ProjectPageClient({
         ? JSON.parse(project.libraries || "[]")
         : project.libraries || []
     ) as string[];
+
+    const applyTechIconOverrides = (items: string[]) =>
+        items.map((item) => {
+            const parsed = parseTechName(item);
+
+            const existing = tech.find((entry) => {
+                const tech = parseTechName(entry.name);
+
+                return (
+                    tech.name.toLowerCase() === parsed.name.toLowerCase() &&
+                    !!tech.iconOverride
+                );
+            });
+
+            return existing
+                ? `${parseTechName(existing.name).name}&icon=${parseTechName(existing.name).iconOverride}`
+                : item;
+        });
+
+    const finalTools = applyTechIconOverrides(tools);
+    const finalLanguages = applyTechIconOverrides(languages);
+    const finalLibraries = applyTechIconOverrides(libraries);
 
     const { 
         glowColour, 
@@ -320,68 +346,23 @@ export default function ProjectPageClient({
                         Technologies
                     </h2>
 
-                    {/* LANGUAGES */}
-                    {languages.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-2 mt-3">
-                            <b>Languages:</b>
+                    <TechBadges
+                        label="Languages"
+                        items={finalLanguages}
+                        className="bg-gray-200 border border-gray-300"
+                    />
 
-                            {languages.map((lang, i) => (
-                                <Badge
-                                    key={i}
-                                    fontWeight="normal"
-                                    borderRadius="lg"
-                                    textSize="xs"
-                                    shadow="sm"
-                                    px={2}
-                                    py={1}
-                                    className="bg-gray-200 border border-gray-300"
-                                    text={lang}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <TechBadges
+                        label="Libraries"
+                        items={finalLibraries}
+                        className="bg-gray-100 border border-gray-300"
+                    />
 
-                    {/* LIBRARIES */}
-                    {libraries.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-2 mt-3">
-                            <b>Libraries:</b>
-
-                            {libraries.map((library, i) => (
-                                <Badge
-                                    key={i}
-                                    fontWeight="normal"
-                                    borderRadius="lg"
-                                    textSize="xs"
-                                    shadow="sm"
-                                    px={2}
-                                    py={1}
-                                    className="bg-gray-100 border border-gray-300"
-                                    text={library}
-                                />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* TOOLS */}
-                    {tools.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-2 mt-3">
-                            <b>Tools:</b>
-
-                            {tools.map((tool, i) => (
-                                <Badge
-                                    key={i}
-                                    fontWeight="normal"
-                                    borderRadius="lg"
-                                    textSize="xs"
-                                    shadow="sm"
-                                    px={2}
-                                    py={1}
-                                    className="bg-gray-300 border border-gray-400"
-                                    text={tool}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <TechBadges
+                        label="Tools"
+                        items={finalTools}
+                        className="bg-gray-300 border border-gray-400"
+                        />
                 </div>
                 
                 {/* Delete button if logged in */}

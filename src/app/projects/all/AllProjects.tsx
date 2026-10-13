@@ -5,13 +5,14 @@ import DeleteButton from "@/components/DeleteButton";
 import FadeInOnView from "@/components/FadeInOnView";
 import { useNotifications } from "@/components/NotificationProvider";
 import ProjectCard from "@/components/ProjectCard";
-import { Project } from "@/lib/types";
+import { Project, Tech } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AllProjects(props: {
     projects: Project[];
     isLoggedIn: boolean;
+    tech: Tech[];
 }) {
 
     const router = useRouter();
@@ -82,6 +83,7 @@ export default function AllProjects(props: {
                         delay={(i % columns) * 150}
                     >
                         <ProjectCard
+                            techEntries={props.tech}
                             project={project}
                             isLoggedIn={props.isLoggedIn}
                             position="start"

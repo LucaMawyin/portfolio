@@ -1,4 +1,4 @@
-import { getTechIcon } from "@/lib/techIcons";
+import { getTechIcon, parseTechName } from "@/lib/techIcons";
 import Badge from "./Badge";
 
 export default function TechBadges({
@@ -21,6 +21,7 @@ export default function TechBadges({
 
     const renderBadge = (item: string, key: string | number) => {
         const icon = getTechIcon(item);
+        const techName = parseTechName(item).name;
 
         return (
             <Badge
@@ -32,7 +33,7 @@ export default function TechBadges({
                 px={2}
                 py={1}
                 className={className}
-                text={item}
+                text={techName}
             >
                 {icon && (
                     <div

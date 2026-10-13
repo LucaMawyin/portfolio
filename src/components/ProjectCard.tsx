@@ -1,12 +1,12 @@
 import { shadow } from "@/lib/tags";
-import { Project } from "@/lib/types";
+import { Project, Tech } from "@/lib/types";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import Badge from "./Badge";
 import TechBadges from "./TechBadges";
 import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
-
+import { parseTechName } from "@/lib/techIcons";
 
 export default function ProjectCard( props : {
     project : Project;
@@ -24,6 +24,7 @@ export default function ProjectCard( props : {
     onEdit?: () => void;
     onDelete?: () => void;
     imageHoverText?: string;
+    techEntries: Tech[];
 }){
     const [isTouching, setIsTouching] = React.useState(false);
     const [isImageHovered, setIsImageHovered] = React.useState(false);
@@ -45,6 +46,28 @@ export default function ProjectCard( props : {
         ? JSON.parse(props.project.libraries || "[]")
         : props.project.libraries || []
     ) as string[];
+
+    const applyTechIconOverrides = (items: string[]) =>
+        items.map((item) => {
+            const parsed = parseTechName(item);
+
+            const existing = props.techEntries.find((entry) => {
+                const tech = parseTechName(entry.name);
+
+                return (
+                    tech.name.toLowerCase() === parsed.name.toLowerCase() &&
+                    !!tech.iconOverride
+                );
+            });
+
+            return existing
+                ? `${parseTechName(existing.name).name}&icon=${parseTechName(existing.name).iconOverride}`
+                : item;
+        });
+
+    const finalTools = applyTechIconOverrides(tools);
+    const finalLanguages = applyTechIconOverrides(languages);
+    const finalLibraries = applyTechIconOverrides(libraries);
     
     const { glowColour, glowRGB, borderColour } = shadow(props.project.colour);
     const { 
@@ -435,21 +458,21 @@ export default function ProjectCard( props : {
 
                         <TechBadges
                             label="Languages"
-                            items={languages}
+                            items={finalLanguages}
                             condensed={props.condenseTech}
                             className="bg-gray-200 border border-gray-300"
                         />
 
                         <TechBadges
                             label="Libraries"
-                            items={libraries}
+                            items={finalLibraries}
                             condensed={props.condenseTech}
                             className="bg-gray-100 border border-gray-300"
                         />
 
                         <TechBadges
                             label="Tools"
-                            items={tools}
+                            items={finalTools}
                             condensed={props.condenseTech}
                             className="bg-gray-300 border border-gray-400"
                         />

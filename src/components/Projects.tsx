@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Project } from "@/lib/types";
+import { Project, Tech } from "@/lib/types";
 import ProjectCard from "./ProjectCard";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ import AddButton from "./AddButton";
 export default function Projects(props: {
     isLoggedIn: boolean;
     projects: Project[];
+    techStack:Tech[];
 }) {
     const router = useRouter();
     const { notify } = useNotifications();
@@ -605,6 +606,7 @@ export default function Projects(props: {
                                 }}
                             >
                                 <ProjectCard
+                                    techEntries={props.techStack}
                                     project={project}
                                     condenseTech={true}
                                     isLoggedIn={props.isLoggedIn}
@@ -710,6 +712,7 @@ export default function Projects(props: {
                             >
 
                                 <ProjectCard
+                                    techEntries={props.techStack}
                                     project={project}
                                     condenseTech={true}
                                     isLoggedIn={props.isLoggedIn}
@@ -894,6 +897,7 @@ export default function Projects(props: {
                                     </button>
 
                                     <ProjectCard
+                                        techEntries={props.techStack}
                                         project={hoveredProject}
                                         isLoggedIn={props.isLoggedIn}
                                         imageHoverText={hoveredProject.link?.startsWith("https://github.com") ? "View Code" : "Visit Website"}

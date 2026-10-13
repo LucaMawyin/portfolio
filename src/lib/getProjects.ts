@@ -1,6 +1,6 @@
 import { getDB } from "@/lib/db";
 import { Project, Session, Tech } from "@/lib/types";
-import { getTechIcon } from "./techIcons";
+import { getTechIcon, parseTechName } from "./techIcons";
 
 export async function getProjects(session: Session | null): Promise<Project[]> {
     const isLoggedIn = !!session;
@@ -76,8 +76,6 @@ export async function getProject(
     };
 }
 
-// ... getProjects and getProject stay unchanged
-
 export const getTech = async (): Promise<Tech[]> => {
     const db = await getDB();
 
@@ -117,11 +115,22 @@ export const getTech = async (): Promise<Tech[]> => {
                 category: "languages",
             };
 
-            const exists = [...techSet].some(
-                (t) => t.name === temp.name
+            const parsed = parseTechName(temp.name);
+            const normalizedName = parsed.name.toLowerCase();
+
+            const existing = [...techSet].find(
+                (t) => parseTechName(t.name).name.toLowerCase() === normalizedName
             );
 
-            if (!exists) techSet.add(temp);
+            if (!existing) {
+                techSet.add(temp);
+            } else if (
+                !parseTechName(existing.name).iconOverride &&
+                parsed.iconOverride
+            ) {
+                techSet.delete(existing);
+                techSet.add(temp);
+            }
         });
 
         (toolArr ?? []).forEach((tool) => {
@@ -133,11 +142,22 @@ export const getTech = async (): Promise<Tech[]> => {
                 category: "tools",
             };
 
-            const exists = [...techSet].some(
-                (t) => t.name === temp.name
+            const parsed = parseTechName(temp.name);
+            const normalizedName = parsed.name.toLowerCase();
+
+            const existing = [...techSet].find(
+                (t) => parseTechName(t.name).name.toLowerCase() === normalizedName
             );
 
-            if (!exists) techSet.add(temp);
+            if (!existing) {
+                techSet.add(temp);
+            } else if (
+                !parseTechName(existing.name).iconOverride &&
+                parsed.iconOverride
+            ) {
+                techSet.delete(existing);
+                techSet.add(temp);
+            }
         });
 
         (libArr ?? []).forEach((lib) => {
@@ -149,20 +169,36 @@ export const getTech = async (): Promise<Tech[]> => {
                 category: "libraries",
             };
 
-            const exists = [...techSet].some(
-                (t) => t.name === temp.name
+            const parsed = parseTechName(temp.name);
+            const normalizedName = parsed.name.toLowerCase();
+
+            const existing = [...techSet].find(
+                (t) => parseTechName(t.name).name.toLowerCase() === normalizedName
             );
 
-            if (!exists) techSet.add(temp);
+            if (!existing) {
+                techSet.add(temp);
+            } else if (
+                !parseTechName(existing.name).iconOverride &&
+                parsed.iconOverride
+            ) {
+                techSet.delete(existing);
+                techSet.add(temp);
+            }
         });
     });
 
     return Array.from(techSet).map((tech) => {
-        const icon = getTechIcon(tech.name);
+        const parsed = parseTechName(tech.name);
+
+        const defaultIcon = getTechIcon(parsed.name);
+        const overrideIcon = parsed.iconOverride
+            ? getTechIcon(parsed.iconOverride)
+            : undefined;
 
         return {
             ...tech,
-            iconPath: icon?.path,
+            iconPath: overrideIcon?.path ?? defaultIcon?.path,
         };
     });
 };

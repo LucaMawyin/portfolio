@@ -7,6 +7,7 @@ import Badge from "./Badge";
 import { useEffect, useState } from "react";
 import { getInitials } from "@/lib/getInitials";
 import EditButton from "./EditButton";
+import { parseTechName } from "@/lib/techIcons";
 
 export default function TechStack(props: {
     isLoggedIn: boolean;
@@ -207,12 +208,14 @@ export default function TechStack(props: {
                                         "
                                     >
                                         {items.map((item) => {
-                                            const isHighlighted =
-                                                highlighted[section.key] ===
-                                                item.name;
+                                            const parsed = parseTechName(item.name);
 
-                                            const initials =
-                                                getInitials(item.name);
+                                            const isHighlighted =
+                                                highlighted[section.key] === parsed.name;
+
+                                            const initials = getInitials(parsed.name);
+
+                                                
 
                                             return (
                                                 <Badge
@@ -249,7 +252,7 @@ export default function TechStack(props: {
                                                                 `
                                                         }
                                                     `}
-                                                    text={item.name}
+                                                    text={parsed.name}
                                                 >
                                                     <div
                                                         className={`
