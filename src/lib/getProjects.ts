@@ -163,7 +163,9 @@ export const getTech = async (): Promise<Tech[]> => {
         `[TIMING] getTech processing: ${(performance.now() - processingStart).toFixed(1)}ms`
     );
 
-    return Array.from(techMap.values()).map((tech) => {
+    const iconStart = performance.now();
+
+    const result = Array.from(techMap.values()).map((tech) => {
         const parsed = parseTechName(tech.name);
 
         const defaultIcon = getTechIcon(parsed.name);
@@ -176,4 +178,10 @@ export const getTech = async (): Promise<Tech[]> => {
             iconPath: overrideIcon?.path ?? defaultIcon?.path,
         };
     });
+
+    console.log(
+        `[TIMING] getTech icons: ${(performance.now() - iconStart).toFixed(2)}ms`
+    );
+
+    return result;
 };
