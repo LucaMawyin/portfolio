@@ -7,8 +7,6 @@ import Footer from "@/components/Footer";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import SmoothScroll from "@/components/SmoothScroll";
 
-export const dynamic = "force-dynamic";
-
 const description = "Luca Mawyin is a software developer and McMaster Computer Science student focused on building clean, intuitive web applications"
 const siteUrl = "https://lucamawyin.com"
 

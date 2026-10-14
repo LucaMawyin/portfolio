@@ -611,7 +611,7 @@ export default function CreateProjectPage(props : {
                                         initialDate={
                                             form.created_at
                                                 ? new Date(form.created_at)
-                                                : undefined
+                                                : new Date()
                                         }
                                         onChange={(date) => {
                                             if (!date) return;

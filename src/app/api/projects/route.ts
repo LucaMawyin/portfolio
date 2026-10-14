@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
         // Project name, description and id (for updates)
         const id = formData.get("id") as string | null;
         const name = formData.get("name") as string;
-        const createdAt = formData.get("created_at") as string | null;
+        const createdAt =
+            (formData.get("created_at") as string | null) ||
+            new Date().toISOString().slice(0, 19).replace("T", " ");
         const slug = formData.get("slug") as string;
         const subtitle = formData.get("subtitle") as string;
         const description = formData.get("description") as string;
