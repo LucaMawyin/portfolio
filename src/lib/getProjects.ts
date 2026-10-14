@@ -77,9 +77,6 @@ export async function getProject(
 }
 
 export const getTech = async (): Promise<Tech[]> => {
-
-    const start = performance.now();
-
     const db = await getDB();
 
     const [techRes, projectRes] = await Promise.all([
@@ -92,13 +89,6 @@ export const getTech = async (): Promise<Tech[]> => {
             }[];
         }>,
     ]);
-
-    console.log(
-        `[TIMING] getTech queries: ${(performance.now() - start).toFixed(1)}ms`
-    );
-
-    const processingStart = performance.now();
-
 
     const techMap = new Map<string, Tech>();
     let largestId = 0;
@@ -159,13 +149,7 @@ export const getTech = async (): Promise<Tech[]> => {
         for (const library of libraries) addTech(library, "libraries");
     }
 
-    console.log(
-        `[TIMING] getTech processing: ${(performance.now() - processingStart).toFixed(1)}ms`
-    );
-
-    const iconStart = performance.now();
-
-    const result = Array.from(techMap.values()).map((tech) => {
+    return Array.from(techMap.values()).map((tech) => {
         const parsed = parseTechName(tech.name);
 
         const defaultIcon = getTechIcon(parsed.name);
@@ -178,10 +162,4 @@ export const getTech = async (): Promise<Tech[]> => {
             iconPath: overrideIcon?.path ?? defaultIcon?.path,
         };
     });
-
-    console.log(
-        `[TIMING] getTech icons: ${(performance.now() - iconStart).toFixed(2)}ms`
-    );
-
-    return result;
 };

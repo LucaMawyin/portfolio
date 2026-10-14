@@ -5,15 +5,12 @@ import { getProjects, getTech } from "@/lib/getProjects";
 import { getContent } from "@/lib/getContent";
 import { getExperience } from "@/lib/getExperience";
 import { pages } from "@/lib/info";
-import { timed } from "@/lib/timed";
 
 export default async function Home({
     params,
 }: {
     params: Promise<{ slug: string[] }>;
 }) {
-    const start = performance.now();
-
     const { slug } = await params;
 
     const path = `/${slug.join("/")}`;
@@ -31,32 +28,21 @@ export default async function Home({
         notFound();
     }
 
+    const session = await validateSession();
+    const [projects, tech, content, experience ] = await Promise.all([
+        getProjects(session),
+        getTech(),
+        getContent(),
+        getExperience(),
+    ]);
 
-    try {
-        const session = await timed(
-            "validateSession",
-            () => validateSession()
-        );
-
-        const [projects, tech, content, experience] = await Promise.all([
-            timed("getProjects", () => getProjects(session)),
-            timed("getTech", () => getTech()),
-            timed("getContent", () => getContent()),
-            timed("getExperience", () => getExperience()),
-        ]);
-
-        return (
-            <HomeClient
-                isLoggedIn={!!session}
-                projects={projects}
-                tech={tech}
-                content={content}
-                experience={experience}
-            />
-        );
-    } finally {
-        console.log(
-            `[TIMING] Slug total: ${(performance.now() - start).toFixed(2)}ms`
-        );
-    }
+    return (
+        <HomeClient
+            isLoggedIn={!!session}
+            projects={projects}
+            tech={tech}
+            content={content}
+            experience={experience}
+        />
+    );
 }
