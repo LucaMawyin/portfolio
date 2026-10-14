@@ -6,6 +6,7 @@ import { Session } from "@/lib/types";
 import { getContent } from "@/lib/getContent";
 import { getExperience } from "@/lib/getExperience";
 import { pages } from "@/lib/info";
+import { timed } from "@/lib/timed";
 
 export default async function Home({
     params,
@@ -29,12 +30,13 @@ export default async function Home({
         notFound();
     }
 
-    const session = await validateSession() as Session;
-    const [projects, tech, content, experience ] = await Promise.all([
-        getProjects(session),
-        getTech(),
-        getContent(),
-        getExperience(),
+    const session = await timed("validateSession", () => validateSession());
+
+    const [projects, tech, content, experience] = await Promise.all([
+        timed("getProjects", () => getProjects(session)),
+        timed("getTech", () => getTech()),
+        timed("getContent", () => getContent()),
+        timed("getExperience", () => getExperience()),
     ]);
 
     return (
