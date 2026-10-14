@@ -77,118 +77,93 @@ export async function getProject(
 }
 
 export const getTech = async (): Promise<Tech[]> => {
+
+    const start = performance.now();
+
     const db = await getDB();
 
-    const techRes = await db
-        .prepare(`SELECT * FROM tech`)
-        .all() as { results: Tech[] };
-
-    const projectRes = await db
-        .prepare(`SELECT languages, tools, libraries FROM projects`)
-        .all() as {
+    const [techRes, projectRes] = await Promise.all([
+        db.prepare(`SELECT * FROM tech`).all() as Promise<{ results: Tech[] }>,
+        db.prepare(`SELECT languages, tools, libraries FROM projects`).all() as Promise<{
             results: {
-                languages: string;
-                tools: string;
+                languages: string | null;
+                tools: string | null;
                 libraries: string | null;
             }[];
-        };
+        }>,
+    ]);
 
-    const techSet = new Set<Tech>();
+    console.log(
+        `[TIMING] getTech queries: ${(performance.now() - start).toFixed(1)}ms`
+    );
+
+    const processingStart = performance.now();
+
+
+    const techMap = new Map<string, Tech>();
     let largestId = 0;
 
-    techRes.results.forEach((result) => {
-        largestId = result.id > largestId ? result.id : largestId;
-        techSet.add(result);
-    });
+    const addTech = (name: string, category: Tech["category"]) => {
+        const parsed = parseTechName(name);
+        const normalizedName = parsed.name.toLowerCase();
 
-    (projectRes?.results ?? []).forEach((result) => {
-        const toolArr: string[] = JSON.parse(result.tools || "[]");
-        const languageArr: string[] = JSON.parse(result.languages || "[]");
-        const libArr: string[] = JSON.parse(result.libraries || "[]");
+        if (!normalizedName) return;
 
-        (languageArr ?? []).forEach((language) => {
+        const existing = techMap.get(normalizedName);
+
+        if (!existing) {
             largestId++;
 
-            const temp: Tech = {
+            techMap.set(normalizedName, {
                 id: largestId,
-                name: language,
-                category: "languages",
-            };
+                name,
+                category,
+            });
+        } else if (
+            !parseTechName(existing.name).iconOverride &&
+            parsed.iconOverride
+        ) {
+            techMap.set(normalizedName, {
+                id: existing.id,
+                name,
+                category,
+            });
+        }
+    };
 
-            const parsed = parseTechName(temp.name);
-            const normalizedName = parsed.name.toLowerCase();
+    for (const tech of techRes.results) {
+        largestId = Math.max(largestId, tech.id);
 
-            const existing = [...techSet].find(
-                (t) => parseTechName(t.name).name.toLowerCase() === normalizedName
-            );
+        const parsed = parseTechName(tech.name);
+        const key = parsed.name.toLowerCase();
 
-            if (!existing) {
-                techSet.add(temp);
-            } else if (
-                !parseTechName(existing.name).iconOverride &&
-                parsed.iconOverride
-            ) {
-                techSet.delete(existing);
-                techSet.add(temp);
-            }
-        });
+        const existing = techMap.get(key);
 
-        (toolArr ?? []).forEach((tool) => {
-            largestId++;
+        if (!existing) {
+            techMap.set(key, tech);
+        } else if (
+            !parseTechName(existing.name).iconOverride &&
+            parsed.iconOverride
+        ) {
+            techMap.set(key, tech);
+        }
+    }
 
-            const temp: Tech = {
-                id: largestId,
-                name: tool,
-                category: "tools",
-            };
+    for (const project of projectRes.results) {
+        const languages: string[] = JSON.parse(project.languages || "[]");
+        const tools: string[] = JSON.parse(project.tools || "[]");
+        const libraries: string[] = JSON.parse(project.libraries || "[]");
 
-            const parsed = parseTechName(temp.name);
-            const normalizedName = parsed.name.toLowerCase();
+        for (const language of languages) addTech(language, "languages");
+        for (const tool of tools) addTech(tool, "tools");
+        for (const library of libraries) addTech(library, "libraries");
+    }
 
-            const existing = [...techSet].find(
-                (t) => parseTechName(t.name).name.toLowerCase() === normalizedName
-            );
+    console.log(
+        `[TIMING] getTech processing: ${(performance.now() - processingStart).toFixed(1)}ms`
+    );
 
-            if (!existing) {
-                techSet.add(temp);
-            } else if (
-                !parseTechName(existing.name).iconOverride &&
-                parsed.iconOverride
-            ) {
-                techSet.delete(existing);
-                techSet.add(temp);
-            }
-        });
-
-        (libArr ?? []).forEach((lib) => {
-            largestId++;
-
-            const temp: Tech = {
-                id: largestId,
-                name: lib,
-                category: "libraries",
-            };
-
-            const parsed = parseTechName(temp.name);
-            const normalizedName = parsed.name.toLowerCase();
-
-            const existing = [...techSet].find(
-                (t) => parseTechName(t.name).name.toLowerCase() === normalizedName
-            );
-
-            if (!existing) {
-                techSet.add(temp);
-            } else if (
-                !parseTechName(existing.name).iconOverride &&
-                parsed.iconOverride
-            ) {
-                techSet.delete(existing);
-                techSet.add(temp);
-            }
-        });
-    });
-
-    return Array.from(techSet).map((tech) => {
+    return Array.from(techMap.values()).map((tech) => {
         const parsed = parseTechName(tech.name);
 
         const defaultIcon = getTechIcon(parsed.name);
