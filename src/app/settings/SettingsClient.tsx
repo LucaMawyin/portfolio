@@ -1096,7 +1096,7 @@ export default function SettingsClient(props : {
                                             }}
                                         />
                                         <DeleteButton
-                                            text="Project"
+                                            itemName={project.name}
                                             action={async () => {
                                                 const res = await fetch("/api/projects", {
                                                     method: "DELETE",
@@ -1449,7 +1449,7 @@ export default function SettingsClient(props : {
                                                 <RotateCcw size={18} />
                                             </Button>
                                             <DeleteButton
-                                                text="Project"
+                                                itemName={project.name}
                                                 action={async () => {
                                                     const res = await fetch("/api/projects", {
                                                         method: "DELETE",
