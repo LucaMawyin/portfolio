@@ -312,7 +312,7 @@ textarea {
 }
 
 .squircle {
-    border-radius: 1rem;
+    border-radius: 1em;
 
     @supports (corner-shape: squircle) {
         corner-shape: squircle;
@@ -321,7 +321,7 @@ textarea {
 }
 
 .squircle-large {
-    border-radius: 1.5rem;
+    border-radius: 1.5em;
 
     @supports (corner-shape: squircle) {
         corner-shape: squircle;
