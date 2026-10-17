@@ -399,6 +399,5 @@ b {
 }
 
 .animate-hold-progress {
-    animation: hold-progress 500ms linear 0ms forwards !important;
-    transition-delay: 0ms !important;
+    animation: hold-progress 1000ms linear !important;
 }

@@ -17,7 +17,7 @@ export default function Projects(props: {
 }) {
     const router = useRouter();
     const { notify } = useNotifications();
-    const HOLD_DURATION = 500;
+    const HOLD_DURATION = 1000;
     const [isMobile, setIsMobile] = useState(false);
 
     // Project states
