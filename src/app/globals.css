@@ -399,5 +399,5 @@ b {
 }
 
 .animate-hold-progress {
-    animation: hold-progress 1000ms linear !important;
+    animation: hold-progress 1000ms ease-in;
 }
