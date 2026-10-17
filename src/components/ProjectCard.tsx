@@ -202,18 +202,20 @@ export default function ProjectCard( props : {
                         />
 
                         <div
-                            className="
+                            className={`
                                 absolute
                                 bottom-0
                                 left-0
                                 h-0.5
+                                w-full
+                                origin-left
                                 z-20
-                                transition-none
                                 bg-current
-                            "
-                            style={{
-                                width: `${props.holdProgress * 100}%`,
-                            }}
+                                ${props.holdProgress > 0
+                                    ? "animate-hold-progress"
+                                    : "scale-x-0"
+                                }
+                            `}
                         />
                     </>
                 )}

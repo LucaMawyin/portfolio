@@ -52,12 +52,8 @@ export default function Projects(props: {
     const closeTimeout =
         useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const [holdProgress, setHoldProgress] = useState(0);
     const [holdingProjectId, setHoldingProjectId] =
         useState<number | null>(null);
-
-    const holdAnimation = useRef<number | null>(null);
-    const holdStartTime = useRef<number | null>(null);
     const holdingProject = useRef<Project | null>(null);
 
     const HOLD_DURATION = 500;
@@ -78,16 +74,15 @@ export default function Projects(props: {
         }, 100);
     };
 
+    const holdTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const cancelHold = () => {
-        if (holdAnimation.current !== null) {
-            cancelAnimationFrame(holdAnimation.current);
-            holdAnimation.current = null;
+        if (holdTimeout.current !== null) {
+            clearTimeout(holdTimeout.current);
+            holdTimeout.current = null;
         }
 
-        holdStartTime.current = null;
         holdingProject.current = null;
-
-        setHoldProgress(0);
         setHoldingProjectId(null);
     };
 
@@ -97,50 +92,19 @@ export default function Projects(props: {
         cancelHold();
 
         holdingProject.current = project;
-        holdStartTime.current = performance.now();
-
         setHoldingProjectId(project.id);
-        setHoldProgress(0);
         setIsInteracting(true);
 
-        const update = (now: number) => {
-            if (
-                holdStartTime.current === null ||
-                holdingProject.current !== project
-            ) {
-                return;
-            }
+        holdTimeout.current = setTimeout(() => {
+            if (holdingProject.current !== project) return;
 
-            const elapsed =
-                now - holdStartTime.current;
+            holdTimeout.current = null;
+            holdingProject.current = null;
 
-            const progress = Math.min(
-                elapsed / HOLD_DURATION,
-                1
-            );
-
-            setHoldProgress(progress);
-
-            if (progress >= 1) {
-                holdAnimation.current = null;
-                holdStartTime.current = null;
-                holdingProject.current = null;
-
-                setHoldProgress(0);
-                setHoldingProjectId(null);
-                setIsInteracting(false);
-
-                setHoveredProject(project);
-
-                return;
-            }
-
-            holdAnimation.current =
-                requestAnimationFrame(update);
-        };
-
-        holdAnimation.current =
-            requestAnimationFrame(update);
+            setHoldingProjectId(null);
+            setIsInteracting(false);
+            setHoveredProject(project);
+        }, HOLD_DURATION);
     };
 
     const goPrev = () => {
@@ -615,11 +579,7 @@ export default function Projects(props: {
                                     onHoverEnd={() => {
                                         cancelHold();
                                     }}
-                                    holdProgress={
-                                        holdingProjectId === project.id
-                                            ? holdProgress
-                                            : 0
-                                    }
+                                    holdProgress={holdingProjectId === project.id ? 1 : 0}
                                     onEdit={() => {
                                         router.push(`add-project/edit?id=${project.id}`);
                                     }}
@@ -721,11 +681,7 @@ export default function Projects(props: {
                                     onHoverEnd={() => {
                                         cancelHold();
                                     }}
-                                    holdProgress={
-                                        holdingProjectId === project.id
-                                            ? holdProgress
-                                            : 0
-                                    }
+                                    holdProgress={holdingProjectId === project.id ? 1 : 0}
                                     onEdit={() => {
                                         router.push(`add-project/edit?id=${project.id}`);
                                     }}
