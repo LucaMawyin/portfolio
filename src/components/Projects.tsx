@@ -17,46 +17,41 @@ export default function Projects(props: {
 }) {
     const router = useRouter();
     const { notify } = useNotifications();
+    const HOLD_DURATION = 500;
+    const [isMobile, setIsMobile] = useState(false);
 
-    // Fetching projects on load
+    // Project states
     const [projects, setProjects] = useState<Project[]>(
         props.projects.filter((project) => project.deleted === 0)
     );
-
-    const featuredPool = projects;
-
     const [featuredStart, setFeaturedStart] = useState(0);
-    const [isMobile, setIsMobile] = useState(false);
-
     const maxFeaturedStart = Math.max(
-        featuredPool.length - 3,
+        projects.length - 3,
         0
     );
-
-    const featuredProjects = featuredPool.slice(
+    const featuredProjects = projects.slice(
         featuredStart,
         featuredStart + 3
     );
 
+    // Project Hovering
+    const [hoveredProject, setHoveredProject] =
+        useState<Project | null>(null);
+    const holdingProject = useRef<Project | null>(null);
+    const [holdingProjectId, setHoldingProjectId] =
+        useState<number | null>(null);
+
+
+    // Project ineractions
     const startX = useRef<number | null>(null);
     const [timerDeadline, setTimerDeadline] = useState(
         Date.now() + 10000
     );
     const [isInteracting, setIsInteracting] = useState(false);
-
     const pausedTimeRemaining = useRef<number | null>(null);
-
-    const [hoveredProject, setHoveredProject] =
-        useState<Project | null>(null);
-
     const closeTimeout =
         useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const [holdingProjectId, setHoldingProjectId] =
-        useState<number | null>(null);
-    const holdingProject = useRef<Project | null>(null);
-
-    const HOLD_DURATION = 500;
 
     const cancelModalClose = () => {
         if (closeTimeout.current) {
@@ -108,12 +103,12 @@ export default function Projects(props: {
     };
 
     const goPrev = () => {
-        if (featuredPool.length <= 1) return;
+        if (projects.length <= 1) return;
 
         setFeaturedStart((prev) => {
             if (isMobile) {
                 return prev <= 0
-                    ? featuredPool.length - 1
+                    ? projects.length - 1
                     : prev - 1;
             }
 
@@ -126,11 +121,11 @@ export default function Projects(props: {
     };
 
     const goNext = () => {
-        if (featuredPool.length <= 1) return;
+        if (projects.length <= 1) return;
 
         setFeaturedStart((prev) => {
             if (isMobile) {
-                return prev >= featuredPool.length - 1
+                return prev >= projects.length - 1
                     ? 0
                     : prev + 1;
             }
@@ -147,16 +142,6 @@ export default function Projects(props: {
         if (Date.now() >= timerDeadline) {
             goNext();
         }
-    };
-
-    const onTouchStart = (
-        e: React.TouchEvent,
-        project: Project
-    ) => {
-        startX.current = e.touches[0].clientX;
-        setIsInteracting(true);
-
-        startHold(project);
     };
 
     const onTouchEnd = (e: React.TouchEvent) => {
@@ -189,8 +174,8 @@ export default function Projects(props: {
     useEffect(() => {
         if (
             isMobile
-                ? featuredPool.length <= 1
-                : featuredPool.length <= 3
+                ? projects.length <= 1
+                : projects.length <= 3
         ) {
             return;
         }
@@ -235,7 +220,7 @@ export default function Projects(props: {
         return () => clearTimeout(timeout);
     }, [
         timerDeadline,
-        featuredPool.length,
+        projects.length,
         isInteracting,
         hoveredProject,
         isMobile,
@@ -267,11 +252,6 @@ export default function Projects(props: {
             });
         };
     }, [hoveredProject]);
-
-    const cancelHoldAndPauseCarousel = () => {
-        cancelHold();
-        setIsInteracting(true);
-    };
 
     useEffect(() => {
         if (!isMobile && featuredStart > maxFeaturedStart) {
@@ -342,8 +322,8 @@ export default function Projects(props: {
                             onClick={goPrev}
                             disabled={
                                 isMobile
-                                    ? featuredPool.length <= 1
-                                    : featuredPool.length <= 3
+                                    ? projects.length <= 1
+                                    : projects.length <= 3
                             }
                             className="
                                 cursor-pointer
@@ -371,7 +351,7 @@ export default function Projects(props: {
                             type="button"
                             onClick={goNext}
                             disabled={
-                                featuredPool.length <= 3
+                                projects.length <= 3
                             }
                             className="
                                 cursor-pointer
@@ -398,7 +378,7 @@ export default function Projects(props: {
                 </div>
 
                 {/* Project position indicators */}
-                {featuredPool.length > 0 && (
+                {projects.length > 0 && (
                     <div
                         className={`
                             flex
@@ -436,7 +416,7 @@ export default function Projects(props: {
                                 }}
                             />
 
-                            {featuredPool.map((_, i) => (
+                            {projects.map((_, i) => (
                                 <button
                                     key={i}
                                     type="button"
@@ -537,7 +517,7 @@ export default function Projects(props: {
                         advanceIfExpired();
                     }}
                 >
-                    {featuredPool.map((project) => (
+                    {projects.map((project) => (
                         <div
                             key={project.id}
                             className="
