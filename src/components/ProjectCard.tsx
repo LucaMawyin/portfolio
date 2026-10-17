@@ -207,14 +207,10 @@ export default function ProjectCard( props : {
                                 bottom-0
                                 left-0
                                 h-0.5
-                                w-full
-                                origin-left
                                 z-20
                                 bg-current
-                                ${props.holdProgress > 0
-                                    ? "animate-hold-progress"
-                                    : "scale-x-0"
-                                }
+                                transition-none
+                                ${isImageHovered ? "animate-hold-progress" : ""}
                             `}
                         />
                     </>
