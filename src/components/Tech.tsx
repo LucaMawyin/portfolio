@@ -1,19 +1,189 @@
 "use client";
 
-import { Tech } from "@/lib/types";
+import { Project, Tech } from "@/lib/types";
 import FadeInOnView from "./FadeInOnView";
 import { useRouter } from "next/navigation";
 import Badge from "./Badge";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getInitials } from "@/lib/getInitials";
 import EditButton from "./EditButton";
 import { parseTechName } from "@/lib/techIcons";
+import { createPortal } from "react-dom";
+
+type PopupPlacement = "top" | "bottom" | "left" | "right";
 
 export default function TechStack(props: {
     isLoggedIn: boolean;
     tech: Tech[];
+    projects: Project[];
 }) {
     const [highlighted, setHighlighted] = useState<Record<string, string>>({});
+    const [activeTech, setActiveTech] = useState<number | null>(null);
+    const [popupPosition, setPopupPosition] = useState({
+        top: 0,
+        left: 0,
+    });
+
+    const [popupPlacement, setPopupPlacement] =
+        useState<PopupPlacement>("right");
+
+    const badgeRefs = useRef<Record<number, HTMLDivElement | null>>({});
+    const popupRef = useRef<HTMLDivElement>(null);
+    const [mounted, setMounted] = useState(false);
+    const [pointerOffset, setPointerOffset] = useState(24);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const getProjectsForTech = (techName: string) => {
+
+        const parseTechArray = (value: string[] | string | null | undefined): string[] => {
+            if (!value) return [];
+
+            if (Array.isArray(value)) return value;
+
+            try {
+                const parsed: unknown = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        };
+
+        const name = parseTechName(techName).name.toLowerCase();
+
+        return props.projects.filter((project: Project) => {
+            const projectTech = [
+                ...parseTechArray(project.languages),
+                ...parseTechArray(project.libraries),
+                ...parseTechArray(project.tools),
+            ];
+
+            return projectTech.some((item) => {
+                const cleanName = item.split("&icon=")[0];
+
+                return (
+                    parseTechName(cleanName).name.toLowerCase() === name
+                );
+            });
+        });
+    };
+
+    const positionPopup = (techId: number) => {
+        const badge = badgeRefs.current[techId];
+        if (!badge) return;
+
+        const rect = badge.getBoundingClientRect();
+        const gap = 12;
+        const margin = 16;
+        const popupWidth = Math.min(288, window.innerWidth - margin * 2);
+        const popupHeight = popupRef.current?.offsetHeight ?? 200;
+
+        const spaceRight = window.innerWidth - rect.right - margin;
+        const spaceLeft = rect.left - margin;
+        const spaceBelow = window.innerHeight - rect.bottom - margin;
+
+        let placement: PopupPlacement;
+
+        if (spaceRight >= popupWidth + gap) {
+            placement = "right";
+        } else if (spaceLeft >= popupWidth + gap) {
+            placement = "left";
+        } else if (spaceBelow >= Math.min(popupHeight, 240) + gap) {
+            placement = "bottom";
+        } else {
+            placement = "top";
+        }
+
+        setPopupPlacement(placement);
+
+        let top = rect.top + rect.height / 2;
+        let left = rect.right + gap;
+
+        if (placement === "left") {
+            left = rect.left - popupWidth - gap;
+        } else if (placement === "top" || placement === "bottom") {
+            left = rect.left + rect.width / 2 - popupWidth / 2;
+            top =
+                placement === "bottom"
+                    ? rect.bottom + gap
+                    : rect.top - gap - popupHeight;
+        }
+
+        if (placement === "left" || placement === "right") {
+            top = Math.max(
+                margin + popupHeight / 2,
+                Math.min(window.innerHeight - margin - popupHeight / 2, top)
+            );
+        } else {
+            left = Math.max(
+                margin,
+                Math.min(window.innerWidth - popupWidth - margin, left)
+            );
+        }
+
+        const badgeCenterX = rect.left + rect.width / 2;
+        const badgeCenterY = rect.top + rect.height / 2;
+
+        if (placement === "top" || placement === "bottom") {
+            setPointerOffset(
+                Math.max(16, Math.min(popupWidth - 16, badgeCenterX - left))
+            );
+        } else {
+            setPointerOffset(
+                Math.max(16, Math.min(popupHeight - 16, badgeCenterY - top + popupHeight / 2))
+            );
+        }
+
+        setPopupPosition({ top, left });
+    };
+
+    const openTechPopup = (techId: number) => {
+        setActiveTech(techId);
+    };
+
+    useEffect(() => {
+        if (activeTech === null) return;
+
+        const updatePosition = () => positionPopup(activeTech);
+
+        // Reposition after the popup has rendered and its size is measurable.
+        const frame = requestAnimationFrame(updatePosition);
+
+        window.addEventListener("scroll", updatePosition, true);
+        window.addEventListener("resize", updatePosition);
+
+        return () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener("scroll", updatePosition, true);
+            window.removeEventListener("resize", updatePosition);
+        };
+    }, [activeTech, props.projects]);
+
+    useEffect(() => {
+        if (activeTech === null) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+
+            if (
+                popupRef.current &&
+                !popupRef.current.contains(target) &&
+                !Object.values(badgeRefs.current).some(
+                    (badge) => badge?.contains(target)
+                )
+            ) {
+                setActiveTech(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [activeTech]);
 
     useEffect(() => {
         const grouped = props.tech.reduce(
@@ -149,7 +319,9 @@ export default function TechStack(props: {
                     return (
                         <FadeInOnView
                             key={section.key}
-                            className="fade-left"
+                            className={`fade-left ${
+                                activeTech !== null ? "z-50" : "z-0"
+                            }`}
                         >
                             <div
                                 className={`
@@ -215,79 +387,253 @@ export default function TechStack(props: {
 
                                             const initials = getInitials(parsed.name);
 
-                                                
-
                                             return (
-                                                <Badge
+                                                <div
                                                     key={item.id}
-                                                    textSize="sm"
-                                                    borderRadius="xl"
-                                                    shadow={
-                                                        isHighlighted
-                                                            ? "md"
-                                                            : "none"
-                                                    }
-                                                    fontWeight={
-                                                        isHighlighted
-                                                            ? "semibold"
-                                                            : "normal"
-                                                    }
-                                                    px={2}
-                                                    className={`
-                                                        transition-all
-                                                        duration-500
-                                                        border
-
-                                                        ${
-                                                            isHighlighted
-                                                                ? `
-                                                                    ${section.accent.bg}
-                                                                    ${section.accent.border}
-                                                                    ${section.accent.text}
-                                                                    -translate-y-1
-                                                                `
-                                                                : `
-                                                                    bg-white
-                                                                    border-gray-300
-                                                                `
-                                                        }
-                                                    `}
-                                                    text={parsed.name}
+                                                    ref={(element) => {
+                                                        badgeRefs.current[item.id] = element;
+                                                    }}
+                                                    className="relative inline-flex"
                                                 >
-                                                    <div
+                                                    <Badge
+                                                        key={item.id}
+                                                        onClick={() => {
+                                                            if (activeTech === item.id) {
+                                                                setActiveTech(null);
+                                                            } else {
+                                                                openTechPopup(item.id);
+                                                            }
+                                                        }}
+                                                        textSize="sm"
+                                                        borderRadius="xl"
+                                                        shadow={
+                                                            isHighlighted
+                                                                ? "md"
+                                                                : "none"
+                                                        }
+                                                        fontWeight={
+                                                            isHighlighted
+                                                                ? "semibold"
+                                                                : "normal"
+                                                        }
+                                                        px={2}
                                                         className={`
-                                                            flex
-                                                            items-center
-                                                            justify-center
-                                                            w-6
-                                                            h-6
-                                                            rounded-md
-                                                            text-[10px]
-                                                            font-semibold
+                                                            transition-all duration-300
+                                                            border
+                                                            cursor-pointer
+                                                            hover:-translate-y-1
+                                                            hover:shadow-md
                                                             ${
                                                                 isHighlighted
-                                                                    ? `${section.accent.icon} ${section.accent.text}`
-                                                                    : "bg-gray-100 text-gray-500"
+                                                                    ? `
+                                                                        ${section.accent.bg}
+                                                                        ${section.accent.border}
+                                                                        ${section.accent.text}
+                                                                        -translate-y-1
+                                                                        shadow-md
+                                                                    `
+                                                                    : `
+                                                                        bg-white
+                                                                        border-gray-300
+                                                                        hover:${section.accent.bg}
+                                                                        hover:${section.accent.border}
+                                                                    `
                                                             }
                                                         `}
+                                                        text={parsed.name}
                                                     >
-                                                        {item.iconPath ? (
-                                                            <svg
-                                                                viewBox="0 0 24 24"
-                                                                className="w-4 h-4 fill-current"
-                                                                aria-hidden="true"
-                                                            >
-                                                                <path
-                                                                    d={
-                                                                        item.iconPath
-                                                                    }
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            initials
-                                                        )}
-                                                    </div>
-                                                </Badge>
+                                                        <div
+                                                            className={`
+                                                                flex
+                                                                items-center
+                                                                justify-center
+                                                                w-6
+                                                                h-6
+                                                                rounded-md
+                                                                text-[10px]
+                                                                font-semibold
+                                                                ${
+                                                                    isHighlighted
+                                                                        ? `${section.accent.icon} ${section.accent.text}`
+                                                                        : "bg-gray-100 text-gray-500"
+                                                                }
+                                                            `}
+                                                        >
+                                                            {item.iconPath ? (
+                                                                <svg
+                                                                    viewBox="0 0 24 24"
+                                                                    className="w-4 h-4 fill-current"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    <path
+                                                                        d={
+                                                                            item.iconPath
+                                                                        }
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                initials
+                                                            )}
+                                                        </div>
+                                                    </Badge>  
+
+                                                    {mounted &&
+                                                        activeTech !== null &&
+                                                        createPortal(
+                                                            (() => {
+                                                                const activeItem = props.tech.find(
+                                                                    (tech) => tech.id === activeTech
+                                                                );
+
+                                                                if (!activeItem) return null;
+
+                                                                const parsed = parseTechName(activeItem.name);
+                                                                const matchingProjects = getProjectsForTech(activeItem.name);
+
+                                                                return (
+                                                                    <div
+                                                                        ref={popupRef}
+                                                                        style={{
+                                                                            position: "fixed",
+                                                                            top: popupPosition.top,
+                                                                            left: popupPosition.left,
+                                                                            transform:
+                                                                                popupPlacement === "left" || popupPlacement === "right"
+                                                                                    ? "translateY(-50%)"
+                                                                                    : "none",
+                                                                            maxHeight: "min(70vh, 480px)",
+                                                                        }}
+                                                                        className="
+                                                                            relative
+                                                                            w-[min(288px,calc(100vw-32px))]
+                                                                            wrap-break-words
+                                                                            rounded-xl
+                                                                            border 
+                                                                            border-gray-200
+                                                                            bg-white
+                                                                            p-3
+                                                                            text-left
+                                                                        "
+                                                                    >
+                                                                        {/* Pointer */}
+                                                                        <div
+                                                                            className={`
+                                                                                absolute
+                                                                                z-10
+                                                                                h-0
+                                                                                w-0
+                                                                                border-solid
+                                                                                ${
+                                                                                    popupPlacement === "right"
+                                                                                        ? `
+                                                                                            -left-2
+                                                                                            border-y-8
+                                                                                            border-y-transparent
+                                                                                            border-r-8
+                                                                                            border-r-white
+                                                                                        `
+                                                                                        : popupPlacement === "left"
+                                                                                        ? `
+                                                                                            -right-2
+                                                                                            border-y-8
+                                                                                            border-y-transparent
+                                                                                            border-l-8
+                                                                                            border-l-white
+                                                                                        `
+                                                                                        : popupPlacement === "bottom"
+                                                                                        ? `
+                                                                                            -top-2
+                                                                                            border-x-8
+                                                                                            border-x-transparent
+                                                                                            border-b-8
+                                                                                            border-b-white
+                                                                                        `
+                                                                                        : `
+                                                                                            -bottom-2
+                                                                                            border-x-8
+                                                                                            border-x-transparent
+                                                                                            border-t-8
+                                                                                            border-t-white
+                                                                                        `
+                                                                                }
+                                                                            `}
+                                                                            style={
+                                                                                popupPlacement === "left" || popupPlacement === "right"
+                                                                                    ? {
+                                                                                        top: pointerOffset,
+                                                                                        transform: "translateY(-50%)",
+                                                                                    }
+                                                                                    : {
+                                                                                        left: pointerOffset,
+                                                                                        transform: "translateX(-50%)",
+                                                                                    }
+                                                                            }
+                                                                        />
+
+                                                                        {/* Keep content above the pointer */}
+                                                                        <div className="relative z-20">
+                                                                            <p className="mb-2 text-xs font-semibold text-gray-400">
+                                                                                PROJECTS USING {parsed.name.toUpperCase()}
+                                                                            </p>
+
+                                                                            {matchingProjects.length > 0 ? (
+                                                                                <div className="flex flex-col gap-1">
+                                                                                    {matchingProjects.map((project) => (
+                                                                                        <button
+                                                                                            key={project.id}
+                                                                                            onClick={() => {
+                                                                                                setActiveTech(null);
+                                                                                                if (project.link) {
+                                                                                                    window.open(project.link, "_blank", "noopener,noreferrer");
+                                                                                                }
+                                                                                            }}
+                                                                                            className={`
+                                                                                                w-full 
+                                                                                                rounded-md 
+                                                                                                px-2 
+                                                                                                py-2
+                                                                                                text-left 
+                                                                                                text-sm 
+                                                                                                text-gray-700
+                                                                                                ${project.link 
+                                                                                                    ? "cursor-pointer hover:bg-gray-100" 
+                                                                                                    : ""
+                                                                                                }
+                                                                                            `}
+                                                                                        >
+                                                                                            {project.name}
+                                                                                        </button>
+                                                                                    ))}
+                                                                                </div>
+                                                                            ) : (
+                                                                                <p className="text-sm text-gray-500">
+                                                                                    No projects use this technology yet.
+                                                                                </p>
+                                                                            )}
+
+                                                                            <button
+                                                                                onClick={() => setActiveTech(null)}
+                                                                                className="
+                                                                                    mt-2 
+                                                                                    text-xs 
+                                                                                    text-gray-400 
+                                                                                    hover:text-gray-700
+                                                                                    cursor-pointer
+                                                                                "
+                                                                            >
+                                                                                Close
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })(),
+                                                            document.body
+                                                        )
+                                                    }
+
+                                                </div>
+
+
                                             );
                                         })}
                                     </div>

@@ -49,6 +49,7 @@ export default function Badge(props: {
     shadow?: keyof typeof shadowClasses;
     animateText?: boolean;
     children?: React.ReactNode;
+    onClick?: () => void;
 }) {
     const px = props.px ?? 3;
     const py = props.py ?? 1;
@@ -77,6 +78,7 @@ export default function Badge(props: {
                 ${shadowClasses[props.shadow ?? "md"]}
                 ${props.className ?? ""}
             `}
+            onClick={props.onClick}
         >
             {props.children}
             {props.text && (

@@ -295,6 +295,7 @@ export default function HomeClient(props :
                 <TechStack 
                     isLoggedIn={props.isLoggedIn}
                     tech={props.tech}
+                    projects={props.projects}
                 />
             </section>
 
