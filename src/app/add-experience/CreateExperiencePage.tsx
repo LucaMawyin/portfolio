@@ -631,22 +631,15 @@ export default function CreateExperiencePage(props: {
                                                 }));
                                             }}
                                         >
-                                            {Array.from({ length: 50 }).map(
-                                                (_, i) => {
-                                                    const year =
-                                                        new Date().getFullYear() -
-                                                        i;
+                                            {Array.from({ length: 31 }).map((_, i) => {
+                                                const year = new Date().getFullYear() + 5 - i;
 
-                                                    return (
-                                                        <option
-                                                            key={year}
-                                                            value={year}
-                                                        >
-                                                            {year}
-                                                        </option>
-                                                    );
-                                                }
-                                            )}
+                                                return (
+                                                    <option key={year} value={year}>
+                                                        {year}
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                     </div>
 
@@ -727,22 +720,15 @@ export default function CreateExperiencePage(props: {
                                                 Present
                                             </option>
 
-                                            {Array.from({ length: 50 }).map(
-                                                (_, i) => {
-                                                    const year =
-                                                        new Date().getFullYear() -
-                                                        i;
+                                            {Array.from({ length: 31 }).map((_, i) => {
+                                                const year = new Date().getFullYear() + 5 - i;
 
-                                                    return (
-                                                        <option
-                                                            key={year}
-                                                            value={year}
-                                                        >
-                                                            {year}
-                                                        </option>
-                                                    );
-                                                }
-                                            )}
+                                                return (
+                                                    <option key={year} value={year}>
+                                                        {year}
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                     </div>
 
