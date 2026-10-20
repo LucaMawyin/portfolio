@@ -17,10 +17,10 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
 
     const router = useRouter();
     const [experience, setExperience] = useState<Experience[]>(
-        props.experienceList.filter(e => !e.tag?.includes("Certificate"))
+        props.experienceList.filter(e => !e.tag?.toLowerCase().includes("certificate"))
     );
     const [certificates, setCertificates] = useState<Experience[]>(
-        props.experienceList.filter(e => e.tag?.includes("Certificate"))
+        props.experienceList.filter(e => e.tag?.toLowerCase().includes("certificate"))
     );
     
     return (
@@ -235,9 +235,6 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                             {exp.tag && (
                                                 <Badge
                                                     text={exp.tag}
-                                                    px={2}
-                                                    py={1}
-                                                    textSize="xs"
                                                     shadow="none"
                                                     className="
                                                         text-neutral-600! 
@@ -249,6 +246,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                             {(exp.hidden === 1) && (
                                                 <Badge
                                                     text="Hidden"
+                                                    shadow="none"
                                                     className="bg-orange-400"
                                                 />
                                             )}    
@@ -335,180 +333,225 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                     md:gap-0 
                     lg:px-[5%] 
                 ">
-                    {certificates.map((cert,index) => (
-                        <div 
-                            key={index}
-                            className={`
-                                relative
-                                flex 
-                                flex-col
-                                w-full
-                                h-full
-                                gap-8
-                                ${index !== 0 ? "md:translate-y-[-10%]" : ""}
-                            `}
-                            style={{
-                                zIndex: certificates.length - index
-                            }}
-                        >
+                    {certificates.map((cert,index) => {
 
-                            {/* CARD & DOT */}
+                        const { 
+                            glowColour: statusGlowColour, 
+                            glowRGB: statusGlowRGB, 
+                            borderColour: statusBorderColour
+                        } = shadow(cert.status_colour);
 
-                            {/* DOT */}
-                            <div className="
-                                hidden md:block
-                                absolute
-                                left-1/2
-                                top-1/2
-                                w-4 h-4
-                                rounded-full
-                                bg-neutral-400
-                                -translate-x-1/2
-                                -translate-y-1/2
-                                z-10
-                            " />
-
-                    
-                            <FadeInOnView
+                        return (
+                            <div 
+                                key={index}
                                 className={`
-                                    flex
+                                    relative
+                                    flex 
                                     flex-col
-                                    rounded-xl
-                                    shadow-[0_4px_10px_rgba(0,0,0,0.08),0_-1px_3px_rgba(0,0,0,0.04)]
-                                    p-6
-                                    gap-4
                                     w-full
                                     h-full
-                                    md:w-[45%]
-                                    ${((experience.length + index) % 2 === 0)
-                                        ? "md:self-start"
-                                        : "md:self-end"
-                                    }
-                                    ${((experience.length + index) % 2 === 0)
-                                        ? "sm:fade-left"
-                                        : "sm:fade-right"
-                                    }
-                                    squircle-large
-                                    pillow
+                                    gap-8
+                                    ${index !== 0 ? "md:translate-y-[-10%]" : ""}
                                 `}
+                                style={{
+                                    zIndex: certificates.length - index
+                                }}
                             >
-                                {/* TITLE + DATE */}
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                                    <h2 className="
-                                        text-lg 
-                                        sm:text-xl 
-                                        font-semibold 
-                                        max-w-[50%]
-                                    ">
-                                        {cert.title}
-                                    </h2>
 
-                                    <p className="hidden sm:inline text-neutral-400">• </p>
+                                {/* CARD & DOT */}
 
-                                    <p className="text-sm text-neutral-500">
-                                        <span className="whitespace-nowrap">
-                                            {formatToMonthYear(cert.start_date)}
-                                        </span> 
-                                        {cert.end_date && " - "}
-                                        <span className="whitespace-nowrap">
-                                            {cert.end_date ? formatToMonthYear(cert.end_date) : ""}
-                                        </span>
-                                    </p>                                            
+                                {/* DOT */}
+                                <div className="
+                                    hidden md:block
+                                    absolute
+                                    left-1/2
+                                    top-1/2
+                                    w-4 h-4
+                                    rounded-full
+                                    bg-neutral-400
+                                    -translate-x-1/2
+                                    -translate-y-1/2
+                                    z-10
+                                " />
 
-                                    {/* HIDDEN */}
-                                    {(cert.hidden === 1) && (
-                                        <Badge
-                                            text="Hidden"
-                                            className="bg-orange-400 ml-auto"
-                                        />
-                                    )}   
-
-                                </div>
-
-                                {/* COMPANY + LOCATION */}
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                                    <span className="text-sm">
-                                        {cert.company}
-                                    </span>
-
-                                    {(cert.city || cert.region) && <span className="hidden sm:inline text-neutral-400">|</span>}
-
-                                    <span className="text-sm text-neutral-500">
-                                        {cert.city && cert.city}
-                                        {cert.city && cert.region && `, ${cert.region}`}
-                                        {!cert.city && cert.region && cert.region}
-                                    </span>
-                                </div>
-
-                                {/* TAG */}
-                                {cert.tag && (
-                                    <div>
-                                        <Badge
-                                            text={cert.tag}
-                                            px={2}
-                                            py={1}
-                                            textSize="xs"
-                                            shadow="none"
-                                            className="
-                                                text-neutral-600! 
-                                                bg-neutral-200
-                                            "
-                                        />
-                                    </div>
-                                )}
-                                
-                                <div className="text-sm mt-2">
-                                    <ReactMarkdown
-                                        components={{
-                                            ul: ({ ...props }) => (
-                                                <ul className="list-disc pl-5 space-y-1" {...props} />
-                                            ),
-                                            li: ({ ...props }) => (
-                                                <li {...props} />
-                                            ),
-                                        }}
-                                        >
-                                        {cert.description}
-                                    </ReactMarkdown>
-                                </div>
-
-                                {props.isLoggedIn && (
-                                    <div className="flex w-full justify-between mt-auto">
-                                        <EditButton
-                                            action={() => {router.push(`add-experience/edit?id=${cert.id}`)}}
-                                        />
-                                        <DeleteButton
-                                            itemName={cert.title}
-                                            action={async () => {
-                                            const res = await fetch("/api/experience", {
-                                                method: "DELETE",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                },
-                                                body: JSON.stringify({ id: cert.id }),
-                                            });
-                
-                                            if (res.status === 401) {
-                                                router.push("/login");
-                                                return;
-                                            }
-                                            
-                                                setExperience((prev) =>
-                                                    prev.filter((p) => p.id !== cert.id)
-                                                );
-                                            }}
-                                        /> 
-                                    </div>
-                                )}
-
-                            </FadeInOnView>
-
-
-
-                            
-                        </div>
                         
-                    ))}
+                                <FadeInOnView
+                                    className={`
+                                        flex
+                                        flex-col
+                                        rounded-xl
+                                        shadow-[0_4px_10px_rgba(0,0,0,0.08),0_-1px_3px_rgba(0,0,0,0.04)]
+                                        p-6
+                                        gap-3
+                                        w-full
+                                        h-full
+                                        md:w-[45%]
+                                        ${((experience.length + index) % 2 === 0)
+                                            ? "md:self-start"
+                                            : "md:self-end"
+                                        }
+                                        ${((experience.length + index) % 2 === 0)
+                                            ? "sm:fade-left"
+                                            : "sm:fade-right"
+                                        }
+                                        squircle-large
+                                        pillow
+                                    `}
+                                >
+                                    {/* HEADER */}
+                                    <div className="flex flex-col gap-3">
+
+                                        {/* TITLE & BADGE */}
+                                        <div className="
+                                            flex 
+                                            flex-row 
+                                            w-full
+                                            justify-between
+                                            items-start
+                                            gap-3
+                                        ">
+                                            <h2 className="
+                                                min-w-0
+                                                flex-1
+                                                text-lg
+                                                sm:text-xl
+                                                font-semibold
+                                                wrap-anywhere
+                                            ">
+                                                {cert.title}
+                                            </h2>
+                                            <div>
+                                                {cert.status && (
+                                                    
+                                                    <Badge
+                                                        text={cert.status}
+                                                        style={{
+                                                            "--glow": statusGlowRGB,
+                                                            backgroundColor: cert.status_colour,
+                                                            borderColor: statusBorderColour,
+                                                            color: statusGlowColour,
+                                                        } as React.CSSProperties}
+                                                        className="
+                                                            w-fit!
+                                                            mt-0.5
+                                                            z-10
+                                                            border
+                                                            animate-tag-pulse
+                                                            animate-tag-text
+                                                        "
+                                                    />
+                                                )}
+                                                
+                                            </div>
+
+                                        </div>
+
+
+                                        <p className="text-sm text-neutral-500">
+                                            <span className="whitespace-nowrap">
+                                                {formatToMonthYear(cert.start_date)}
+                                            </span> 
+                                            {cert.end_date && " - "}
+                                            <span className="whitespace-nowrap">
+                                                {cert.end_date ? formatToMonthYear(cert.end_date) : ""}
+                                            </span>
+                                        </p>      
+
+
+                                        {/* COMPANY & LOCATION */}
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+                                            <span className="text-sm">
+                                                {cert.company}
+                                            </span>
+
+                                            {(cert.city || cert.region) && <span className="hidden sm:inline text-neutral-400">|</span>}
+
+                                            <span className="text-sm text-neutral-500">
+                                                {cert.city && cert.city}
+                                                {cert.city && cert.region && `, ${cert.region}`}
+                                                {!cert.city && cert.region && cert.region}
+                                            </span>
+                                        </div>
+
+
+                                        {/* TAG + HIDDEN */}
+                                        <div className="flex flex-row gap-2">
+                                            {cert.tag && (
+                                                <Badge
+                                                    text={cert.tag}
+                                                    shadow="none"
+                                                    className="
+                                                        text-neutral-600! 
+                                                        bg-neutral-200
+                                                    "
+                                                />                                                    
+                                            )}
+
+                                            {(cert.hidden === 1) && (
+                                                <Badge
+                                                    text="Hidden"
+                                                    shadow="none"
+                                                    className="bg-orange-400"
+                                                />
+                                            )}    
+
+                                        </div>
+
+                                    </div>
+                                    
+                                    <div className="text-sm mt-2">
+                                        <ReactMarkdown
+                                            components={{
+                                                ul: ({ ...props }) => (
+                                                    <ul className="list-disc pl-5 space-y-1" {...props} />
+                                                ),
+                                                li: ({ ...props }) => (
+                                                    <li {...props} />
+                                                ),
+                                            }}
+                                            >
+                                            {cert.description}
+                                        </ReactMarkdown>
+                                    </div>
+
+                                    {props.isLoggedIn && (
+                                        <div className="flex w-full justify-between mt-auto">
+                                            <EditButton
+                                                action={() => {router.push(`add-experience/edit?id=${cert.id}`)}}
+                                            />
+                                            <DeleteButton
+                                                itemName={cert.title}
+                                                action={async () => {
+                                                const res = await fetch("/api/experience", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ id: cert.id }),
+                                                });
+                    
+                                                if (res.status === 401) {
+                                                    router.push("/login");
+                                                    return;
+                                                }
+                                                
+                                                    setExperience((prev) =>
+                                                        prev.filter((p) => p.id !== cert.id)
+                                                    );
+                                                }}
+                                            /> 
+                                        </div>
+                                    )}
+
+                                </FadeInOnView>
+
+
+
+                                
+                            </div>
+                            
+                        )
+                    })}
                 </div>
 
             </div>

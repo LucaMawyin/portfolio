@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Page } from "@/lib/types";
 import { getHref } from "@/lib/getHref";
 
-export default function NavBar(props : {isLoggedIn : boolean}){
+export default function NavBar(props : {isLoggedIn : boolean, children?: React.ReactNode}){
 
     // Checking what pages are allowed to be shown to user
     const visiblePages = pages.filter(page =>
@@ -129,178 +129,182 @@ export default function NavBar(props : {isLoggedIn : boolean}){
     }, []);
 
     return (
-        <header className={`
-                h-[10vh]
-                fixed top-0 z-50
-                w-full 
-                flex items-center
-                shadow-sm
+        <>
+            <header className={`
+                    h-[10vh]
+                    fixed top-0 z-50
+                    w-full 
+                    flex items-center
+                    shadow-sm
 
-                transition-all duration-150 ease-out
-                ${visible 
-                    ? "opacity-100 translate-y-0" 
-                    : "opacity-0 -translate-y-4 pointer-events-none"
-                }
-                bg-(--bg)
-        `}>
-
-            {/* Desktop navbar */}
-            <div className="
-                w-full
-                m-8
-                hidden
-                lg:flex
-                justify-between
-                text-lg
-            ">  
-                <a
-                    href="/"
-                    className="
-                        transition-transform duration-(--transition-duration)
-                        hover:scale-(--link-scale)
-                    "
-                >
-                    Luca Mawyin
-                </a>
-                <div className="flex gap-8">
-                    {visiblePages
-                        .filter((page) => (!page.mobile && page.show))
-                        .map((page) => (
-                        <a
-                            key={page.title}
-                            href={getHref(page)}
-                            onClick={(e) => {
-                                handleClick(e, page)
-                            }}
-                            target={page.newTab ? "_blank" : undefined}
-                            className="
-                                transition-transform duration-(--transition-duration)
-                                hover:scale-(--link-scale)
-                            "
-                        >
-                            {capitalizeNamesAndTitles(page.title)}
-                        </a>
-                        ))
-                    }                    
-                </div>
-
-            </div>
-
-            {/* Mobile navbar */}
-            <div className="
-                flex
-                lg:hidden
-                justify-between
-                items-center
-                pl-4 pr-4
-                w-full
-            ">
-                <a
-                    href="/"
-                    className="
-                        transition-transform duration-(--transition-duration)
-                        hover:scale-(--link-scale)
-                    "
-                >
-                    Luca Mawyin
-                </a>
-                <button 
-                    aria-label={open ? "Close navigation menu" : "Open navigation menu"}
-                    aria-expanded={open}
-                    aria-controls="mobile-menu"
-                    className="
-                        flex lg:hidden
-                        flex-col gap-1
-                        hover:cursor-pointer
-                    " 
-                    onClick={() => {setOpen(!open)}}
-                >
-                    <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>
-                    <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>
-                    <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>                    
-                </button>                
-            </div>
-
-            <div 
-                id="mobile-menu"
-                className={`
-                    lg:hidden
-                    fixed inset-0
-                    w-full h-screen
-                    bg-(--bg)
-
-                    flex flex-col items-center justify-evenly
-
-                    z-50
-                    
-                    transition-all duration-(--transition-duration) ease-out
-                    ${open
-                        ? "translate-y-0 shadow-sm"
-                        : "-translate-y-full"
+                    transition-all duration-150 ease-out
+                    ${visible 
+                        ? "opacity-100 translate-y-0" 
+                        : "opacity-0 -translate-y-4 pointer-events-none"
                     }
-                `}
-            >
-                <div className="h-[5%]"/>
-                <button
-                    aria-label="Close navigation menu"
-                    className="hover:cursor-pointer text-xl"
-                    onClick={() => setOpen(false)}
-                >
-                    <span aria-hidden="true">x</span>
-                </button>
+                    bg-(--bg)
+            `}>
 
-                {visiblePages
-                    .filter((page) => page.show)
-                    .map((page) => (
-                        <a
-                            key={page.title}
-                            href={getHref(page)}
-                            target={page.newTab ? "_blank" : undefined}
-                            className="
-                                text-xl
-                                transition-transform duration-(--transition-duration)
-                                hover:scale-(--link-scale) 
-                            "
-                            onClick={(e) => {
-                                setOpen(false);
-                                handleClick(e, page);
-                            }}
-                        >
-                            {capitalizeNamesAndTitles(page.title)}
-                        </a>
-                    ))
-                }
-                <div className="h-[5%]"/>
-            </div>
-            
-
-            {/* Logos hang in top right */}
-            <div className="
-                fixed right-0 top-[10vh] z-40 space-y-4 m-2
-            ">
-                {icons.map((icon) => (
+                {/* Desktop navbar */}
+                <div className="
+                    w-full
+                    m-8
+                    hidden
+                    lg:flex
+                    justify-between
+                    text-lg
+                ">  
                     <a
-                        key={icon.title}
-                        href={icon.href}
-                        aria-label={`${icon.title} profile`}
-                        target="_blank"
+                        href="/"
                         className="
-                            block w-fit 
-                            transition-all duration-(--transition-duration) ease-out
+                            transition-transform duration-(--transition-duration)
                             hover:scale-(--link-scale)
                         "
                     >
-                        <div className="squircle overflow-hidden">
-                            <img
-                                src={`/icons/${icon.title}.svg`}
-                                alt={icon.title}
-                                className="w-[clamp(2em,2vw,5em)] block"
-                            />
-                        </div>
+                        Luca Mawyin
                     </a>
-                ))}
-            </div>              
-        </header>   
+                    <div className="flex gap-8">
+                        {visiblePages
+                            .filter((page) => (!page.mobile && page.show))
+                            .map((page) => (
+                            <a
+                                key={page.title}
+                                href={getHref(page)}
+                                onClick={(e) => {
+                                    handleClick(e, page)
+                                }}
+                                target={page.newTab ? "_blank" : undefined}
+                                className="
+                                    transition-transform duration-(--transition-duration)
+                                    hover:scale-(--link-scale)
+                                "
+                            >
+                                {capitalizeNamesAndTitles(page.title)}
+                            </a>
+                            ))
+                        }                    
+                    </div>
+
+                </div>
+
+                {/* Mobile navbar */}
+                <div className="
+                    flex
+                    lg:hidden
+                    justify-between
+                    items-center
+                    pl-4 pr-4
+                    w-full
+                ">
+                    <a
+                        href="/"
+                        className="
+                            transition-transform duration-(--transition-duration)
+                            hover:scale-(--link-scale)
+                        "
+                    >
+                        Luca Mawyin
+                    </a>
+                    <button 
+                        aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+                        aria-expanded={open}
+                        aria-controls="mobile-menu"
+                        className="
+                            flex lg:hidden
+                            flex-col gap-1
+                            hover:cursor-pointer
+                        " 
+                        onClick={() => {setOpen(!open)}}
+                    >
+                        <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>
+                        <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>
+                        <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>                    
+                    </button>                
+                </div>
+
+                <div 
+                    id="mobile-menu"
+                    className={`
+                        lg:hidden
+                        fixed inset-0
+                        w-full h-screen
+                        bg-(--bg)
+
+                        flex flex-col items-center justify-evenly
+
+                        z-50
+                        
+                        transition-all duration-(--transition-duration) ease-out
+                        ${open
+                            ? "translate-y-0 shadow-sm"
+                            : "-translate-y-full"
+                        }
+                    `}
+                >
+                    <div className="h-[5%]"/>
+                    <button
+                        aria-label="Close navigation menu"
+                        className="hover:cursor-pointer text-xl"
+                        onClick={() => setOpen(false)}
+                    >
+                        <span aria-hidden="true">x</span>
+                    </button>
+
+                    {visiblePages
+                        .filter((page) => page.show)
+                        .map((page) => (
+                            <a
+                                key={page.title}
+                                href={getHref(page)}
+                                target={page.newTab ? "_blank" : undefined}
+                                className="
+                                    text-xl
+                                    transition-transform duration-(--transition-duration)
+                                    hover:scale-(--link-scale) 
+                                "
+                                onClick={(e) => {
+                                    setOpen(false);
+                                    handleClick(e, page);
+                                }}
+                            >
+                                {capitalizeNamesAndTitles(page.title)}
+                            </a>
+                        ))
+                    }
+                    <div className="h-[5%]"/>
+                </div>
+                
+
+                {/* Logos hang in top right */}
+                <div className="
+                    fixed right-0 top-[10vh] z-40 space-y-4 m-2
+                ">
+                    {icons.map((icon) => (
+                        <a
+                            key={icon.title}
+                            href={icon.href}
+                            aria-label={`${icon.title} profile`}
+                            target="_blank"
+                            className="
+                                block w-fit 
+                                transition-all duration-(--transition-duration) ease-out
+                                hover:scale-(--link-scale)
+                            "
+                        >
+                            <div className="squircle overflow-hidden">
+                                <img
+                                    src={`/icons/${icon.title}.svg`}
+                                    alt={icon.title}
+                                    className="w-[clamp(2em,2vw,5em)] block"
+                                />
+                            </div>
+                        </a>
+                    ))}
+                </div>              
+            </header>   
+            {props.children}
+        </>
+
 
     );
 }

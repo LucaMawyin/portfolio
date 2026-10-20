@@ -13,6 +13,7 @@ import Badge from "@/components/Badge";
 import ReactMarkdown from "react-markdown";
 import { Eye, EyeOff } from "lucide-react";
 import Switch from "@/components/Switch";
+import { shadow } from "@/lib/tags";
 
 export default function CreateExperiencePage(props: {
     initialData?: any;
@@ -47,6 +48,12 @@ export default function CreateExperiencePage(props: {
     // Custom Status
     const [ customStatus, setCustomStatus ] = useState("");
     const [ useCustomStatus, setUseCustomStatus ] = useState(false);
+
+    const { 
+        glowColour: statusGlowColour, 
+        glowRGB: statusGlowRGB, 
+        borderColour: statusBorderColour
+    } = shadow(form.status_colour);
 
     const [nextPage] = useState<string | null>(() => {
         if (typeof window === "undefined") {
@@ -908,7 +915,7 @@ export default function CreateExperiencePage(props: {
                                             {steps[0]}
                                         </h2>
 
-                                        <div className="flex flex-wrap justify-between items-center gap-1">
+                                        <div className="flex flex-col justify-between gap-1">
                                             <div className="flex flex-row items-center gap-3">
                                                 <h4>{form.title}</h4>
                                                 {form.hidden && (
@@ -919,20 +926,31 @@ export default function CreateExperiencePage(props: {
                                                 )}                                                
                                             </div>
 
-                                            {form.tag && (
-                                                <Badge
-                                                    text={form.tag}
-                                                    px={2}
-                                                    py={1}
-                                                    textSize="xs"
-                                                    shadow="none"
-                                                    className="
-                                                        h-fit
-                                                        text-neutral-600! 
-                                                        bg-neutral-200
-                                                    "
-                                                />
-                                            )}
+                                            <div className="flex flex-row gap-3">
+                                                {form.tag && (
+                                                    <Badge
+                                                        text={form.tag}
+                                                        shadow="none"
+                                                        className="
+                                                            text-neutral-600! 
+                                                            bg-neutral-200
+                                                        "
+                                                    />
+                                                )}
+
+                                                {form.status && (
+                                                    <Badge
+                                                        text={form.status}
+                                                        style={{
+                                                            "--glow": statusGlowRGB,
+                                                            backgroundColor: form.status_colour,
+                                                            borderColor: statusBorderColour,
+                                                            color: statusGlowColour,
+                                                        } as React.CSSProperties}
+                                                        className="border"
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
                                         
 
