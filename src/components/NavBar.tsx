@@ -246,7 +246,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                                 <img
                                     src={`/icons/${icon.title}.svg`}
                                     alt={icon.title}
-                                    className="w-5 h-5 block squircle"
+                                    className="w-7 h-7 block squircle"
                                 />
                             </a>
                         ))}
@@ -288,7 +288,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                         <img
                             src={`/icons/${icon.title}.svg`}
                             alt={icon.title}
-                            className="w-5 h-5 block"
+                            className="w-7 h-7 block squircle"
                         />
                     </a>
                 ))}
