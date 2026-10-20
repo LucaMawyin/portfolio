@@ -22,7 +22,6 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
     } | null>(null);
 
     const [bottomMenuOpen, setBottomMenuOpen] = useState(false);
-
     const bottomMenuRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
@@ -225,7 +224,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     <a
                         href="/"
                         aria-label="Go to homepage"
-                        className="font-medium whitespace-nowrap"
+                        className="transition-transform duration-200 hover:scale-110"
                     >
                         Luca Mawyin
                     </a>
@@ -297,7 +296,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
             <div
                 className={`
                     transition-[padding] duration-150
-                    ${visible ? "pb-20 sm:pb-0" : "pb-0"}
+                    ${visible ? "pb-16 sm:pb-0" : "pb-0"}
                 `}
             >
                 {props.children}

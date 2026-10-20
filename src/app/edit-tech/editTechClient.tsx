@@ -178,7 +178,8 @@ export default function EditTechClient(props: {
                     h-full
                     min-h-[80vh]
                     max-w-3xl
-                    mt-[10vh]
+                    mt-[8vh]
+                    md:mt-[12vh]
                     [&_div]:mt-4
                 "
                 onSubmit={handleSubmit}

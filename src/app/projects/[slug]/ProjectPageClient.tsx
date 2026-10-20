@@ -79,7 +79,8 @@ export default function ProjectPageClient({
 
     return (
         <div className="
-            mt-[10vh]
+            mt-[8vh]
+            md:mt-[12vh]
             flex
             flex-1
             justify-center

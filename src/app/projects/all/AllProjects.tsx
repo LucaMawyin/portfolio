@@ -50,7 +50,11 @@ export default function AllProjects(props: {
     }, []);
 
     return (
-        <div className="w-full mt-[10vh]">
+        <div className="
+            w-full
+            mt-[8vh]
+            md:mt-[12vh]
+        ">
             <h1 className="text-center pb-4 px-8">
                 All Projects
             </h1>
