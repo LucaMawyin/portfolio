@@ -242,17 +242,13 @@ export default async function RootLayout({
                     
                 <NotificationProvider>
                     <NavBar isLoggedIn={!!session}>
-                        <main className="                
-                            min-h-[90vh] 
-                            flex 
-                            flex-col 
-                            justify-between
-                            overflow-x-hidden
-                        ">
-                            {children}
-                        </main>
-                        
-                        <Footer/>                           
+                        <div className="min-h-[90vh] flex flex-col justify-between overflow-x-hidden">
+                            <main className="flex flex-col">
+                                {children}
+                            </main>
+
+                            <Footer />
+                        </div>
                     </NavBar>
                  
                 </NotificationProvider>

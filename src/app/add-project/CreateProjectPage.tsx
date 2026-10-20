@@ -364,9 +364,10 @@ export default function CreateProjectPage(props : {
                     flex
                     flex-col
                     w-full
-                    min-h-[80vh]
+                    min-h-full
                     max-w-3xl
-                    mt-[10vh]
+                    mt-[8vh]
+                    md:mt-[12vh]
                     [&_div]:mt-4
                 "
                 onSubmit={handleSubmit}

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { icons, pages } from "@/lib/info";
 import { usePathname, useRouter } from "next/navigation";
 import { Page } from "@/lib/types";
 import { getHref } from "@/lib/getHref";
+import { BriefcaseBusiness, Circle, FileText, FolderGit2, GraduationCap, House, LogOut, Menu, Settings, UserRound, Wrench, X } from "lucide-react";
 
 export default function NavBar(props : {isLoggedIn : boolean, children?: React.ReactNode}){
 
@@ -19,6 +20,29 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
         path: string;
         id: string;
     } | null>(null);
+
+    const [bottomMenuOpen, setBottomMenuOpen] = useState(false);
+
+    const bottomMenuRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        if (!bottomMenuOpen) return;
+
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                bottomMenuRef.current &&
+                !bottomMenuRef.current.contains(e.target as Node)
+            ) {
+                setBottomMenuOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [bottomMenuOpen]);
     
     const router = useRouter();
     const pathname = usePathname();
@@ -130,30 +154,34 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
 
     return (
         <>
-            <header className={`
-                    h-[10vh]
-                    fixed top-0 z-50
-                    w-full 
-                    flex items-center
-                    shadow-sm
+            <header 
+                className={`
+                    fixed top-4 left-1/2 -translate-x-1/2 z-50
+                    w-[calc(100%-2rem)] lg:w-fit
+                    max-w-full
+
+                    rounded-full
+                    border border-gray-200
+                    shadow-md
+                    bg-(--bg)
 
                     transition-all duration-150 ease-out
-                    ${visible 
-                        ? "opacity-100 translate-y-0" 
+                    ${visible
+                        ? "opacity-100 translate-y-0"
                         : "opacity-0 -translate-y-4 pointer-events-none"
                     }
-                    bg-(--bg)
-            `}>
+                `}
+            >
 
                 {/* Desktop navbar */}
                 <div className="
-                    w-full
-                    m-8
-                    hidden
-                    lg:flex
-                    justify-between
-                    text-lg
-                ">  
+                    hidden lg:flex
+                    items-center justify-between
+                    gap-10
+                    px-6 py-3
+                    text-base
+                    whitespace-nowrap
+                ">
                     <a
                         href="/"
                         className="
@@ -187,122 +215,224 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
 
                 </div>
 
-                {/* Mobile navbar */}
+                {/* Mobile name + social links */}
                 <div className="
-                    flex
-                    lg:hidden
-                    justify-between
-                    items-center
-                    pl-4 pr-4
-                    w-full
+                    flex lg:hidden
+                    items-center justify-between
+                    gap-3
+                    px-4 py-3
                 ">
                     <a
                         href="/"
-                        className="
-                            transition-transform duration-(--transition-duration)
-                            hover:scale-(--link-scale)
-                        "
+                        aria-label="Go to homepage"
+                        className="font-medium whitespace-nowrap"
                     >
                         Luca Mawyin
                     </a>
-                    <button 
-                        aria-label={open ? "Close navigation menu" : "Open navigation menu"}
-                        aria-expanded={open}
-                        aria-controls="mobile-menu"
-                        className="
-                            flex lg:hidden
-                            flex-col gap-1
-                            hover:cursor-pointer
-                        " 
-                        onClick={() => {setOpen(!open)}}
-                    >
-                        <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>
-                        <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>
-                        <span aria-hidden="true" className="w-6 h-0.5 bg-black"></span>                    
-                    </button>                
-                </div>
 
-                <div 
-                    id="mobile-menu"
-                    className={`
-                        lg:hidden
-                        fixed inset-0
-                        w-full h-screen
-                        bg-(--bg)
-
-                        flex flex-col items-center justify-evenly
-
-                        z-50
-                        
-                        transition-all duration-(--transition-duration) ease-out
-                        ${open
-                            ? "translate-y-0 shadow-sm"
-                            : "-translate-y-full"
-                        }
-                    `}
-                >
-                    <div className="h-[5%]"/>
-                    <button
-                        aria-label="Close navigation menu"
-                        className="hover:cursor-pointer text-xl"
-                        onClick={() => setOpen(false)}
-                    >
-                        <span aria-hidden="true">x</span>
-                    </button>
-
-                    {visiblePages
-                        .filter((page) => page.show)
-                        .map((page) => (
+                    <div className="flex items-center gap-6">
+                        {icons.map((icon) => (
                             <a
-                                key={page.title}
-                                href={getHref(page)}
-                                target={page.newTab ? "_blank" : undefined}
+                                key={icon.title}
+                                href={icon.href}
+                                aria-label={`${icon.title} profile`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="
-                                    text-xl
-                                    transition-transform duration-(--transition-duration)
-                                    hover:scale-(--link-scale) 
+                                    transition-transform duration-200
+                                    hover:scale-110
                                 "
-                                onClick={(e) => {
-                                    setOpen(false);
-                                    handleClick(e, page);
-                                }}
                             >
-                                {capitalizeNamesAndTitles(page.title)}
-                            </a>
-                        ))
-                    }
-                    <div className="h-[5%]"/>
-                </div>
-                
-
-                {/* Logos hang in top right */}
-                <div className="
-                    fixed right-0 top-[10vh] z-40 space-y-4 m-2
-                ">
-                    {icons.map((icon) => (
-                        <a
-                            key={icon.title}
-                            href={icon.href}
-                            aria-label={`${icon.title} profile`}
-                            target="_blank"
-                            className="
-                                block w-fit 
-                                transition-all duration-(--transition-duration) ease-out
-                                hover:scale-(--link-scale)
-                            "
-                        >
-                            <div className="squircle overflow-hidden">
                                 <img
                                     src={`/icons/${icon.title}.svg`}
                                     alt={icon.title}
-                                    className="w-[clamp(2em,2vw,5em)] block"
+                                    className="w-5 h-5 block squircle"
                                 />
-                            </div>
-                        </a>
-                    ))}
-                </div>              
+                            </a>
+                        ))}
+                    </div>
+                </div>
             </header>   
-            {props.children}
+
+            {/* Desktop social links pill */}
+            <div
+                className={`
+                    hidden lg:flex
+                    fixed top-18 left-1/2
+                    -translate-x-1/2 z-40
+
+                    items-center gap-6
+                    px-4 py-2
+
+                    rounded-full
+                    border border-gray-200
+                    shadow-sm
+                    bg-(--bg)
+
+                    transition-all duration-150 ease-out
+                    ${visible
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-2 pointer-events-none"
+                    }
+                `}
+            >
+                {icons.map((icon) => (
+                    <a
+                        key={icon.title}
+                        href={icon.href}
+                        aria-label={`${icon.title} profile`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-transform duration-200 hover:scale-110"
+                    >
+                        <img
+                            src={`/icons/${icon.title}.svg`}
+                            alt={icon.title}
+                            className="w-5 h-5 block"
+                        />
+                    </a>
+                ))}
+            </div>
+
+            <div
+                className={`
+                    transition-[padding] duration-150
+                    ${visible ? "pb-20 sm:pb-0" : "pb-0"}
+                `}
+            >
+                {props.children}
+            </div>
+
+            <header 
+                ref={bottomMenuRef}
+                className={`
+                    block
+                    lg:hidden
+                    fixed 
+                    bottom-5 
+                    sm:top-4
+                    left-1/2 
+                    -translate-x-1/2
+                    z-50
+                    w-56
+                    overflow-visible
+
+                    transition-all duration-150 ease-out
+                    ${visible
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-4 pointer-events-none"
+                    }
+                `}
+            >
+                {/* EXPANDABLE MENU */}
+                <div
+                    className={`
+                        absolute bottom-6 sm:bottom-auto sm:top-14 left-0
+                        w-full
+                        origin-bottom sm:origin-top
+                        transition-all duration-300 ease-out
+                        ${bottomMenuOpen
+                            ? "translate-y-0 scale-y-100 opacity-100 pointer-events-auto"
+                            : "translate-y-4 sm:-translate-y-4 scale-y-0 opacity-0 pointer-events-none"
+                        }
+                    `}
+                >
+                    <div className="
+                        flex flex-col gap-1 p-3
+                        rounded-2xl
+                        bg-(--bg)
+                        border border-gray-300
+                        shadow-lg
+                        mb-3
+                    ">
+
+                        {visiblePages
+                            .filter((page) => page.show)
+                            .map((page) => {
+                                const title = page.title.toLowerCase();
+
+                                const Icon =
+                                    title === "home" ? House :
+                                    title.includes("experience") ? BriefcaseBusiness :
+                                    title.includes("education") ? GraduationCap :
+                                    title.includes("project") ? FolderGit2 :
+                                    title.includes("about") ? UserRound :
+                                    title.includes("settings") ? Settings :
+                                    title.includes("tech") ? Wrench :
+                                    title.includes("logout") || title.includes("log out") ? LogOut :
+                                    title.includes("resume") ? FileText :
+                                    Circle;
+
+                                return (
+                                    <a
+                                        key={page.title}
+                                        href={getHref(page)}
+                                        target={page.newTab ? "_blank" : undefined}
+                                        onClick={(e) => {
+                                            setBottomMenuOpen(false);
+                                            handleClick(e, page);
+                                        }}
+                                        className="
+                                            flex items-center gap-3
+                                            rounded-lg px-3 py-2
+                                            text-sm
+                                            transition-colors duration-200
+                                            hover:bg-gray-100
+                                        "
+                                    >
+                                        <Icon size={18} strokeWidth={1.75} />
+                                        <span>
+                                            {capitalizeNamesAndTitles(page.title)}
+                                        </span>
+                                    </a>
+                                );
+                            })}
+                    </div>
+                </div>
+
+                {/* Persistent ball */}
+                <button
+                    aria-label={bottomMenuOpen
+                        ? "Close floating navigation menu"
+                        : "Open floating navigation menu"
+                    }
+                    aria-expanded={bottomMenuOpen}
+                    onClick={() => setBottomMenuOpen((prev) => !prev)}
+                    className="
+                        relative z-10
+                        flex items-center justify-center
+                        w-12 h-12
+                        mx-auto
+                        rounded-full
+                        bg-(--bg)
+                        border border-gray-300
+                        shadow-lg
+                        sm:bg-transparent
+                        sm:border-transparent
+                        sm:shadow-none
+                        hover:scale-110
+                        transition-transform duration-200
+                        cursor-pointer
+                    "
+                >
+                    <span
+                        className={`
+                            absolute inset-0
+                            flex items-center justify-center
+                            transition-all duration-200
+                            ${bottomMenuOpen
+                                ? "rotate-90 scale-100 opacity-100"
+                                : "rotate-0 scale-100 opacity-100"
+                            }
+                        `}
+                    >
+                        {bottomMenuOpen
+                            ? <X size={21} strokeWidth={1.75} />
+                            : <Menu size={21} strokeWidth={1.75} />
+                        }
+                    </span>
+                </button>
+            </header>
         </>
 
 
