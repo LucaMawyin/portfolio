@@ -63,7 +63,7 @@ export async function POST(req: Request) {
                     UPDATE experience
                     SET title = ?, company = ?, description = ?, tag = ?,
                         city = ?, region = ?, start_date = ?, end_date = ?,
-                        hidden = ?, status = ?, status_colour = ?
+                        hidden = ?, status = ?
                     WHERE id = ?
                 `)
                 .bind(
@@ -77,7 +77,6 @@ export async function POST(req: Request) {
                     end_date,
                     hidden,
                     status,
-                    statusColour,
                     id
                 )
                 .run();
@@ -90,9 +89,9 @@ export async function POST(req: Request) {
             .prepare(`
                 INSERT INTO experience (
                     title, company, description, tag, city, region,
-                    start_date, end_date, hidden, status, status_colour
+                    start_date, end_date, hidden, status
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `)
             .bind(
                 title,
@@ -105,7 +104,6 @@ export async function POST(req: Request) {
                 end_date,
                 hidden,
                 status,
-                statusColour
             )
             .run();
 
