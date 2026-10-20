@@ -134,4 +134,7 @@ export type Experience = {
     start_date : string;
     end_date? : string;
     company : string;
+    hidden : 1 | 0;
+    status : string;
+    status_colour : string;
 }

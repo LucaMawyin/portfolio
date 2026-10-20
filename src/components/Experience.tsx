@@ -167,9 +167,15 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         <span className="whitespace-nowrap">
                                             {exp.end_date ? formatToMonthYear(exp.end_date) : "Present"}
                                         </span>
-                                    </p>                                            
+                                    </p>        
 
-
+                                    {/* HIDDEN */}
+                                    {(exp.hidden === 1) && (
+                                        <Badge
+                                            text="Hidden"
+                                            className="bg-orange-400 ml-auto"
+                                        />
+                                    )}                             
 
                                 </div>
 
@@ -249,15 +255,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         /> 
                                     </div>
                                 )}
-
-
-
                             </FadeInOnView>
-
-
-
-
-                            
                         </div>
                         
                     ))}
@@ -370,7 +368,13 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         </span>
                                     </p>                                            
 
-
+                                    {/* HIDDEN */}
+                                    {(cert.hidden === 1) && (
+                                        <Badge
+                                            text="Hidden"
+                                            className="bg-orange-400 ml-auto"
+                                        />
+                                    )}   
 
                                 </div>
 

@@ -22,8 +22,14 @@ export default async function Page({
     if (id) {
         draft = await db
         .prepare(`
-            SELECT * FROM experience
-            WHERE id = ?
+            SELECT
+                e.*,
+                exp_status_tag.colour AS status_colour
+            FROM experience e
+            LEFT JOIN tags exp_status_tag
+                ON exp_status_tag.name = e.status
+                AND exp_status_tag.category = 'exp_status'
+            WHERE e.id = ?
         `)
         .bind(id)
         .first();
@@ -34,8 +40,9 @@ export default async function Page({
         redirect("/add-experience");
     }
 
-    const [tags, headersList] = await Promise.all([
+    const [tags, statuses, headersList] = await Promise.all([
         getTags("experience"),
+        getTags("exp_status"),
         headers(),
     ]);
 
@@ -47,6 +54,7 @@ export default async function Page({
 
     return (
         <CreateExperiencePage
+            statuses={statuses as Tag[]}
             initialData={{ ...data }}
             tags={tags as Tag[]}
             referrer={referrer}

@@ -83,5 +83,8 @@ CREATE TABLE experience (
     city TEXT,
     region TEXT,
     start_date INTEGER NOT NULL,
-    end_date INTEGER
+    end_date INTEGER,
+    hidden BOOLEAN DEFAULT 0,
+    status TEXT,
+    status_colour TEXT
 );

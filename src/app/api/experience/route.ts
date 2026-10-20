@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDB } from "@/lib/db";
 import { validateSession } from "@/lib/auth";
 import { Experience } from "@/lib/types";
+import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 
 export async function POST(req: Request) {
     try {
@@ -16,8 +17,12 @@ export async function POST(req: Request) {
         const region = formData.get("region")?.toString() ||null;
         const start_date = formData.get("start_date")?.toString();
         const end_date = formData.get("end_date")?.toString() || null;
-
-        console.log(city)
+        const hidden = formData.get("hidden")?.toString() || null;
+        const rawStatus = (formData.get("status") as string) || null;
+        const status = rawStatus
+            ? capitalizeNamesAndTitles(rawStatus.trim().toLowerCase())
+            : null;
+        const statusColour = formData.get("status_colour") as string | null;
 
         // basic validation
         if (!title || !company || !description) {
@@ -40,18 +45,41 @@ export async function POST(req: Request) {
             .run();
         }
 
+        if (status) {
+            await db
+                .prepare(`
+                    INSERT INTO tags (name,category,colour)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT(name, category) DO UPDATE SET colour = EXCLUDED.colour
+                `)
+                .bind(status,"exp_status",statusColour)
+                .run();
+        }
 
         // UPDATE if id exists
         if (id) {
-            await db                
-                .prepare(
-                    `
+            await db
+                .prepare(`
                     UPDATE experience
-                    SET title = ?, company = ?, description = ?, tag = ?, city = ?, region = ?, start_date = ?, end_date = ?
+                    SET title = ?, company = ?, description = ?, tag = ?,
+                        city = ?, region = ?, start_date = ?, end_date = ?,
+                        hidden = ?, status = ?, status_colour = ?
                     WHERE id = ?
-                    `
+                `)
+                .bind(
+                    title,
+                    company,
+                    description,
+                    tag,
+                    city,
+                    region,
+                    start_date,
+                    end_date,
+                    hidden,
+                    status,
+                    statusColour,
+                    id
                 )
-                .bind(title, company, description, tag, city, region, start_date, end_date, id)
                 .run();
 
             return NextResponse.json({ success: true, updated: true });
@@ -59,13 +87,26 @@ export async function POST(req: Request) {
 
         // INSERT new experience
         await db
-            .prepare(
-                `
-                INSERT INTO experience (title, company, description, tag, city, region, start_date, end_date)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                `
+            .prepare(`
+                INSERT INTO experience (
+                    title, company, description, tag, city, region,
+                    start_date, end_date, hidden, status, status_colour
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `)
+            .bind(
+                title,
+                company,
+                description,
+                tag,
+                city,
+                region,
+                start_date,
+                end_date,
+                hidden,
+                status,
+                statusColour
             )
-            .bind(title, company, description, tag, city, region, start_date,end_date)
             .run();
 
         return NextResponse.json({ success: true, created: true });

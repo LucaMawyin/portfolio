@@ -11,11 +11,14 @@ import DeleteButton from "@/components/DeleteButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import Badge from "@/components/Badge";
 import ReactMarkdown from "react-markdown";
+import { Eye, EyeOff } from "lucide-react";
+import Switch from "@/components/Switch";
 
 export default function CreateExperiencePage(props: {
     initialData?: any;
     tags: Tag[];
     referrer?: string | null;
+    statuses : Tag[];
 }) {
     const router = useRouter();
     const { notify } = useNotifications();
@@ -33,10 +36,17 @@ export default function CreateExperiencePage(props: {
         tag: safeString(props.initialData?.tag),
         start_date: safeString(props.initialData?.start_date),
         end_date: safeString(props.initialData?.end_date),
+        hidden: !!props.initialData?.hidden,
+        status: safeString(props.initialData?.status),
+        status_colour: safeString(props.initialData?.status_colour),
     });
 
     const [customTag, setCustomTag] = useState("");
     const [useCustomTag, setUseCustomTag] = useState(false);
+
+    // Custom Status
+    const [ customStatus, setCustomStatus ] = useState("");
+    const [ useCustomStatus, setUseCustomStatus ] = useState(false);
 
     const [nextPage] = useState<string | null>(() => {
         if (typeof window === "undefined") {
@@ -223,6 +233,9 @@ export default function CreateExperiencePage(props: {
         formData.append("region", form.region);
         formData.append("start_date", start_date);
         formData.append("end_date", end_date);
+        formData.append("hidden", form.hidden ? "1" : "0");
+        formData.append("status", form.status);
+        formData.append("status_colour", form.status_colour);
 
         const res = await fetch("/api/experience", {
             method: "POST",
@@ -756,6 +769,129 @@ export default function CreateExperiencePage(props: {
                                         value={form.region}
                                         onChange={handleChange}
                                     />
+
+                                    {/* PROJECT STATUS */}
+                                    <label htmlFor="status">Status</label>
+                                    <div className="flex items-center justify-between gap-2 mt-0!">
+                                        <select
+                                            id="status"
+                                            name="status"
+                                            className="flex-1"
+                                            value={form.status}
+                                                onChange={(e) => {
+                                                    const selectedStatus = props.statuses.find(status => status.name === e.target.value);
+                                                    if (e.target.value === "custom-status") {
+                                                        setUseCustomStatus(true);
+                                                        setForm({ 
+                                                            ...form, 
+                                                            status: "",
+                                                            status_colour: "#FAE8FF"
+                                                        });
+                                                    } else {
+                                                        setUseCustomStatus(false);
+                                                        setForm({ 
+                                                            ...form, 
+                                                            status: e.target.value,
+                                                            status_colour: selectedStatus?.colour || form.status_colour
+                                                        });
+                                                    }
+                                                    
+                                                }}
+                                        >
+
+                                            {props.statuses.map((status) => (
+                                                <option key={status.id} value={status.name}>
+                                                    {status.name === "" ? "No status" : status.name}
+                                                </option>
+                                            ))}
+
+                                            <option value="custom-status">Add new status</option>
+                                        </select>
+
+                                        <DeleteButton
+                                            disabled={
+                                                !form.status ||
+                                                useCustomStatus || 
+                                                props.statuses.find(status => status.name === form.status)?.builtin
+                                            }
+                                            itemName={form.status}
+                                            className="flex min-h-fit rounded-lg! self-start"
+                                            x={4}
+                                            y={1}
+                                            action={async () => {
+                                                if (!form.status) return;
+
+                                                await fetch("/api/tags", {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({ 
+                                                        name: form.status,
+                                                        category: "status",
+                                                    }),
+                                                });
+
+                                                setForm((prev) => ({ ...prev, status: "" }));
+
+                                                notify("Project status deleted successfully", "success");
+                                                router.refresh();
+                                            }}
+                                        />
+                                    </div>
+                                    {useCustomStatus && (
+                                        <>
+                                            <input
+                                                id="status"
+                                                placeholder="Add New Status"
+                                                value={capitalizeNamesAndTitles(customStatus)}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setCustomStatus(value);
+                                                    setForm({ ...form, status: value });
+                                                }}
+                                                required
+                                            />
+                                        </>
+                                    )}
+                                    {props.statuses.find(status => status.name === form.status)?.builtin ? null : (
+                                        <>
+                                            <label htmlFor="status-colour">Status Color</label>
+                                            <input
+                                                id="status-colour"
+                                                name="status-colour"
+                                                type="color"
+                                                placeholder="Colour"
+                                                value={form.status_colour}
+                                                onChange={(e) => {
+                                                    setForm({ ...form, status_colour: e.target.value });
+                                                }}
+                                                required
+                                            />
+                                        </>
+                                    )}
+
+
+                                    <label className="flex gap-2 mt-2 items-center cursor-pointer">
+                                        {form.hidden ? (
+                                            <EyeOff className="w-5 h-5" />
+                                        ) : (
+                                            <Eye className="w-5 h-5" />
+                                        )}
+
+                                        <span className="text-sm">Hidden</span>
+
+                                        <Switch
+                                            name="hidden"
+                                            checked={form.hidden}
+                                            onChange={(hidden) =>
+                                                setForm({
+                                                    ...form,
+                                                    hidden,
+                                                })
+                                            }
+                                        />
+                                    </label>
                                 </Tile>
                             )}
 
@@ -787,7 +923,16 @@ export default function CreateExperiencePage(props: {
                                         </h2>
 
                                         <div className="flex flex-wrap justify-between items-center gap-1">
-                                            <h4>{form.title}</h4>
+                                            <div className="flex flex-row items-center gap-3">
+                                                <h4>{form.title}</h4>
+                                                {form.hidden && (
+                                                    <Badge
+                                                        text="Hidden"
+                                                        className="bg-orange-400"
+                                                    />
+                                                )}                                                
+                                            </div>
+
                                             {form.tag && (
                                                 <Badge
                                                     text={form.tag}

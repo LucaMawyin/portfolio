@@ -13,7 +13,7 @@ export default async function Home() {
         getProjects(session),
         getTech(),
         getContent(),
-        getExperience(),
+        getExperience(session),
     ]);
 
 
