@@ -5,8 +5,9 @@ import { headers } from "next/headers";
 
 export default async function Page() {
 
-    const [tagOptions , headersList] = await Promise.all([
+    const [tagOptions , statusOptions, headersList] = await Promise.all([
         getTags("experience"),
+        getTags("exp_status"),
         headers(),
     ]);
 
@@ -16,6 +17,7 @@ export default async function Page() {
 
     return (
         <CreateExperiencePage 
+            statuses={statusOptions as Tag[]}
             tags={tagOptions as Tag[]} 
             referrer={referrer}
         />
