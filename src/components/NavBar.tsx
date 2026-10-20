@@ -296,7 +296,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
             <div
                 className={`
                     transition-[padding] duration-150
-                    ${visible ? "pb-16 sm:pb-0" : "pb-0"}
+                    ${visible ? "pb-12 sm:pb-0" : "pb-0"}
                 `}
             >
                 {props.children}
@@ -308,7 +308,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     block
                     lg:hidden
                     fixed 
-                    bottom-5 
+                    bottom-2
                     sm:top-4
                     left-1/2 
                     -translate-x-1/2
@@ -326,7 +326,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                 {/* EXPANDABLE MENU */}
                 <div
                     className={`
-                        absolute bottom-6 sm:bottom-auto sm:top-14 left-0
+                        absolute bottom-10 sm:bottom-auto sm:top-14 left-0
                         w-full
                         origin-bottom sm:origin-top
                         transition-all duration-300 ease-out
