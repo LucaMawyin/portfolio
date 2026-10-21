@@ -113,6 +113,7 @@ export default function SettingsClient(props : {
     const [linkUrl, setLinkUrl] = useState("");
     const [savingLink, setSavingLink] = useState(false);
     const [showLinkForm, setShowLinkForm] = useState(false);
+    const [editingLinkId, setEditingLinkId] = useState<number | null>(null);
     async function handleAddLink(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -152,6 +153,68 @@ export default function SettingsClient(props : {
             router.refresh();
         } catch {
             notify("Failed to add link", "error");
+        } finally {
+            setSavingLink(false);
+        }
+    }
+
+    async function handleSaveLink(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        const title = linkName.trim();
+        const url = normalizedLink(linkUrl);
+
+        if (!title || !url) {
+            notify("Please enter a title and URL", "error");
+            return;
+        }
+
+        try {
+            setSavingLink(true);
+
+            const isEditing = editingLinkId !== null;
+
+            const res = await fetch("/api/links", {
+                method: isEditing ? "PATCH" : "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...(isEditing ? { id: editingLinkId } : {}),
+                    title,
+                    url,
+                }),
+            });
+
+            const data = await res.json() as any;
+
+            if (!res.ok) {
+                notify(data.error || "Failed to save link", "error");
+                return;
+            }
+
+            if (isEditing) {
+                setLinks((prev) =>
+                    prev.map((link) =>
+                        link.id === editingLinkId ? data.link : link
+                    )
+                );
+
+                notify("Link updated successfully", "success");
+            } else {
+                setLinks((prev) => [...prev, data.link]);
+
+                notify("Link added successfully", "success");
+            }
+
+            setLinkName("");
+            setLinkUrl("");
+            setEditingLinkId(null);
+            setShowLinkForm(false);
+
+            router.refresh();
+        } catch {
+            notify("Failed to save link", "error");
         } finally {
             setSavingLink(false);
         }
@@ -799,41 +862,38 @@ export default function SettingsClient(props : {
                                     No links added yet
                                 </div>
                             )}
-                            {links.length > 0 && links.map((link) => (
-                                <a
+
+                            {links.map((link) => (
+                                <div
                                     key={link.id}
-                                    href={link.url}
-                                    aria-label={`${link.title} profile`}
-                                    target={link.url.startsWith("mailto:") ? undefined : "_blank"}
-                                    rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                                     className="
                                         flex 
                                         items-center 
-                                        gap-3
-                                        p-3
-                                        pillow 
-                                        squircle-large
+                                        gap-4
                                         min-w-0 
                                         max-w-full
-                                        transition-transform 
-                                        duration-200 
+                                        p-3 
+                                        pillow 
+                                        pillow-hover
                                         hover:scale-(--subtle-scale)
+                                        squircle-large
+                                        w-full
+                                        lg:w-fit
                                     "
                                 >
-                                    <div
+                                    <a
+                                        href={link.url}
+                                        aria-label={`${link.title} profile`}
+                                        target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+                                        rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                                         className="
                                             flex items-center gap-2
-                                            min-w-0
+                                            min-w-0 flex-1
                                         "
                                     >
                                         <span className="
-                                            flex 
-                                            w-7 
-                                            h-7 
-                                            items-center 
-                                            justify-center 
-                                            bg-black 
-                                            squircle
+                                            flex shrink-0 items-center justify-center
+                                            w-7 h-7 bg-black squircle
                                         ">
                                             <Icon
                                                 icon={getIcon(link.url)}
@@ -846,25 +906,33 @@ export default function SettingsClient(props : {
                                         <span className="font-medium truncate">
                                             {link.title}
                                         </span>
-                                    </div>
-                                    
+                                    </a>
+
+                                    <EditButton
+                                        action={() => {
+                                            setEditingLinkId(link.id);
+                                            setLinkName(link.title);
+                                            setLinkUrl(link.url);
+                                            setShowLinkForm(true);
+                                        }}
+                                        x={3}
+                                        y={1}
+                                    />
+
                                     <DeleteButton
                                         action={() => handleRemoveLink(link.id)}
                                         itemName={link.title}
-                                        x={2}
+                                        x={3}
                                         y={1}
                                     />
-                                </a>
-
+                                </div>
                             ))}
                         </div>
 
                         {/* Add link form */}
                         {showLinkForm ? (
                             <form
-                                onSubmit={async (e) => {
-                                    await handleAddLink(e);
-                                }}
+                                onSubmit={handleSaveLink}
                                 className="flex flex-col gap-3"
                             >
                                 <div className="flex flex-col gap-1">
@@ -910,7 +978,11 @@ export default function SettingsClient(props : {
 
                                 <div className="flex flex-wrap gap-4">
                                     <Button
-                                        text={savingLink ? "Adding..." : "Save Link"}
+                                        text={
+                                            savingLink
+                                                ? editingLinkId !== null ? "Saving..." : "Adding..."
+                                                : editingLinkId !== null ? "Save Changes" : "Save Link"
+                                        }
                                         type="submit"
                                         className="w-full sm:w-fit"
                                         x={4}
@@ -926,6 +998,7 @@ export default function SettingsClient(props : {
                                         y={2}
                                         onClick={() => {
                                             setShowLinkForm(false);
+                                            setEditingLinkId(null);
                                             setLinkName("");
                                             setLinkUrl("");
                                         }}
