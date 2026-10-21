@@ -67,7 +67,15 @@ export default function Login(props : {isLoggedIn : boolean}){
     // Show message if user is already logged in
     if (props.isLoggedIn) {
         return (
-            <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 text-center">
+            <div className="
+                flex 
+                flex-col 
+                items-center 
+                justify-center 
+                px-6 
+                text-center
+                my-auto
+            ">
                 <h2 className="text-4xl md:text-6xl font-bold">
                     You are already logged in
                 </h2>
@@ -103,7 +111,7 @@ export default function Login(props : {isLoggedIn : boolean}){
 
 
     return (
-        <div className="min-h-[90vh] flex items-center justify-center px-6">
+        <div className="flex flex-1 items-center justify-center px-6">
             <div
                 className="
                     w-full

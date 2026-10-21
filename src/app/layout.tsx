@@ -223,7 +223,7 @@ export default async function RootLayout({
     const session = await validateSession();
 
     return (
-        <html lang="en">
+        <html lang="en" className="flex flex-col min-h-screen">
             <body className={GeistMono.className}>
                 <SmoothScroll/>
                 <script
@@ -242,8 +242,14 @@ export default async function RootLayout({
                     
                 <NotificationProvider>
                     <NavBar isLoggedIn={!!session}>
-                        <div className="min-h-[90vh] flex flex-col justify-between overflow-x-hidden">
-                            <main className="flex flex-col">
+                        <div className="
+                            flex 
+                            flex-col 
+                            flex-1
+                            justify-between 
+                            overflow-x-hidden
+                        ">
+                            <main className="flex flex-1 flex-col">
                                 {children}
                             </main>
 

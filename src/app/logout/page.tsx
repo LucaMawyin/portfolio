@@ -24,7 +24,7 @@ export default function Logout() {
     }, [router, notify]);
 
     return (
-        <main className="min-h-[90vh] flex flex-col items-center justify-center px-6 text-center">
+        <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
             <p className="text-sm font-semibold tracking-widest uppercase opacity-60">
                 LOGGED OUT
             </p>

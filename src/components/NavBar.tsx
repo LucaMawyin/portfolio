@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Page } from "@/lib/types";
 import { getHref } from "@/lib/getHref";
 import { BriefcaseBusiness, Circle, FileText, FolderGit2, GraduationCap, House, LogOut, Menu, Settings, UserRound, Wrench, X } from "lucide-react";
+import Link from "next/link";
 
 export default function NavBar(props : {isLoggedIn : boolean, children?: React.ReactNode}){
 
@@ -49,38 +50,78 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
         e: React.MouseEvent<HTMLAnchorElement>,
         page: Page
     ) => {
-
-        // Dont do anything if opening new tab
         if (page.newTab) return;
 
-        if (page.title !== "home") e.preventDefault();
+        e.preventDefault();
 
-        const normalizePath = (href: string) => "/" + href.split("#")[1];
+        const isHomeSection = pages.some(
+            (p) =>
+                p.href === "/" &&
+                p.section &&
+                `/${p.section}` === pathname
+        );
 
-        // Return if already on page
-        if (normalizePath(getHref(page)) === pathname) {
+        const isHome = pathname === "/" || isHomeSection;
+
+        // Home link: scroll to the top
+        if (page.title === "home") {
+            if (isHome) {
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+
+                window.history.replaceState(null, "", "/");
+            } else {
+                router.push("/");
+            }
+
             return;
         }
 
-        // Scroll to section
+        // Section links
         if (page.section) {
+            if (!isHome) {
+                setPendingScroll({
+                    path: "/",
+                    id: page.section,
+                });
 
-            const id = page.section;
-
-            if (pathname !== "/") {
-                setPendingScroll({ path: pathname, id });
                 router.push("/");
                 return;
             }
 
-            document.getElementById(id)?.scrollIntoView({
+            document.getElementById(page.section)?.scrollIntoView({
                 behavior: "smooth",
             });
 
             return;
         }
 
+        // Other pages
         router.push(page.href);
+    };
+
+    const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+
+        const isHomeSection = pages.some(
+            (page) =>
+                page.href === "/" &&
+                page.section &&
+                `/${page.section}` === pathname
+        );
+
+        if (pathname === "/" || isHomeSection) {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+
+            window.history.replaceState(null, "", "/");
+        } else {
+            router.push("/");
+        }
     };
 
     // Scroll to section if user clicks link before page has loaded
@@ -183,6 +224,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                 ">
                     <a
                         href="/"
+                        onClick={handleHomeClick}
                         className="
                             transition-transform duration-(--transition-duration)
                             hover:scale-(--link-scale)
@@ -198,7 +240,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                                 key={page.title}
                                 href={getHref(page)}
                                 onClick={(e) => {
-                                    handleClick(e, page)
+                                    handleClick(e, page);
                                 }}
                                 target={page.newTab ? "_blank" : undefined}
                                 className="
@@ -225,6 +267,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                         href="/"
                         aria-label="Go to homepage"
                         className="transition-transform duration-200 hover:scale-110"
+                        onClick={handleHomeClick}
                     >
                         Luca Mawyin
                     </a>
@@ -295,6 +338,9 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
 
             <div
                 className={`
+                    flex
+                    flex-col
+                    min-h-screen
                     transition-[padding] duration-150
                     ${visible ? "pb-14 sm:pb-0" : "pb-0"}
                 `}
