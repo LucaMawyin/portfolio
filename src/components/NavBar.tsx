@@ -383,7 +383,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     `}
                 >
                     <div className="
-                        flex flex-col gap-1 p-3
+                        flex flex-col gap-2 p-4
                         rounded-2xl
                         bg-(--bg)
                         border border-gray-300
@@ -418,14 +418,14 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                                             handleClick(e, page);
                                         }}
                                         className="
-                                            flex items-center gap-3
-                                            rounded-lg px-3 py-2
-                                            text-sm
+                                            flex items-center gap-4
+                                            rounded-lg px-2 py-2
+                                            text-base
                                             transition-colors duration-200
                                             hover:bg-gray-100
                                         "
                                     >
-                                        <Icon size={18} strokeWidth={1.75} />
+                                        <Icon size={20} strokeWidth={1.75} />
                                         <span>
                                             {capitalizeNamesAndTitles(page.title)}
                                         </span>
