@@ -402,62 +402,63 @@ export default function NavBar( props : {
                         w-full
                         origin-bottom sm:origin-top
                         transition-all duration-300 ease-out
+                        liquid-glass
+                        rounded-2xl
+                        flex
+                        flex-col
+                        p-4
+                        gap-2
+                        mb-4
                         ${bottomMenuOpen
                             ? "translate-y-0 scale-y-100 opacity-100 pointer-events-auto"
                             : "translate-y-4 sm:-translate-y-4 scale-y-0 opacity-0 pointer-events-none"
                         }
                     `}
                 >
-                    <div className="
-                        flex flex-col gap-2 p-4
-                        rounded-2xl
-                        bg-(--bg)
-                        liquid-glass
-                        mb-3
-                    ">
 
-                        {visiblePages
-                            .filter((page) => page.show)
-                            .map((page) => {
-                                const title = page.title.toLowerCase();
 
-                                const Icon =
-                                    title === "home" ? House :
-                                    title.includes("experience") ? BriefcaseBusiness :
-                                    title.includes("education") ? GraduationCap :
-                                    title.includes("project") ? FolderGit2 :
-                                    title.includes("about") ? UserRound :
-                                    title.includes("settings") ? Settings :
-                                    title.includes("tech") ? Wrench :
-                                    title.includes("logout") || title.includes("log out") ? LogOut :
-                                    title.includes("resume") ? FileText :
-                                    Circle;
+                    {visiblePages
+                        .filter((page) => page.show)
+                        .map((page) => {
+                            const title = page.title.toLowerCase();
 
-                                return (
-                                    <a
-                                        key={page.title}
-                                        href={getHref(page)}
-                                        target={page.newTab ? "_blank" : undefined}
-                                        onClick={(e) => {
-                                            setBottomMenuOpen(false);
-                                            handleClick(e, page);
-                                        }}
-                                        className="
-                                            flex items-center gap-4
-                                            rounded-lg px-2 py-2
-                                            text-base
-                                            transition-colors duration-200
-                                            hover:bg-gray-100
-                                        "
-                                    >
-                                        <Icon size={20} strokeWidth={1.75} />
-                                        <span>
-                                            {capitalizeNamesAndTitles(page.title)}
-                                        </span>
-                                    </a>
-                                );
-                            })}
-                    </div>
+                            const Icon =
+                                title === "home" ? House :
+                                title.includes("experience") ? BriefcaseBusiness :
+                                title.includes("education") ? GraduationCap :
+                                title.includes("project") ? FolderGit2 :
+                                title.includes("about") ? UserRound :
+                                title.includes("settings") ? Settings :
+                                title.includes("tech") ? Wrench :
+                                title.includes("logout") || title.includes("log out") ? LogOut :
+                                title.includes("resume") ? FileText :
+                                Circle;
+
+                            return (
+                                <a
+                                    key={page.title}
+                                    href={getHref(page)}
+                                    target={page.newTab ? "_blank" : undefined}
+                                    onClick={(e) => {
+                                        setBottomMenuOpen(false);
+                                        handleClick(e, page);
+                                    }}
+                                    className="
+                                        flex items-center gap-4
+                                        rounded-lg px-2 py-2
+                                        text-base
+                                        transition-colors duration-200
+                                        hover:bg-gray-100
+                                    "
+                                >
+                                    <Icon size={20} strokeWidth={1.75} />
+                                    <span>
+                                        {capitalizeNamesAndTitles(page.title)}
+                                    </span>
+                                </a>
+                            );
+                        })
+                    }
                 </div>
 
                 {/* Persistent ball */}
