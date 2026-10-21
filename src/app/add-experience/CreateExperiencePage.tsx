@@ -286,8 +286,8 @@ export default function CreateExperiencePage(props: {
                     h-full
                     min-h-[80vh]
                     max-w-3xl
-                    mt-[8vh]
-                    md:mt-[12vh]
+                    mt-18
+                    lg:mt-32
                     [&_div]:mt-4
                 "
                 onSubmit={handleSubmit}

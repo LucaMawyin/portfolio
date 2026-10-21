@@ -366,8 +366,8 @@ export default function CreateProjectPage(props : {
                     w-full
                     min-h-full
                     max-w-3xl
-                    mt-[8vh]
-                    md:mt-[12vh]
+                    mt-20
+                    lg:mt-32
                     [&_div]:mt-4
                 "
                 onSubmit={handleSubmit}

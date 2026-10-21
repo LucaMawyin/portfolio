@@ -296,7 +296,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
             <div
                 className={`
                     transition-[padding] duration-150
-                    ${visible ? "pb-12 sm:pb-0" : "pb-0"}
+                    ${visible ? "pb-14 sm:pb-0" : "pb-0"}
                 `}
             >
                 {props.children}
@@ -308,7 +308,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     block
                     lg:hidden
                     fixed 
-                    bottom-2
+                    bottom-4
                     sm:top-4
                     left-1/2 
                     -translate-x-1/2
