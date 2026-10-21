@@ -89,3 +89,8 @@ CREATE TABLE experience (
     status_colour TEXT,
     link TEXT
 );
+CREATE TABLE links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL UNIQUE,
+    url TEXT NOT NULL UNIQUE
+);

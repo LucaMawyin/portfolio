@@ -6,8 +6,9 @@ import Projects from "@/components/Projects";
 import TechStack from "@/components/Tech";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { getHref } from "@/lib/getHref";
-import { icons, pages } from "@/lib/info"; 
-import { Experience, Project, SiteContent, Tech } from "@/lib/types";
+import { getIcon, pages } from "@/lib/info"; 
+import { Experience, Project, SiteContent, SocialLink, Tech } from "@/lib/types";
+import { Icon } from "@iconify/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -19,6 +20,7 @@ export default function HomeClient(props :
         tech : Tech[],
         content : SiteContent,
         experience : Experience[],
+        links: SocialLink[],
     }) {
 
     // Getting pages that are visible to user
@@ -102,10 +104,10 @@ export default function HomeClient(props :
 
                     {/* Icon Row on hero */}
                     <div className="flex flex-row gap-6">
-                        {icons.map((icon) => (
+                        {props.links.map((icon) => (
                             <a
                                 key={icon.title}
-                                href={icon.href}
+                                href={icon.url}
                                 target="_blank"
                                 className={`
                                     flex items-center justify-center
@@ -119,11 +121,21 @@ export default function HomeClient(props :
                                     }
                                 `}
                             >
-                                <img
-                                    src={`/icons/${icon.title}.svg`}
-                                    alt={icon.title}
-                                    className="h-[clamp(3rem,5vw,4rem)] squircle"
-                                />
+                                <span className="
+                                    flex 
+                                    h-[clamp(3rem,5vw,4rem)] 
+                                    w-[clamp(3rem,5vw,4rem)] 
+                                    items-center 
+                                    justify-center 
+                                    bg-black 
+                                    squircle
+                                ">
+                                    <Icon
+                                        icon={getIcon(icon.url)}
+                                        color="white"
+                                        className="h-full w-full p-3"
+                                    />
+                                </span>
                             </a>
                         ))}
                     </div>

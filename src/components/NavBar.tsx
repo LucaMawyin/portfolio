@@ -2,14 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
-import { icons, pages } from "@/lib/info";
+import { getIcon, pages } from "@/lib/info";
 import { usePathname, useRouter } from "next/navigation";
-import { Page } from "@/lib/types";
+import { Page, SocialLink } from "@/lib/types";
 import { getHref } from "@/lib/getHref";
 import { BriefcaseBusiness, Circle, FileText, FolderGit2, GraduationCap, House, LogOut, Menu, Settings, UserRound, Wrench, X } from "lucide-react";
-import Link from "next/link";
+import { Icon } from "@iconify/react";
 
-export default function NavBar(props : {isLoggedIn : boolean, children?: React.ReactNode}){
+export default function NavBar( props : {
+    isLoggedIn : boolean, 
+    children?: React.ReactNode,
+    links: SocialLink[],
+}){
 
     // Checking what pages are allowed to be shown to user
     const visiblePages = pages.filter(page =>
@@ -201,9 +205,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     max-w-full
 
                     rounded-full
-                    border border-gray-200
-                    shadow-md
-                    bg-(--bg)
+                    liquid-glass
 
                     transition-all duration-150 ease-out
                     ${visible
@@ -262,6 +264,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     items-center justify-between
                     gap-3
                     px-4 py-3
+                    
                 ">
                     <a
                         href="/"
@@ -271,70 +274,93 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     >
                         Luca Mawyin
                     </a>
+                    
+                    {props.links.length > 0 && (
+                        <div className="flex items-center gap-6">
+                            {props.links.map((icon) => (
+                                <a
+                                    key={icon.title}
+                                    href={icon.url}
+                                    aria-label={`${icon.title} profile`}
+                                    target={icon.url.startsWith("mailto:") ? undefined : "_blank"}
+                                    rel={icon.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                                    className="transition-transform duration-200 hover:scale-110"
+                                >
+                                    <span className="
+                                        flex 
+                                        w-7 
+                                        h-7 
+                                        items-center 
+                                        justify-center 
+                                        bg-black 
+                                        squircle
+                                    ">
+                                        <Icon
+                                            icon={getIcon(icon.url)}
+                                            width={18}
+                                            height={18}
+                                            color="white"
+                                        />
+                                    </span>
+                                </a>
+                            ))}
+                        </div>                        
+                    )}
 
-                    <div className="flex items-center gap-6">
-                        {icons.map((icon) => (
-                            <a
-                                key={icon.title}
-                                href={icon.href}
-                                aria-label={`${icon.title} profile`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="
-                                    transition-transform duration-200
-                                    hover:scale-110
-                                "
-                            >
-                                <img
-                                    src={`/icons/${icon.title}.svg`}
-                                    alt={icon.title}
-                                    className="w-7 h-7 block squircle"
-                                />
-                            </a>
-                        ))}
-                    </div>
                 </div>
             </header>   
 
             {/* Desktop social links pill */}
-            <div
-                className={`
-                    hidden lg:flex
-                    fixed top-18 left-1/2
-                    -translate-x-1/2 z-40
+            {props.links.length > 0 && (
+                <div
+                    className={`
+                        hidden lg:flex
+                        fixed top-18 left-1/2
+                        -translate-x-1/2 z-40
 
-                    items-center gap-6
-                    px-4 py-2
+                        items-center gap-6
+                        px-4 py-2
 
-                    rounded-full
-                    border border-gray-200
-                    shadow-sm
-                    bg-(--bg)
+                        rounded-full
+                        liquid-glass
 
-                    transition-all duration-150 ease-out
-                    ${visible
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 -translate-y-2 pointer-events-none"
-                    }
-                `}
-            >
-                {icons.map((icon) => (
-                    <a
-                        key={icon.title}
-                        href={icon.href}
-                        aria-label={`${icon.title} profile`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="transition-transform duration-200 hover:scale-110"
-                    >
-                        <img
-                            src={`/icons/${icon.title}.svg`}
-                            alt={icon.title}
-                            className="w-7 h-7 block squircle"
-                        />
-                    </a>
-                ))}
-            </div>
+                        transition-all duration-150 ease-out
+                        ${visible
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 -translate-y-2 pointer-events-none"
+                        }
+                    `}
+                >
+                    {props.links.map((icon) => (
+                        <a
+                            key={icon.title}
+                            href={icon.url}
+                            aria-label={`${icon.title} profile`}
+                            target={icon.url.startsWith("mailto:") ? undefined : "_blank"}
+                            rel={icon.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                            className="transition-transform duration-200 hover:scale-110"
+                        >
+                            <span className="
+                                flex 
+                                w-7 
+                                h-7 
+                                items-center 
+                                justify-center 
+                                bg-black 
+                                squircle
+                            ">
+                                <Icon
+                                    icon={getIcon(icon.url)}
+                                    width={18}
+                                    height={18}
+                                    color="white"
+                                />
+                            </span>
+                        </a>
+                    ))}
+                </div>                
+            )}
+
 
             <div
                 className={`
@@ -355,7 +381,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     lg:hidden
                     fixed 
                     bottom-4
-                    sm:top-4
+                    sm:top-5
                     left-1/2 
                     -translate-x-1/2
                     z-50
@@ -386,8 +412,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                         flex flex-col gap-2 p-4
                         rounded-2xl
                         bg-(--bg)
-                        border border-gray-300
-                        shadow-lg
+                        liquid-glass
                         mb-3
                     ">
 
@@ -449,12 +474,11 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                         w-12 h-12
                         mx-auto
                         rounded-full
-                        bg-(--bg)
-                        border border-gray-300
-                        shadow-lg
-                        sm:bg-transparent
-                        sm:border-transparent
-                        sm:shadow-none
+                        sm:shadow-none!
+                        sm:bg-transparent!
+                        sm:border-none!
+                        sm:backdrop-filter-none!
+                        liquid-glass
                         hover:scale-110
                         transition-transform duration-200
                         cursor-pointer

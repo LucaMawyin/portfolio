@@ -11,8 +11,34 @@ export const pages = [
     { title: "add-project", href: "/add-project", requireLogin : true, show: false },
 ]
 
-export const icons = [
-    { title:"email", href:"mailto:lucamawyin@gmail.com" },
-    { title:"github", href:"https://github.com/LucaMawyin" },
-    { title: "linkedin", href:"https://www.linkedin.com/in/lucamawyin/" }
-]
+export const getIcon = (href: string) => {
+    try {
+        if (href.toLowerCase().startsWith("mailto:")) {
+            return "lucide:mail";
+        }
+
+        const url = new URL(
+            /^[a-z][a-z\d+.-]*:/i.test(href)
+                ? href
+                : `https://${href}`
+        );
+
+        const hostname = url.hostname
+            .toLowerCase()
+            .replace(/^www\./, "");
+
+        if (hostname === "linkedin.com") {
+            return "fa6-brands:linkedin-in";
+        }
+
+        const parts = hostname.split(".");
+        const domain =
+            parts.length >= 2
+                ? parts[parts.length - 2]
+                : parts[0];
+
+        return `simple-icons:${domain}`;
+    } catch {
+        return "lucide:globe";
+    }
+};

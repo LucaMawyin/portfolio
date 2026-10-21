@@ -7,11 +7,14 @@ import DeleteButton from "@/components/DeleteButton";
 import EditButton from "@/components/EditButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import Tile from "@/components/Tile";
+import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { getDevice } from "@/lib/getDevice";
+import { getIcon } from "@/lib/info";
 import resizeImage from "@/lib/resizeImage";
 import { shadow } from "@/lib/tags";
-import { ChangePasswordResponse, Project, Session, SiteContent, User } from "@/lib/types";
-import { RotateCcw } from "lucide-react";
+import { ChangePasswordResponse, Project, Session, SiteContent, SocialLink, User } from "@/lib/types";
+import { Icon } from "@iconify/react";
+import { Globe, Plus, RotateCcw, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
@@ -45,6 +48,7 @@ export default function SettingsClient(props : {
     activeSessions : Session[],
     currentSession : Session,
     projects : Project[],
+    links: SocialLink[],
 }){
 
     const router = useRouter();
@@ -84,6 +88,90 @@ export default function SettingsClient(props : {
         (project) => project.deleted === 1
     );
     const [showDeletedProjects, setShowDeletedProjects] = useState(false);
+
+    const normalizedLink = (link: string) => link.trim()
+        ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(link.trim())
+            ? `mailto:${link.trim()}`
+            : /^https?:\/\//i.test(link.trim())
+                ? link.trim()
+                : `https://${link.trim()}`
+        : "";
+
+    // Social links
+    const [links, setLinks] = useState<SocialLink[]>(props.links);
+    const [linkName, setLinkName] = useState("");
+    const [linkUrl, setLinkUrl] = useState("");
+    const [savingLink, setSavingLink] = useState(false);
+    const [showLinkForm, setShowLinkForm] = useState(false);
+    async function handleAddLink(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        try {
+            setSavingLink(true);
+
+            const title = linkName.trim();
+            const url = normalizedLink(linkUrl.trim());
+
+            if (!title || !url) {
+                notify("Please enter a title and URL", "error");
+                return;
+            }
+
+            const res = await fetch("/api/links", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ title, url }),
+            });
+
+            const data = await res.json() as any;
+
+            if (!res.ok) {
+                notify(data.error || "Failed to add link", "error");
+                return;
+            }
+
+            setLinks((prev) => [...prev, data.link]);
+
+            setLinkName("");
+            setLinkUrl("");
+
+            notify("Link added successfully", "success");
+            setShowLinkForm(false);
+            router.refresh();
+        } catch {
+            notify("Failed to add link", "error");
+        } finally {
+            setSavingLink(false);
+        }
+    }
+
+    async function handleRemoveLink(id: number) {
+        try {
+            const res = await fetch("/api/links", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+
+            const data = await res.json() as any;
+
+            if (!res.ok) {
+                notify(data.error || "Failed to remove link", "error");
+                return;
+            }
+
+            setLinks((prev) => prev.filter((link) => link.id !== id));
+
+            notify("Link removed successfully", "success");
+            router.refresh();
+        } catch {
+            notify("Failed to remove link", "error");
+        }
+    }
 
     useEffect(() => {
         if (deletedProjects.length === 0) {
@@ -690,8 +778,162 @@ export default function SettingsClient(props : {
                     disablePillow={true}
                 >
 
+                    {/* Links section */}
+                    <div className="space-y-4 py-6 border-b">
+                        <h2 className="text-xl">Social Links</h2>
+
+                        {/* Existing links */}
+                        <div className="flex flex-wrap gap-3">
+                            {links.length === 0 && (
+                                <div className="text-sm text-gray-400">
+                                    No links added yet
+                                </div>
+                            )}
+                            {links.length > 0 && links.map((link) => (
+                                <a
+                                    key={link.id}
+                                    href={link.url}
+                                    aria-label={`${link.title} profile`}
+                                    target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+                                    rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                                    className="
+                                        flex 
+                                        items-center 
+                                        gap-3
+                                        p-3
+                                        pillow 
+                                        squircle-large
+                                        min-w-0 
+                                        max-w-full
+                                        transition-transform 
+                                        duration-200 
+                                        hover:scale-(--subtle-scale)
+                                    "
+                                >
+                                    <div
+                                        className="
+                                            flex items-center gap-2
+                                            min-w-0
+                                        "
+                                    >
+                                        <span className="
+                                            flex 
+                                            w-7 
+                                            h-7 
+                                            items-center 
+                                            justify-center 
+                                            bg-black 
+                                            squircle
+                                        ">
+                                            <Icon
+                                                icon={getIcon(link.url)}
+                                                width={18}
+                                                height={18}
+                                                color="white"
+                                            />
+                                        </span>
+
+                                        <span className="font-medium truncate">
+                                            {link.title}
+                                        </span>
+                                    </div>
+                                    
+                                    <DeleteButton
+                                        action={() => handleRemoveLink(link.id)}
+                                        itemName={link.title}
+                                        x={2}
+                                        y={1}
+                                    />
+                                </a>
+
+                            ))}
+                        </div>
+
+                        {/* Add link form */}
+                        {showLinkForm ? (
+                            <form
+                                onSubmit={async (e) => {
+                                    await handleAddLink(e);
+                                }}
+                                className="flex flex-col gap-3"
+                            >
+                                <div className="flex flex-col gap-1">
+                                    <label
+                                        htmlFor="link-name"
+                                        className="text-gray-500"
+                                    >
+                                        Link Title
+                                    </label>
+
+                                    <input
+                                        id="link-name"
+                                        type="text"
+                                        value={linkName}
+                                        onChange={(e) => setLinkName(capitalizeNamesAndTitles(e.target.value))}
+                                        placeholder="e.g. GitHub"
+                                        maxLength={100}
+                                        required
+                                        className="w-full"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label
+                                        htmlFor="link-url"
+                                        className="text-gray-500"
+                                    >
+                                        URL
+                                    </label>
+
+                                    <input
+                                        id="link-url"
+                                        type="text"
+                                        inputMode="url"
+                                        value={linkUrl}
+                                        onChange={(e) => setLinkUrl(e.target.value)}
+                                        placeholder="https://github.com/username or email@example.com"
+                                        maxLength={2048}
+                                        required
+                                        className="w-full"
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap gap-4">
+                                    <Button
+                                        text={savingLink ? "Adding..." : "Save Link"}
+                                        type="submit"
+                                        className="w-full sm:w-fit"
+                                        x={4}
+                                        y={2}
+                                    />
+
+                                    <Button
+                                        text="Cancel"
+                                        type="button"
+                                        variant="secondary"
+                                        className="w-full sm:w-fit"
+                                        x={4}
+                                        y={2}
+                                        onClick={() => {
+                                            setShowLinkForm(false);
+                                            setLinkName("");
+                                            setLinkUrl("");
+                                        }}
+                                    />
+                                </div>
+                            </form>
+                        ) : (
+                            <AddButton
+                                action={() => setShowLinkForm(true)}
+                                x={2}
+                                y={2}
+                                text="Add Link"
+                            />
+                        )}
+                    </div>
+
                     {/* Change password section */}
-                    <div className="space-y-4 pb-6 border-b">
+                    <div className="space-y-4 py-6 border-b">
                         <h2 className="text-xl">
                             Change Password
                         </h2>

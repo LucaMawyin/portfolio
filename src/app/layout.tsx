@@ -6,6 +6,8 @@ import { Metadata } from "next";
 import Footer from "@/components/Footer";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import SmoothScroll from "@/components/SmoothScroll";
+import { getLinks } from "@/lib/getLinks";
+import { SocialLink } from "@/lib/types";
 
 const description = "Luca Mawyin is a software developer and McMaster Computer Science student focused on building clean, intuitive web applications"
 const siteUrl = "https://lucamawyin.com"
@@ -220,6 +222,7 @@ export default async function RootLayout({
         },
     };
 
+    const links = await getLinks();
     const session = await validateSession();
 
     return (
@@ -241,7 +244,10 @@ export default async function RootLayout({
                 />            
                     
                 <NotificationProvider>
-                    <NavBar isLoggedIn={!!session}>
+                    <NavBar 
+                        isLoggedIn={!!session}
+                        links={links as SocialLink[]}
+                    >
                         <div className="
                             flex 
                             flex-col 
@@ -253,7 +259,7 @@ export default async function RootLayout({
                                 {children}
                             </main>
 
-                            <Footer />
+                            <Footer links={links as SocialLink[]}/>
                         </div>
                     </NavBar>
                  

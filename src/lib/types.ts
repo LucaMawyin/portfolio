@@ -139,3 +139,9 @@ export type Experience = {
     status_colour : string;
     link : string | null;
 }
+
+export type SocialLink = {
+    id: number;
+    title: string;
+    url: string;
+};
