@@ -40,6 +40,7 @@ export default function CreateExperiencePage(props: {
         hidden: !!props.initialData?.hidden,
         status: safeString(props.initialData?.status),
         status_colour: safeString(props.initialData?.status_colour),
+        link: safeString(props.initialData?.link),
     });
 
     const [customTag, setCustomTag] = useState("");
@@ -66,6 +67,12 @@ export default function CreateExperiencePage(props: {
             null
         );
     });
+
+    const normalizedLink = form.link?.trim()
+        ? /^https?:\/\//i.test(form.link.trim())
+            ? form.link.trim()
+            : `https://${form.link.trim()}`
+        : "";
 
     const currentDate = new Date();
     const currentYear = String(currentDate.getFullYear());
@@ -243,6 +250,7 @@ export default function CreateExperiencePage(props: {
         formData.append("hidden", form.hidden ? "1" : "0");
         formData.append("status", form.status);
         formData.append("status_colour", form.status_colour);
+        formData.append("link", form.link);
 
         const res = await fetch("/api/experience", {
             method: "POST",
@@ -425,6 +433,20 @@ export default function CreateExperiencePage(props: {
                                         onChange={handleChange}
                                         required
                                     />
+
+                                    <label htmlFor="link">
+                                        Link (optional)
+                                    </label>
+
+                                    <input
+                                        id="link"
+                                        name="link"
+                                        placeholder="Link"
+                                        value={form.link}
+                                        onChange={handleChange}
+                                    />
+
+
 
                                     <label htmlFor="description">
                                         Experience Description
@@ -958,6 +980,21 @@ export default function CreateExperiencePage(props: {
                                         <div className="font-medium">
                                             {form.company}
                                         </div>
+
+                                        {normalizedLink && (
+                                            <a
+                                                href={normalizedLink}
+                                                className="text-sm text-blue-600 hover:text-blue-800 w-fit"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                }}
+                                            >
+                                                {form.link}
+                                            </a>
+                                        )}
+
 
                                         <div className="
                                             flex

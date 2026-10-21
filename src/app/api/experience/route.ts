@@ -24,6 +24,15 @@ export async function POST(req: Request) {
             : null;
         const statusColour = formData.get("status_colour") as string | null;
 
+        // Ensure link starts with https:// if provided
+        const rawLink = (formData.get("link") as string) || null;
+        const link =
+        rawLink
+            ? (rawLink.startsWith("https://")
+            ? rawLink.trim()
+            : `https://${rawLink.trim()}`)
+            : null;
+
         // basic validation
         if (!title || !company || !description) {
             return NextResponse.json(
@@ -63,7 +72,7 @@ export async function POST(req: Request) {
                     UPDATE experience
                     SET title = ?, company = ?, description = ?, tag = ?,
                         city = ?, region = ?, start_date = ?, end_date = ?,
-                        hidden = ?, status = ?
+                        hidden = ?, status = ?, link = ?
                     WHERE id = ?
                 `)
                 .bind(
@@ -77,6 +86,7 @@ export async function POST(req: Request) {
                     end_date,
                     hidden,
                     status,
+                    link,
                     id
                 )
                 .run();
@@ -89,9 +99,9 @@ export async function POST(req: Request) {
             .prepare(`
                 INSERT INTO experience (
                     title, company, description, tag, city, region,
-                    start_date, end_date, hidden, status
+                    start_date, end_date, hidden, status, link
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `)
             .bind(
                 title,
@@ -104,6 +114,7 @@ export async function POST(req: Request) {
                 end_date,
                 hidden,
                 status,
+                link
             )
             .run();
 

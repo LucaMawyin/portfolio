@@ -86,5 +86,6 @@ CREATE TABLE experience (
     end_date INTEGER,
     hidden BOOLEAN DEFAULT 0,
     status TEXT,
-    status_colour TEXT
+    status_colour TEXT,
+    link TEXT
 );

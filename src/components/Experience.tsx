@@ -153,7 +153,19 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         squircle-large
                                         pillow
                                         ${index % 2 === 0 ? "sm:fade-left" : "sm:fade-right"}
+                                        ${
+                                            exp.link 
+                                            ? `
+                                                cursor-pointer 
+                                                pillow-hover
+                                                hover:scale-(--subtle-scale)
+                                            `
+                                            : ""
+                                        }
                                     `}
+                                    onClick={() => {
+                                        if (exp.link) window.open(exp.link, "_blank", "noopener,noreferrer");
+                                    }}
                                 >
                                     {/* HEADER */}
                                     <div className="flex flex-col gap-3">
@@ -396,7 +408,19 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         }
                                         squircle-large
                                         pillow
+                                        ${
+                                            cert.link 
+                                            ? `
+                                                cursor-pointer 
+                                                pillow-hover
+                                                hover:scale-(--subtle-scale)
+                                            `
+                                            : ""
+                                        }
                                     `}
+                                    onClick={() => {
+                                        if (cert.link) window.open(cert.link, "_blank", "noopener,noreferrer");
+                                    }}
                                 >
                                     {/* HEADER */}
                                     <div className="flex flex-col gap-3">

@@ -137,4 +137,5 @@ export type Experience = {
     hidden : 1 | 0;
     status : string;
     status_colour : string;
+    link : string | null;
 }

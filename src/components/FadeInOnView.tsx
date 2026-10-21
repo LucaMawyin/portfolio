@@ -7,6 +7,7 @@ export default function FadeInOnView({
     className = "",
     style,
     delay = 0,
+    onClick,
     onMouseEnter,
     onMouseLeave,
     onTouchStart,
@@ -22,6 +23,7 @@ export default function FadeInOnView({
     onTouchStart?: () => void;
     onTouchEnd?: () => void;
     onTouchCancel?: () => void;
+    onClick?: () => void;
 }) {
     const ref = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
@@ -101,6 +103,7 @@ export default function FadeInOnView({
     return (
         <div
             ref={ref}
+            onClick={onClick}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             onTouchStart={onTouchStart}
