@@ -342,7 +342,7 @@ export default function NavBar(props : {isLoggedIn : boolean, children?: React.R
                     flex-col
                     min-h-screen
                     transition-[padding] duration-150
-                    ${visible ? "pb-14 sm:pb-0" : "pb-0"}
+                    ${visible ? "pb-16 sm:pb-0" : "pb-0"}
                 `}
             >
                 {props.children}
