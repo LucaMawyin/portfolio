@@ -432,7 +432,7 @@ export default function CreateProjectPage(props : {
                                             }
                                         `}
                                     >
-                                        {item < step ? "✓" : item}
+                                        {item}
                                     </button>
 
                                     {index < steps.length - 1 && (
@@ -1128,6 +1128,8 @@ export default function CreateProjectPage(props : {
                                                     text-blue-600
                                                     hover:text-blue-800
                                                     w-fit
+                                                    max-w-full
+                                                    truncate
                                                 "
                                             >
                                                 {form.link}

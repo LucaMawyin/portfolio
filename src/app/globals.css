@@ -404,3 +404,9 @@ b {
 .animate-hold-progress {
     animation: hold-progress 1000ms ease-in;
 }
+
+@media (min-width: 768px) {
+    .timeline-card-offset {
+        transform: translateY(var(--card-offset));
+    }
+}

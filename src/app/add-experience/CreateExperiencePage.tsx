@@ -360,7 +360,7 @@ export default function CreateExperiencePage(props: {
                                             }
                                         `}
                                     >
-                                        {item < step ? "✓" : item}
+                                        {item}
                                     </button>
 
                                     {index < steps.length - 1 && (
@@ -984,7 +984,14 @@ export default function CreateExperiencePage(props: {
                                         {normalizedLink && (
                                             <a
                                                 href={normalizedLink}
-                                                className="text-sm text-blue-600 hover:text-blue-800 w-fit"
+                                                className="
+                                                    text-sm 
+                                                    text-blue-600 
+                                                    hover:text-blue-800
+                                                    w-fit
+                                                    max-w-full
+                                                    truncate
+                                                "
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 onClick={(e) => {

@@ -244,7 +244,7 @@ export default function EditTechClient(props: {
                                             }
                                         `}
                                     >
-                                        {item < step ? "✓" : item}
+                                        {item}
                                     </button>
 
                                     {index < steps.length - 1 && (

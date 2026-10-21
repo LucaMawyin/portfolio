@@ -102,20 +102,21 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                         } = shadow(exp.status_colour);
                         
                         return (
-                            <div 
+                            <div
                                 key={index}
-                                className={`
-                                    relative
+                                className="
+                                    timeline-card-offset 
+                                    relative 
                                     flex 
-                                    flex-col
-                                    w-full
-                                    h-full
+                                    flex-col 
+                                    w-full 
+                                    h-full 
                                     gap-8
-                                    ${index !== 0 ? "md:translate-y-[-10%]" : ""}
-                                `}
+                                "
                                 style={{
-                                    zIndex: experience.length - index
-                                }}
+                                    zIndex: experience.length - index,
+                                    "--card-offset": `${-index * 64}px`,
+                                } as React.CSSProperties}
                             >
 
                                 {/* CARD & DOT */}
@@ -320,19 +321,27 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
 
                 {/* CERTIFICATES */}
                 {certificates.length > 0 && (
-                    <h2 className="
-                        relative
-                        text-center
-                        text-4xl
-                        md:text-2xl
-                        font-bold
-                        md:translate-y-[-2vh]
-                        my-12
-                        md:my-0
-                        bg-(--bg)
-                    ">
+                    <h2
+                        className="
+                            timeline-card-offset
+                            relative
+                            text-center
+                            text-4xl
+                            md:text-2xl
+                            font-bold
+                            my-12
+                            md:my-0
+                            bg-(--bg)
+                        "
+                        style={{
+                            "--card-offset": `-${Math.min(
+                                20,
+                                Math.max(0, experience.length - certificates.length) * 5
+                            )}vh`,
+                        } as React.CSSProperties}
+                    >
                         Certificates
-                    </h2>                    
+                    </h2>
                 )}
 
 
@@ -353,21 +362,25 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                             borderColour: statusBorderColour
                         } = shadow(cert.status_colour);
 
+                        const titleOffset =
+                            Math.max(0, experience.length - certificates.length) * 4;
+
                         return (
-                            <div 
+                            <div
                                 key={index}
-                                className={`
-                                    relative
+                                className="
+                                    timeline-card-offset 
+                                    relative 
                                     flex 
-                                    flex-col
-                                    w-full
-                                    h-full
+                                    flex-col 
+                                    w-full 
+                                    h-full 
                                     gap-8
-                                    ${index !== 0 ? "md:translate-y-[-10%]" : ""}
-                                `}
+                                "
                                 style={{
-                                    zIndex: certificates.length - index
-                                }}
+                                    zIndex: certificates.length - index,
+                                    "--card-offset": `calc(-${titleOffset}vh - ${index * 64}px)`,
+                                } as React.CSSProperties}
                             >
 
                                 {/* CARD & DOT */}
