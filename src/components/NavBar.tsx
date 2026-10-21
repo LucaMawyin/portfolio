@@ -277,13 +277,13 @@ export default function NavBar( props : {
                     
                     {props.links.length > 0 && (
                         <div className="flex items-center gap-6">
-                            {props.links.map((icon) => (
+                            {props.links.map((link) => (
                                 <a
-                                    key={icon.title}
-                                    href={icon.url}
-                                    aria-label={`${icon.title} profile`}
-                                    target={icon.url.startsWith("mailto:") ? undefined : "_blank"}
-                                    rel={icon.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                                    key={link.title}
+                                    href={link.url}
+                                    aria-label={link.title}
+                                    target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+                                    rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                                     className="transition-transform duration-200 hover:scale-110"
                                 >
                                     <span className="
@@ -296,7 +296,7 @@ export default function NavBar( props : {
                                         squircle
                                     ">
                                         <Icon
-                                            icon={getIcon(icon.url)}
+                                            icon={getIcon(link.url)}
                                             width={18}
                                             height={18}
                                             color="white"
@@ -331,13 +331,13 @@ export default function NavBar( props : {
                         }
                     `}
                 >
-                    {props.links.map((icon) => (
+                    {props.links.map((link) => (
                         <a
-                            key={icon.title}
-                            href={icon.url}
-                            aria-label={`${icon.title} profile`}
-                            target={icon.url.startsWith("mailto:") ? undefined : "_blank"}
-                            rel={icon.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                            key={link.title}
+                            href={link.url}
+                            aria-label={link.title}
+                            target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+                            rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                             className="transition-transform duration-200 hover:scale-110"
                         >
                             <span className="
@@ -350,7 +350,7 @@ export default function NavBar( props : {
                                 squircle
                             ">
                                 <Icon
-                                    icon={getIcon(icon.url)}
+                                    icon={getIcon(link.url)}
                                     width={18}
                                     height={18}
                                     color="white"

@@ -14,7 +14,7 @@ import resizeImage from "@/lib/resizeImage";
 import { shadow } from "@/lib/tags";
 import { ChangePasswordResponse, Project, Session, SiteContent, SocialLink, User } from "@/lib/types";
 import { Icon } from "@iconify/react";
-import { Globe, Plus, RotateCcw, X } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
@@ -89,13 +89,23 @@ export default function SettingsClient(props : {
     );
     const [showDeletedProjects, setShowDeletedProjects] = useState(false);
 
-    const normalizedLink = (link: string) => link.trim()
-        ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(link.trim())
-            ? `mailto:${link.trim()}`
-            : /^https?:\/\//i.test(link.trim())
-                ? link.trim()
-                : `https://${link.trim()}`
-        : "";
+    const normalizedLink = (link: string) => {
+        const value = link.trim();
+
+        if (!value) return "";
+
+        if (/^mailto:/i.test(value)) {
+            return value;
+        }
+
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            return `mailto:${value}`;
+        }
+
+        return /^https?:\/\//i.test(value)
+            ? value
+            : `https://${value}`;
+    };
 
     // Social links
     const [links, setLinks] = useState<SocialLink[]>(props.links);

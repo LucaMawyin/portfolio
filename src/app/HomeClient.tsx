@@ -104,11 +104,13 @@ export default function HomeClient(props :
 
                     {/* Icon Row on hero */}
                     <div className="flex flex-row gap-6">
-                        {props.links.map((icon) => (
+                        {props.links.map((link) => (
                             <a
-                                key={icon.title}
-                                href={icon.url}
-                                target="_blank"
+                                key={link.title}
+                                href={link.url}
+                                aria-label={link.title}
+                                target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+                                rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                                 className={`
                                     flex items-center justify-center
                                     transition-all duration-(--transition-duration) ease-out
@@ -131,7 +133,7 @@ export default function HomeClient(props :
                                     squircle
                                 ">
                                     <Icon
-                                        icon={getIcon(icon.url)}
+                                        icon={getIcon(link.url)}
                                         color="white"
                                         className="h-full w-full p-3"
                                     />
