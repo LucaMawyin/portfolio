@@ -135,7 +135,7 @@ export default function HomeClient(props :
                                     <Icon
                                         icon={getIcon(link.url)}
                                         color="white"
-                                        className="h-full w-full p-[20%]"
+                                        className="h-full w-full p-[17.5%]"
                                     />
                                 </span>
                             </a>
