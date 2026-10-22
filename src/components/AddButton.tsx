@@ -20,7 +20,7 @@ export default function AddButton({
         <Button
             type="button"
             disabled={disabled}
-            className={`flex flex-row-reverse gap-4 ${className}`}
+            className={`flex flex-row-reverse gap-2 ${className}`}
             onClick={action}
             x={x}
             y={y}

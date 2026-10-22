@@ -876,7 +876,7 @@ export default function SettingsClient(props : {
                                         pillow 
                                         pillow-hover
                                         hover:scale-(--subtle-scale)
-                                        squircle-large
+                                        squircle-medium
                                         w-full
                                         lg:w-fit
                                     "
@@ -1008,7 +1008,7 @@ export default function SettingsClient(props : {
                         ) : (
                             <AddButton
                                 action={() => setShowLinkForm(true)}
-                                x={2}
+                                x={4}
                                 y={2}
                                 text="Add Link"
                             />
