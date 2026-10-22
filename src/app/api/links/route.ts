@@ -124,9 +124,7 @@ export async function PATCH(req: NextRequest) {
             );
         }
 
-        const url = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawUrl)
-            ? `mailto:${rawUrl}`
-            : rawUrl;
+        const url = rawUrl;
 
         let parsedUrl: URL;
 
