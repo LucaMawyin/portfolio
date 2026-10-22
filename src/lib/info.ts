@@ -1,3 +1,7 @@
+import { getIconData } from "@iconify/utils";
+import simpleIcons from "@iconify/json/json/simple-icons.json";
+import type { IconifyJSON } from "@iconify/types";
+
 export const pages = [
     {title:"home", href:"/", requireLogin : false, mobile : true, show: true },
     { title:"about", href:"/", section : "about", requireLogin : false, show: true },
@@ -11,6 +15,7 @@ export const pages = [
     { title: "add-project", href: "/add-project", requireLogin : true, show: false },
 ]
 
+const icons = simpleIcons as IconifyJSON;
 export const getIcon = (href: string) => {
     try {
         if (href.toLowerCase().startsWith("mailto:")) {
@@ -37,7 +42,9 @@ export const getIcon = (href: string) => {
                 ? parts[parts.length - 2]
                 : parts[0];
 
-        return `simple-icons:${domain}`;
+        return getIconData(icons, domain)
+            ? `simple-icons:${domain}`
+            : "lucide:globe";
     } catch {
         return "lucide:globe";
     }
