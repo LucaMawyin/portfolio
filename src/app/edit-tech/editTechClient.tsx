@@ -544,6 +544,31 @@ export default function EditTechClient(props: {
                                                     ))}
                                             </div>
                                         )}
+                                        {form.skills && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {form.skills
+                                                    .split(",")
+                                                    .map((tool) => tool.trim())
+                                                    .filter(Boolean)
+                                                    .map((skill, index) => (
+                                                        <Badge
+                                                            key={index}
+                                                            fontWeight="normal"
+                                                            borderRadius="lg"
+                                                            textSize="xs"
+                                                            shadow="sm"
+                                                            px={2}
+                                                            py={1}
+                                                            className="
+                                                                bg-gray-100 
+                                                                border 
+                                                                border-gray-300
+                                                            "
+                                                            text={skill}
+                                                        />
+                                                    ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </Tile>
                             )}

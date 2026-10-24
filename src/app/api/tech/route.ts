@@ -20,10 +20,22 @@ export async function POST(req: Request) {
     const parse = (str: string) =>
         str.split(",").map(s => s.trim()).filter(Boolean);
 
-    const languages = parse(body.languages);
-    const tools = parse(body.tools);
-    const libraries = parse(body.libraries);
-    const skills = parse(body.skills);
+    const seen = new Set<string>();
+
+    const deduplicate = (names: string[]) =>
+        names.filter(name => {
+            const key = name.split("&")[0].trim().toLowerCase();
+
+            if (seen.has(key)) return false;
+
+            seen.add(key);
+            return true;
+        });
+
+    const languages = deduplicate(parse(body.languages));
+    const tools = deduplicate(parse(body.tools));
+    const libraries = deduplicate(parse(body.libraries));
+    const skills = deduplicate(parse(body.skills));
 
     // Just wipe & rebuild db
     await db
