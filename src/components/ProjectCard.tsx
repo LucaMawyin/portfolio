@@ -482,10 +482,11 @@ export default function ProjectCard( props : {
                             condensed={props.condenseTech}
                             className="bg-gray-300 border border-gray-400"
                         />
-                        
+
                         <TechBadges
                             label="Skills"
                             items={finalSkills}
+                            condensed={props.condenseTech}
                             className="bg-gray-100 border border-gray-300"
                         />
 
