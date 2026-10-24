@@ -43,6 +43,12 @@ export default function ProjectPageClient({
         : project.libraries || []
     ) as string[];
 
+    const skills = (
+    typeof project.skills === "string"
+        ? JSON.parse(project.skills || "[]")
+        : project.skills || []
+    ) as string[];
+
     const applyTechIconOverrides = (items: string[]) =>
         items.map((item) => {
             const parsed = parseTechName(item);
@@ -64,6 +70,7 @@ export default function ProjectPageClient({
     const finalTools = applyTechIconOverrides(tools);
     const finalLanguages = applyTechIconOverrides(languages);
     const finalLibraries = applyTechIconOverrides(libraries);
+    const finalSkills = applyTechIconOverrides(skills);
 
     const { 
         glowColour, 
@@ -361,7 +368,12 @@ export default function ProjectPageClient({
                         label="Tools"
                         items={finalTools}
                         className="bg-gray-300 border border-gray-400"
-                        />
+                    />
+                    <TechBadges
+                        label="Skills"
+                        items={finalSkills}
+                        className="bg-gray-100 border border-gray-300"
+                    />
                 </div>
                 
                 {/* Delete button if logged in */}

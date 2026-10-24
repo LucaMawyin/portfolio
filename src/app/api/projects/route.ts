@@ -54,6 +54,14 @@ export async function POST(req: NextRequest) {
             .filter(Boolean)
         : null;
 
+        const skillsRaw = (formData.get("skills") as string)?.trim();
+        const skills = skillsRaw
+        ? skillsRaw
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : null;
+
 
         // Image upload
         const image = formData.get("image") as File | null;
@@ -127,6 +135,7 @@ export async function POST(req: NextRequest) {
                         languages = ?,
                         tools = ?,
                         libraries = ?,
+                        skills = ?,
                         tag = ?,
                         status = ?,
                         pinned = ?,
@@ -146,6 +155,7 @@ export async function POST(req: NextRequest) {
                     languages ? JSON.stringify(languages) : null,
                     tools ? JSON.stringify(tools) : null,
                     libraries ? JSON.stringify(libraries) : null,
+                    skills ? JSON.stringify(skills) : null,
 
                     tag,
                     status,
@@ -181,13 +191,14 @@ export async function POST(req: NextRequest) {
                     languages,
                     tools,
                     libraries,
+                    skills,
                     tag,
                     status,
                     pinned,
                     hidden,
                     created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `)
             .bind(
                 name,
@@ -200,6 +211,7 @@ export async function POST(req: NextRequest) {
                 languages ? JSON.stringify(languages) : null,
                 tools ? JSON.stringify(tools) : null,
                 libraries ? JSON.stringify(libraries) : null,
+                skills ? JSON.stringify(skills) : null,
 
                 tag,
                 status,

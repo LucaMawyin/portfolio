@@ -58,6 +58,7 @@ export default function TechStack(props: {
                 ...parseTechArray(project.languages),
                 ...parseTechArray(project.libraries),
                 ...parseTechArray(project.tools),
+                ...parseTechArray(project.skills),
             ];
 
             return projectTech.some((item) => {
@@ -207,6 +208,7 @@ export default function TechStack(props: {
             "languages",
             "libraries",
             "tools",
+            "skills",
         ].filter((category) => grouped[category]?.length);
 
         const updateHighlight = () => {
@@ -283,6 +285,16 @@ export default function TechStack(props: {
                 border: "border-emerald-200",
                 text: "text-emerald-600",
                 icon: "bg-emerald-100",
+            },
+        },
+        {
+            key: "skills",
+            title: "Skills",
+            accent: {
+                bg: "bg-amber-50",
+                border: "border-amber-200",
+                text: "text-amber-600",
+                icon: "bg-amber-100",
             },
         },
     ];

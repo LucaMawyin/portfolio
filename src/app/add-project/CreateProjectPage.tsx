@@ -49,7 +49,8 @@ export default function CreateProjectPage(props : {
         created_at: safeString(props.initialData?.created_at),
         languages: safeString(normalizeArray(props.initialData?.languages)).replace(/\s*,\s*/g, ", "),
         tools: safeString(normalizeArray(props.initialData?.tools)).replace(/\s*,\s*/g, ", "),
-        libraries: safeString(normalizeArray(props.initialData?.libraries)).replace(/\s*,\s*/g, ", "),        
+        libraries: safeString(normalizeArray(props.initialData?.libraries)).replace(/\s*,\s*/g, ", "),
+        skills: safeString(normalizeArray(props.initialData?.skills)).replace(/\s*,\s*/g, ", "),        
         tag: safeString(props.initialData?.tag),
         colour: safeString(props.initialData?.colour),
         status: safeString(props.initialData?.status),
@@ -123,6 +124,7 @@ export default function CreateProjectPage(props : {
             const shouldCapitalize =
                 name === "tools" ||
                 name === "languages" ||
+                name === "skills" ||
                 name === "libraries";
 
             formattedValue = shouldCapitalize
@@ -213,6 +215,7 @@ export default function CreateProjectPage(props : {
         formData.append("languages", form.languages);
         formData.append("tools", form.tools);
         formData.append("libraries", form.libraries);
+        formData.append("skills", form.skills);
         formData.append("tag", form.tag);
         formData.append("colour", form.colour);
         formData.append("status", form.status);
@@ -684,6 +687,20 @@ export default function CreateProjectPage(props : {
                                         name="tools"
                                         placeholder="Tools (comma separated)"
                                         value={form.tools}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="skills">Skills Used</label>
+                                    <textarea
+                                        id="skills"
+                                        name="skills"
+                                        placeholder="Skills (comma separated)"
+                                        value={form.skills}
                                         rows={1}
                                         style={{
                                             overflow: "hidden",
@@ -1244,6 +1261,30 @@ export default function CreateProjectPage(props : {
                                                                 py={1}
                                                                 className="bg-gray-300 border border-gray-400"
                                                                 text={tool}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {form.skills && (
+                                            <div>
+                                                <h4 className="font-semibold">Skills</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.skills
+                                                        .split(",")
+                                                        .map((skill: string) => skill.trim())
+                                                        .filter(Boolean)
+                                                        .map((skill: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-300 border border-gray-400"
+                                                                text={skill}
                                                             />
                                                         ))}
                                                 </div>

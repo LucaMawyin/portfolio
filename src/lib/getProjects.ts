@@ -81,11 +81,12 @@ export const getTech = async (): Promise<Tech[]> => {
 
     const [techRes, projectRes] = await Promise.all([
         db.prepare(`SELECT * FROM tech`).all() as Promise<{ results: Tech[] }>,
-        db.prepare(`SELECT languages, tools, libraries FROM projects`).all() as Promise<{
+        db.prepare(`SELECT languages, tools, libraries, skills FROM projects`).all() as Promise<{
             results: {
                 languages: string | null;
                 tools: string | null;
                 libraries: string | null;
+                skills: string | null;
             }[];
         }>,
     ]);
@@ -143,10 +144,12 @@ export const getTech = async (): Promise<Tech[]> => {
         const languages: string[] = JSON.parse(project.languages || "[]");
         const tools: string[] = JSON.parse(project.tools || "[]");
         const libraries: string[] = JSON.parse(project.libraries || "[]");
+        const skills: string[] = JSON.parse(project.skills || "[]");
 
         for (const language of languages) addTech(language, "languages");
         for (const tool of tools) addTech(tool, "tools");
         for (const library of libraries) addTech(library, "libraries");
+        for (const skill of skills) addTech(skill, "skills");
     }
 
     return Array.from(techMap.values()).map((tech) => {

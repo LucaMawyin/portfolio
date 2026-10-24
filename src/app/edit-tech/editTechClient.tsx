@@ -28,6 +28,7 @@ export default function EditTechClient(props: {
         languages: grouped.languages?.join(", ") ?? "",
         libraries: grouped.libraries?.join(", ") ?? "",
         tools: grouped.tools?.join(", ") ?? "",
+        skills: grouped.skills?.join(", ") ?? "",
     });
 
     const [nextPage] = useState<string | null>(() => {
@@ -46,6 +47,7 @@ export default function EditTechClient(props: {
         "Languages",
         "Libraries",
         "Tools",
+        "Skills",
         "Review",
     ];
 
@@ -75,6 +77,7 @@ export default function EditTechClient(props: {
         const shouldCapitalize =
             name === "tools" ||
             name === "languages" ||
+            name === "skills" ||
             name === "libraries";
 
         const formattedValue = shouldCapitalize
@@ -369,8 +372,36 @@ export default function EditTechClient(props: {
                                 </Tile>
                             )}
 
-                            {/* STEP 4 — REVIEW */}
+                            {/* STEP 4 — SKILLS */}
                             {step === 4 && (
+                                <Tile
+                                    title={steps[step - 1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="skills">
+                                        Skills
+                                    </label>
+
+                                    <textarea
+                                        id="skills"
+                                        name="skills"
+                                        placeholder="Skills (comma separated)"
+                                        value={form.skills}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                            overflowWrap: "normal",
+                                            wordBreak: "normal",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+
+                            {/* STEP 5 — REVIEW */}
+                            {step === 5 && (
                                 <Tile
                                     title={steps[step - 1]}
                                     disableHover={true}

@@ -9,6 +9,7 @@ CREATE TABLE projects(
     languages TEXT,
     tools TEXT,
     libraries TEXT,
+    skills TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     deleted_at DATETIME,
@@ -66,7 +67,7 @@ CREATE TABLE tech(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     category TEXT NOT NULL CHECK (
-        category IN ('languages', 'libraries', 'tools')
+        category IN ('languages', 'libraries', 'tools', 'skills')
     )
 );
 CREATE TABLE site_content (

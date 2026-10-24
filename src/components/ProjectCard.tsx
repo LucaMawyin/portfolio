@@ -47,6 +47,12 @@ export default function ProjectCard( props : {
         : props.project.libraries || []
     ) as string[];
 
+    const skills = (
+    typeof props.project.skills === "string"
+        ? JSON.parse(props.project.skills || "[]")
+        : props.project.skills || []
+    ) as string[];
+
     const applyTechIconOverrides = (items: string[]) =>
         items.map((item) => {
             const parsed = parseTechName(item);
@@ -68,6 +74,7 @@ export default function ProjectCard( props : {
     const finalTools = applyTechIconOverrides(tools);
     const finalLanguages = applyTechIconOverrides(languages);
     const finalLibraries = applyTechIconOverrides(libraries);
+    const finalSkills = applyTechIconOverrides(skills);
     
     const { glowColour, glowRGB, borderColour } = shadow(props.project.colour);
     const { 
@@ -475,7 +482,12 @@ export default function ProjectCard( props : {
                             condensed={props.condenseTech}
                             className="bg-gray-300 border border-gray-400"
                         />
-
+                        
+                        <TechBadges
+                            label="Skills"
+                            items={finalSkills}
+                            className="bg-gray-100 border border-gray-300"
+                        />
 
                     </div>
 

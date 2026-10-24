@@ -15,10 +15,10 @@ export type Project= {
     content: string;
     link : string;
     image : string | null;
-    image_type : string | null;
     languages : string | null;
     tools : string | null;
     libraries:  string | null;
+    skills: string | null;
     created_at : string;
     updated_at :string;
     deleted_at : string | null;
@@ -114,7 +114,7 @@ export type Tag = {
 export type Tech = {
     id : number; 
     name : string;
-    category : "tools" | "libraries" | "languages";
+    category : "tools" | "libraries" | "languages" | "skills";
     iconPath?: string;
 }
 
@@ -122,6 +122,7 @@ export type TechBody = {
     languages: string;
     tools: string;
     libraries: string;
+    skills: string;
 };
 
 export type Experience = {
