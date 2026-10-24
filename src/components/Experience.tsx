@@ -22,17 +22,37 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
     const [certificates, setCertificates] = useState<Experience[]>(
         props.experienceList.filter(e => e.tag?.toLowerCase().includes("certificate"))
     );
+
+    const titleOffset =
+        Math.max(0, experience.length - certificates.length) * 4;
+
+
+    const totalTranslateY =
+        certificates.length > 0
+            ? `calc(${titleOffset}vh + ${(certificates.length - 1) * 64}px)`
+            : "0px";
+
+    const wrapperOffset =
+        certificates.length > 0
+            ? `calc(-${certificates.length * titleOffset}vh - ${
+                (certificates.length * (certificates.length - 1) / 2) * 64
+            }px)`
+            : "0px";
     
     return (
         <div
             className="
-                flex 
-                w-full 
-                flex-col 
-                items-center 
-                py-4 
+                flex
+                w-full
+                flex-col
+                items-center
+                py-4
                 px-4
+                md:mb-(--wrapper-offset)
             "
+            style={{
+                "--wrapper-offset": wrapperOffset,
+            } as React.CSSProperties}
         >
             <FadeInOnView>
                 <h1 className={`
@@ -68,16 +88,22 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
 
 
             <div className="relative w-full my-[2.5%]">
-                <div className="
-                    absolute
-                    hidden md:block
-                    left-1/2
-                    top-0
-                    bottom-0
-                    w-0.5
-                    bg-neutral-300
-                    -translate-x-1/2
-                " />
+
+                {/* CENTER LINE */}
+                <div
+                    className="
+                        absolute
+                        hidden md:block
+                        left-1/2
+                        top-0
+                        w-0.5
+                        bg-neutral-300
+                        -translate-x-1/2
+                    "
+                    style={{
+                        bottom: totalTranslateY,
+                    }}
+                />
 
                 {/* EXPERIENCE */}
                 <div className={`
@@ -90,8 +116,6 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                     md:gap-0
                     lg:px-[5%] 
                 `}>
-
-                    {/* CENTER LINE */}
 
                     {experience.map((exp,index) => {
 

@@ -264,7 +264,6 @@ export default function NavBar( props : {
                     items-center justify-between
                     gap-3
                     px-4 py-3
-                    
                 ">
                     <a
                         href="/"
@@ -294,6 +293,8 @@ export default function NavBar( props : {
                                         justify-center 
                                         bg-black 
                                         squircle
+                                        pillow-black
+                                        pillow-hover-black
                                     ">
                                         <Icon
                                             icon={getIcon(link.url)}
@@ -348,6 +349,8 @@ export default function NavBar( props : {
                                 justify-center 
                                 bg-black 
                                 squircle
+                                pillow-black
+                                pillow-hover-black
                             ">
                                 <Icon
                                     icon={getIcon(link.url)}

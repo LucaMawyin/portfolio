@@ -131,6 +131,8 @@ export default function HomeClient(props :
                                     justify-center 
                                     bg-black 
                                     squircle
+                                    pillow-black
+                                    pillow-hover-black
                                 ">
                                     <Icon
                                         icon={getIcon(link.url)}

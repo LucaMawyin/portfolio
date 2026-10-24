@@ -892,8 +892,15 @@ export default function SettingsClient(props : {
                                         "
                                     >
                                         <span className="
-                                            flex shrink-0 items-center justify-center
-                                            w-7 h-7 bg-black squircle
+                                            flex 
+                                            shrink-0 
+                                            items-center 
+                                            justify-center
+                                            w-7 h-7 
+                                            bg-black 
+                                            squircle
+                                            pillow-black
+                                            pillow-hover-black
                                         ">
                                             <Icon
                                                 icon={getIcon(link.url)}

@@ -164,24 +164,32 @@ export default function TechStack(props: {
     useEffect(() => {
         if (activeTech === null) return;
 
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;
+        const handleOutsideInteraction = (event: Event) => {
+            const target = event.target;
 
-            if (
-                popupRef.current &&
-                !popupRef.current.contains(target) &&
-                !Object.values(badgeRefs.current).some(
-                    (badge) => badge?.contains(target)
-                )
-            ) {
+            if (!(target instanceof Node)) return;
+
+            const clickedBadge = Object.values(badgeRefs.current).some(
+                (badge) => badge?.contains(target)
+            );
+
+            const clickedPopup = popupRef.current?.contains(target);
+
+            if (!clickedBadge && !clickedPopup) {
                 setActiveTech(null);
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        const handleScroll = () => {
+            setActiveTech(null);
+        };
+
+        document.addEventListener("pointerdown", handleOutsideInteraction);
+        window.addEventListener("scroll", handleScroll, true);
 
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("pointerdown", handleOutsideInteraction);
+            window.removeEventListener("scroll", handleScroll, true);
         };
     }, [activeTech]);
 
