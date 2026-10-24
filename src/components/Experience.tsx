@@ -160,6 +160,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                                 cursor-pointer 
                                                 pillow-hover
                                                 hover:scale-(--subtle-scale)
+                                                active:scale-(--subtle-scale)
                                             `
                                             : ""
                                         }
@@ -427,6 +428,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                                 cursor-pointer 
                                                 pillow-hover
                                                 hover:scale-(--subtle-scale)
+                                                active:scale-(--subtle-scale)
                                             `
                                             : ""
                                         }

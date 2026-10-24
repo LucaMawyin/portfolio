@@ -1489,7 +1489,6 @@ export default function SettingsClient(props : {
                                     transition-all
                                     duration-(--transition-duration)
                                     pillow 
-                                    squircle
                                     hover:scale-(--subtle-scale)
                                 "
                             >
@@ -1517,7 +1516,6 @@ export default function SettingsClient(props : {
                                     transition-all
                                     duration-(--transition-duration)
                                     pillow
-                                    squircle
                                     hover:scale-(--subtle-scale)
                                 "
                             >
