@@ -315,17 +315,25 @@ export default function NavBar( props : {
             {props.links.length > 0 && (
                 <div
                     className={`
-                        hidden lg:flex
-                        fixed top-18 left-1/2
+                        hidden 
+                        lg:flex
+                        fixed 
+                        top-18 
+                        left-1/2
                         -translate-x-1/2 z-40
 
-                        items-center gap-6
-                        px-4 py-2
+                        items-center 
+                        gap-6
+                        px-4 
+                        py-2
 
                         rounded-full
                         liquid-glass
 
-                        transition-all duration-150 ease-out
+                        transition-all 
+                        duration-150 
+                        ease-out
+
                         ${visible
                             ? "opacity-100 translate-y-0"
                             : "opacity-0 -translate-y-2 pointer-events-none"
@@ -370,58 +378,56 @@ export default function NavBar( props : {
                     flex
                     flex-col
                     min-h-screen
-                    transition-[padding] duration-150
-                    ${visible ? "pb-16 sm:pb-0" : "pb-0"}
+                    transition-[padding] 
+                    duration-150
+
+                    ${visible ? "pb-20 lg:pb-0" : "pb-0"}
                 `}
             >
                 {props.children}
             </div>
 
-            <header 
+            <header
                 ref={bottomMenuRef}
                 className={`
-                    block
-                    lg:hidden
+                    block 
+                    lg:hidden 
                     fixed 
-                    bottom-4
-                    sm:top-5
+                    bottom-6
+                    
                     left-1/2 
-                    -translate-x-1/2
+                    -translate-x-1/2 
                     z-50
-                    w-56
-                    overflow-visible
-
-                    transition-all duration-150 ease-out
+                    w-fit 
+                    max-w-[calc(100vw-2rem)]
+                    transition-all 
+                    duration-150 
+                    ease-out
                     ${visible
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-4 pointer-events-none"
+                        ? `
+                            opacity-100 
+                            translate-y-0
+                        `
+                        : `
+                            opacity-0
+                            translate-y-4 
+                            pointer-events-none
+                        `
                     }
                 `}
             >
-                {/* EXPANDABLE MENU */}
-                <div
-                    className={`
-                        absolute bottom-10 sm:bottom-auto sm:top-14 left-0
-                        w-full
-                        origin-bottom sm:origin-top
-                        transition-all duration-300 ease-out
-                        liquid-glass
-                        rounded-2xl
-                        flex
-                        flex-col
-                        p-4
-                        gap-2
-                        mb-4
-                        ${bottomMenuOpen
-                            ? "translate-y-0 scale-y-100 opacity-100 pointer-events-auto"
-                            : "translate-y-4 sm:-translate-y-4 scale-y-0 opacity-0 pointer-events-none"
-                        }
-                    `}
-                >
-
-
+                <nav className="
+                    liquid-glass
+                    rounded-full 
+                    flex 
+                    items-center 
+                    justify-center 
+                    gap-1 
+                    p-2
+                ">
+                    {/* PUBLIC LINKS */}
                     {visiblePages
-                        .filter((page) => page.show)
+                        .filter((page) => page.show && !page.requireLogin)
                         .map((page) => {
                             const title = page.title.toLowerCase();
 
@@ -433,7 +439,6 @@ export default function NavBar( props : {
                                 title.includes("about") ? UserRound :
                                 title.includes("settings") ? Settings :
                                 title.includes("tech") ? Wrench :
-                                title.includes("logout") || title.includes("log out") ? LogOut :
                                 title.includes("resume") ? FileText :
                                 Circle;
 
@@ -442,69 +447,178 @@ export default function NavBar( props : {
                                     key={page.title}
                                     href={getHref(page)}
                                     target={page.newTab ? "_blank" : undefined}
-                                    onClick={(e) => {
-                                        setBottomMenuOpen(false);
-                                        handleClick(e, page);
-                                    }}
+                                    rel={page.newTab ? "noopener noreferrer" : undefined}
+                                    aria-label={capitalizeNamesAndTitles(page.title)}
+                                    title={capitalizeNamesAndTitles(page.title)}
+                                    onClick={(e) => handleClick(e, page)}
                                     className="
-                                        flex items-center gap-4
-                                        rounded-lg px-2 py-2
-                                        text-base
-                                        transition-colors duration-200
-                                        hover:bg-gray-100
+                                        flex 
+                                        shrink-0 
+                                        items-center 
+                                        justify-center
+                                        w-10 h-10 
+                                        rounded-full
+                                        transition-all 
+                                        duration-200
+                                        hover:bg-gray-100/40
+                                        hover:scale-110
                                     "
                                 >
                                     <Icon size={20} strokeWidth={1.75} />
-                                    <span>
-                                        {capitalizeNamesAndTitles(page.title)}
-                                    </span>
                                 </a>
                             );
-                        })
-                    }
-                </div>
+                        })}
 
-                {/* Persistent ball */}
-                <button
-                    aria-label={bottomMenuOpen
-                        ? "Close floating navigation menu"
-                        : "Open floating navigation menu"
-                    }
-                    aria-expanded={bottomMenuOpen}
-                    onClick={() => setBottomMenuOpen((prev) => !prev)}
-                    className="
-                        relative z-10
-                        flex items-center justify-center
-                        w-12 h-12
-                        mx-auto
-                        rounded-full
-                        sm:shadow-none!
-                        sm:bg-transparent!
-                        sm:border-none!
-                        sm:backdrop-filter-none!
-                        liquid-glass
-                        hover:scale-110
-                        transition-transform duration-200
-                        cursor-pointer
-                    "
-                >
-                    <span
+                    {/* LOGIN-REQUIRED LINKS */}
+                    {props.isLoggedIn && visiblePages.some(
+                        (page) => page.show && page.requireLogin
+                    ) && (
+                        <button
+                            type="button"
+                            aria-label={
+                                bottomMenuOpen
+                                    ? "Close floating navigation menu"
+                                    : "Open floating navigation menu"
+                            }
+                            aria-expanded={bottomMenuOpen}
+                            onClick={() => setBottomMenuOpen((prev) => !prev)}
+                            className="
+                                relative 
+                                z-10
+                                flex 
+                                items-center 
+                                justify-center
+                                w-10 
+                                h-10 
+                                mx-auto 
+                                hover:scale-110
+                                transition-transform 
+                                duration-200
+                                cursor-pointer
+                            "
+                        >
+                            <span
+                                className={`
+                                    absolute 
+                                    inset-0
+                                    flex 
+                                    items-center 
+                                    justify-center
+                                    transition-transform 
+                                    duration-300 
+                                    ease-in-out
+                                    hover:bg-gray-100/40
+                                    rounded-full
+
+                                    ${bottomMenuOpen ? "rotate-90" : "rotate-0"}
+                                `}
+                            >
+                                <Menu
+                                    size={21}
+                                    strokeWidth={1.75}
+                                    className={`
+                                        absolute 
+                                        transition-all 
+                                        duration-200
+                                        
+
+                                        ${bottomMenuOpen
+                                            ? "rotate-90 scale-75 opacity-0"
+                                            : "rotate-0 scale-100 opacity-100"
+                                        }
+                                    `}
+                                />
+                                <X
+                                    size={21}
+                                    strokeWidth={1.75}
+                                    className={`
+                                        absolute 
+                                        transition-all 
+                                        duration-200
+
+                                        ${bottomMenuOpen
+                                            ? "rotate-0 scale-100 opacity-100"
+                                            : "-rotate-90 scale-75 opacity-0"
+                                        }
+                                    `}
+                                />
+                            </span>
+                        </button>
+                    )}
+                </nav>
+
+                {/* EXPANDABLE MENU */}
+                {props.isLoggedIn && visiblePages.some(
+                    (page) => page.show && page.requireLogin
+                ) && (
+                    <div
                         className={`
-                            absolute inset-0
-                            flex items-center justify-center
+                            liquid-glass
+                            absolute
+                            bottom-full
+                            mb-3
+                            min-w-48
+                            rounded-2xl
+                            flex flex-col
+                            gap-1
+                            p-3
+                            origin-bottom-right
                             transition-all duration-200
-                            ${bottomMenuOpen
-                                ? "rotate-90 scale-100 opacity-100"
-                                : "rotate-0 scale-100 opacity-100"
+                            right-0
+                            ${
+                                bottomMenuOpen
+                                    ? "translate-y-0 scale-100 opacity-100 pointer-events-auto"
+                                    : "translate-y-2 scale-95 opacity-0 pointer-events-none"
                             }
                         `}
                     >
-                        {bottomMenuOpen
-                            ? <X size={21} strokeWidth={1.75} />
-                            : <Menu size={21} strokeWidth={1.75} />
-                        }
-                    </span>
-                </button>
+                        {visiblePages
+                            .filter((page) => page.show && page.requireLogin)
+                            .map((page) => {
+                                const title = page.title.toLowerCase();
+
+                                const Icon =
+                                    title.includes("experience") ? BriefcaseBusiness :
+                                    title.includes("education") ? GraduationCap :
+                                    title.includes("project") ? FolderGit2 :
+                                    title.includes("about") ? UserRound :
+                                    title.includes("settings") ? Settings :
+                                    title.includes("tech") ? Wrench :
+                                    title.includes("logout") || title.includes("log out") ? LogOut :
+                                    title.includes("resume") ? FileText :
+                                    Circle;
+
+                                return (
+                                    <a
+                                        key={page.title}
+                                        href={getHref(page)}
+                                        target={page.newTab ? "_blank" : undefined}
+                                        rel={page.newTab ? "noopener noreferrer" : undefined}
+                                        onClick={(e) => {
+                                            setBottomMenuOpen(false);
+                                            handleClick(e, page);
+                                        }}
+                                        className="
+                                            flex 
+                                            items-center 
+                                            gap-3
+                                            rounded-xl 
+                                            px-3 
+                                            py-2
+                                            transition-all 
+                                            duration-200
+                                            hover:bg-gray-100/40
+                                        "
+                                    >
+                                        <Icon size={18} strokeWidth={1.75} />
+                                        <span className="whitespace-nowrap">
+                                            {capitalizeNamesAndTitles(page.title)}
+                                        </span>
+                                    </a>
+                                );
+                            })}
+                    </div>
+                )}
             </header>
         </>
 
