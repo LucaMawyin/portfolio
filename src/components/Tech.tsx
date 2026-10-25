@@ -1,6 +1,6 @@
 "use client";
 
-import { Project, Tech } from "@/lib/types";
+import { Experience, Project, Tech } from "@/lib/types";
 import FadeInOnView from "./FadeInOnView";
 import { useRouter } from "next/navigation";
 import Badge from "./Badge";
@@ -16,6 +16,7 @@ export default function TechStack(props: {
     isLoggedIn: boolean;
     tech: Tech[];
     projects: Project[];
+    experience: Experience[];
 }) {
     const [highlighted, setHighlighted] = useState<Record<string, string>>({});
     const [activeTech, setActiveTech] = useState<number | null>(null);
@@ -29,6 +30,7 @@ export default function TechStack(props: {
 
     const badgeRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const popupRef = useRef<HTMLDivElement>(null);
+    const popupContentRef = useRef<HTMLDivElement>(null);
     const [mounted, setMounted] = useState(false);
     const [pointerOffset, setPointerOffset] = useState(24);
 
@@ -70,6 +72,42 @@ export default function TechStack(props: {
             });
         });
     };
+
+    const getExperienceForTech = (techName: string) => {
+
+        const parseTechArray = (value: string[] | string | null | undefined): string[] => {
+            if (!value) return [];
+
+            if (Array.isArray(value)) return value;
+
+            try {
+                const parsed: unknown = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        };
+
+        const name = parseTechName(techName).name.toLowerCase();
+
+        return props.experience.filter((exp: Experience) => {
+            const experienceTech = [
+                ...parseTechArray(exp.languages),
+                ...parseTechArray(exp.libraries),
+                ...parseTechArray(exp.tools),
+                ...parseTechArray(exp.skills),
+            ];
+
+            return experienceTech.some((item) => {
+                const cleanName = item.split("&icon=")[0];
+
+                return (
+                    parseTechName(cleanName).name.toLowerCase() === name
+                );
+            });
+        });
+    };
+
 
     const positionPopup = (techId: number) => {
         const badge = badgeRefs.current[techId];
@@ -147,20 +185,55 @@ export default function TechStack(props: {
     useEffect(() => {
         if (activeTech === null) return;
 
-        const updatePosition = () => positionPopup(activeTech);
+        const updatePosition = () => {
+            positionPopup(activeTech);
+        };
 
-        // Reposition after the popup has rendered and its size is measurable.
         const frame = requestAnimationFrame(updatePosition);
 
-        window.addEventListener("scroll", updatePosition, true);
+        const handleScroll = (event: Event) => {
+            const target = event.target;
+
+            // Scrolling the popup itself should not close it.
+            if (
+                target instanceof Node &&
+                popupContentRef.current?.contains(target)
+            ) {
+                return;
+            }
+
+            // Any other scroll closes the popup.
+            setActiveTech(null);
+        };
+
+        document.addEventListener("scroll", handleScroll, true);
         window.addEventListener("resize", updatePosition);
 
         return () => {
             cancelAnimationFrame(frame);
-            window.removeEventListener("scroll", updatePosition, true);
+            document.removeEventListener("scroll", handleScroll, true);
             window.removeEventListener("resize", updatePosition);
         };
-    }, [activeTech, props.projects]);
+    }, [activeTech, props.projects, props.experience]);
+
+    useEffect(() => {
+        const popup = popupContentRef.current;
+        if (!popup || activeTech === null) return;
+
+        const containWheel = (event: WheelEvent) => {
+            const canScroll = popup.scrollHeight > popup.clientHeight;
+
+            if (canScroll) {
+                event.stopPropagation();
+            }
+        };
+
+        popup.addEventListener("wheel", containWheel, { passive: true });
+
+        return () => {
+            popup.removeEventListener("wheel", containWheel);
+        };
+    }, [activeTech]);
 
     useEffect(() => {
         if (activeTech === null) return;
@@ -181,16 +254,10 @@ export default function TechStack(props: {
             }
         };
 
-        const handleScroll = () => {
-            setActiveTech(null);
-        };
-
         document.addEventListener("pointerdown", handleOutsideInteraction);
-        window.addEventListener("scroll", handleScroll, true);
 
         return () => {
             document.removeEventListener("pointerdown", handleOutsideInteraction);
-            window.removeEventListener("scroll", handleScroll, true);
         };
     }, [activeTech]);
 
@@ -497,160 +564,6 @@ export default function TechStack(props: {
                                                         </div>
                                                     </Badge>  
 
-                                                    {mounted &&
-                                                        activeTech !== null &&
-                                                        createPortal(
-                                                            (() => {
-                                                                const activeItem = props.tech.find(
-                                                                    (tech) => tech.id === activeTech
-                                                                );
-
-                                                                if (!activeItem) return null;
-
-                                                                const parsed = parseTechName(activeItem.name);
-                                                                const matchingProjects = getProjectsForTech(activeItem.name);
-
-                                                                return (
-                                                                    <div
-                                                                        ref={popupRef}
-                                                                        style={{
-                                                                            position: "fixed",
-                                                                            top: popupPosition.top,
-                                                                            left: popupPosition.left,
-                                                                            transform:
-                                                                                popupPlacement === "left" || popupPlacement === "right"
-                                                                                    ? "translateY(-50%)"
-                                                                                    : "none",
-                                                                            maxHeight: "min(70vh, 480px)",
-                                                                        }}
-                                                                        className="
-                                                                            relative
-                                                                            w-[min(288px,calc(100vw-32px))]
-                                                                            wrap-break-words
-                                                                            rounded-xl
-                                                                            border 
-                                                                            border-gray-200
-                                                                            bg-white
-                                                                            p-3
-                                                                            text-left
-                                                                        "
-                                                                    >
-                                                                        {/* Pointer */}
-                                                                        <div
-                                                                            className={`
-                                                                                absolute
-                                                                                z-10
-                                                                                h-0
-                                                                                w-0
-                                                                                border-solid
-                                                                                ${
-                                                                                    popupPlacement === "right"
-                                                                                        ? `
-                                                                                            -left-2
-                                                                                            border-y-8
-                                                                                            border-y-transparent
-                                                                                            border-r-8
-                                                                                            border-r-white
-                                                                                        `
-                                                                                        : popupPlacement === "left"
-                                                                                        ? `
-                                                                                            -right-2
-                                                                                            border-y-8
-                                                                                            border-y-transparent
-                                                                                            border-l-8
-                                                                                            border-l-white
-                                                                                        `
-                                                                                        : popupPlacement === "bottom"
-                                                                                        ? `
-                                                                                            -top-2
-                                                                                            border-x-8
-                                                                                            border-x-transparent
-                                                                                            border-b-8
-                                                                                            border-b-white
-                                                                                        `
-                                                                                        : `
-                                                                                            -bottom-2
-                                                                                            border-x-8
-                                                                                            border-x-transparent
-                                                                                            border-t-8
-                                                                                            border-t-white
-                                                                                        `
-                                                                                }
-                                                                            `}
-                                                                            style={
-                                                                                popupPlacement === "left" || popupPlacement === "right"
-                                                                                    ? {
-                                                                                        top: pointerOffset,
-                                                                                        transform: "translateY(-50%)",
-                                                                                    }
-                                                                                    : {
-                                                                                        left: pointerOffset,
-                                                                                        transform: "translateX(-50%)",
-                                                                                    }
-                                                                            }
-                                                                        />
-
-                                                                        {/* Keep content above the pointer */}
-                                                                        <div className="relative z-20">
-                                                                            <p className="mb-2 text-xs font-semibold text-gray-400">
-                                                                                PROJECTS USING {parsed.name.toUpperCase()}
-                                                                            </p>
-
-                                                                            {matchingProjects.length > 0 ? (
-                                                                                <div className="flex flex-col gap-1">
-                                                                                    {matchingProjects.map((project) => (
-                                                                                        <button
-                                                                                            key={project.id}
-                                                                                            onClick={() => {
-                                                                                                setActiveTech(null);
-                                                                                                if (project.link) {
-                                                                                                    window.open(project.link, "_blank", "noopener,noreferrer");
-                                                                                                }
-                                                                                            }}
-                                                                                            className={`
-                                                                                                w-full 
-                                                                                                rounded-md 
-                                                                                                px-2 
-                                                                                                py-2
-                                                                                                text-left 
-                                                                                                text-sm 
-                                                                                                text-gray-700
-                                                                                                ${project.link 
-                                                                                                    ? "cursor-pointer hover:bg-gray-100" 
-                                                                                                    : ""
-                                                                                                }
-                                                                                            `}
-                                                                                        >
-                                                                                            {project.name}
-                                                                                        </button>
-                                                                                    ))}
-                                                                                </div>
-                                                                            ) : (
-                                                                                <p className="text-sm text-gray-500">
-                                                                                    No projects use this technology yet.
-                                                                                </p>
-                                                                            )}
-
-                                                                            <button
-                                                                                onClick={() => setActiveTech(null)}
-                                                                                className="
-                                                                                    mt-2 
-                                                                                    text-xs 
-                                                                                    text-gray-400 
-                                                                                    hover:text-gray-700
-                                                                                    cursor-pointer
-                                                                                "
-                                                                            >
-                                                                                Close
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            })(),
-                                                            document.body
-                                                        )
-                                                    }
-
                                                 </div>
 
 
@@ -663,6 +576,204 @@ export default function TechStack(props: {
                     );
                 })}
             </div>
+
+            {mounted &&
+                activeTech !== null &&
+                createPortal(
+                    (() => {
+                        const activeItem = props.tech.find(
+                            (tech) => tech.id === activeTech
+                        );
+
+                        if (!activeItem) return null;
+
+                        const parsed = parseTechName(activeItem.name);
+                        const matchingProjects = getProjectsForTech(activeItem.name);
+                        const matchingExperience = getExperienceForTech(activeItem.name);
+
+                        return (                                             
+                            <div
+                                ref={popupRef}
+                                style={{
+                                    position: "fixed",
+                                    top: popupPosition.top,
+                                    left: popupPosition.left,
+                                    transform:
+                                        popupPlacement === "left" || popupPlacement === "right"
+                                            ? "translateY(-50%)"
+                                            : "none",
+                                    maxHeight: "min(70vh, 480px)",
+                                }}
+                                className="
+                                    relative
+                                    w-[min(288px,calc(100vw-32px))]
+                                    max-h-[min(70vh,480px)]
+                                    wrap-break-words
+                                    rounded-xl
+                                    border
+                                    border-gray-200
+                                    bg-white
+                                    text-left
+                                    overflow-visible
+                                "
+                            >
+                                {/* Pointer border */}
+                                <div
+                                    className={`absolute z-30 ${
+                                        popupPlacement === "right"
+                                            ? "-left-2.25 border-y-8 border-y-transparent border-r-8 border-r-gray-200"
+                                            : popupPlacement === "left"
+                                                ? "-right-2.25 border-y-8 border-y-transparent border-l-8 border-l-gray-200"
+                                                : popupPlacement === "bottom"
+                                                    ? "-top-2.25 border-x-8 border-x-transparent border-b-8 border-b-gray-200"
+                                                    : "-bottom-2.25 border-x-8 border-x-transparent border-t-8 border-t-gray-200"
+                                    } h-0 w-0`}
+                                    style={{
+                                        ...(popupPlacement === "left" || popupPlacement === "right"
+                                            ? { top: pointerOffset, transform: "translateY(-50%)" }
+                                            : { left: pointerOffset, transform: "translateX(-50%)" }),
+                                    }}
+                                />
+
+                                {/* White pointer */}
+                                <div
+                                    className={`absolute z-30 h-0 w-0 ${
+                                        popupPlacement === "right"
+                                            ? "-left-2 border-y-8 border-y-transparent border-r-8 border-r-white"
+                                            : popupPlacement === "left"
+                                                ? "-right-2 border-y-8 border-y-transparent border-l-8 border-l-white"
+                                                : popupPlacement === "bottom"
+                                                    ? "-top-2 border-x-8 border-x-transparent border-b-8 border-b-white"
+                                                    : "-bottom-2 border-x-8 border-x-transparent border-t-8 border-t-white"
+                                    }`}
+                                    style={{
+                                        ...(popupPlacement === "left" || popupPlacement === "right"
+                                            ? { top: pointerOffset, transform: "translateY(-50%)" }
+                                            : { left: pointerOffset, transform: "translateX(-50%)" }),
+                                    }}
+                                />
+
+                                {/* Keep content above the pointer */}
+                                <div
+                                    ref={popupContentRef}
+                                    className="
+                                        max-h-[min(70vh,480px)]
+                                        overflow-y-auto
+                                        overscroll-contain
+                                        rounded-xl
+                                        touch-pan-y
+                                        p-3
+                                    "
+                                >
+                                    <div className="relative z-20 flex flex-col gap-2">
+                                        <div>
+                                            <p className="mb-2 text-xs font-semibold text-gray-400">
+                                                PROJECTS USING {parsed.name.toUpperCase()}
+                                            </p>
+
+                                            {matchingProjects.length > 0 ? (
+                                                <div className="flex flex-col gap-1">
+                                                    {matchingProjects.map((project) => (
+                                                        <button
+                                                            key={project.id}
+                                                            onClick={() => {
+                                                                setActiveTech(null);
+                                                                if (project.link) {
+                                                                    window.open(project.link, "_blank", "noopener,noreferrer");
+                                                                }
+                                                                else {
+                                                                    document.getElementById("projects")?.scrollIntoView({
+                                                                        behavior: "smooth",
+                                                                    });
+                                                                }
+                                                            }}
+                                                            className={`
+                                                                w-full 
+                                                                rounded-md 
+                                                                px-2 
+                                                                py-2
+                                                                text-left 
+                                                                text-sm 
+                                                                text-gray-700
+                                                                ${project.link 
+                                                                    ? "cursor-pointer hover:bg-gray-100" 
+                                                                    : ""
+                                                                }
+                                                            `}
+                                                        >
+                                                            {project.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500">
+                                                    No projects use this technology yet.
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <p className="mb-2 text-xs font-semibold text-gray-400">
+                                                EXPERIENCE USING {parsed.name.toUpperCase()}
+                                            </p>
+
+                                            {matchingExperience.length > 0 ? (
+                                                <div className="flex flex-col gap-1">
+                                                    {matchingExperience.map((experience) => (
+                                                        <button
+                                                            key={experience.id}
+                                                            onClick={() => {
+                                                                setActiveTech(null);
+                                                                document.getElementById("experience")?.scrollIntoView({
+                                                                    behavior: "smooth",
+                                                                });
+                                                            }}
+                                                            className={`
+                                                                w-full 
+                                                                rounded-md 
+                                                                px-2 
+                                                                py-2
+                                                                text-left 
+                                                                text-sm 
+                                                                text-gray-700
+                                                                ${experience.link 
+                                                                    ? "cursor-pointer hover:bg-gray-100" 
+                                                                    : ""
+                                                                }
+                                                            `}
+                                                        >
+                                                            {experience.title}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500">
+                                                    No experiences use this technology yet.
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            onClick={() => setActiveTech(null)}
+                                            className="
+                                                mt-2 
+                                                text-xs 
+                                                text-gray-400 
+                                                hover:text-gray-700
+                                                cursor-pointer
+                                                self-start
+                                            "
+                                        >
+                                            Close
+                                        </button>
+                                    </div>                                                                            
+                                </div>
+                            </div>
+                        );
+                    })(),
+                    document.body
+                )
+            }
         </div>
     );
 }

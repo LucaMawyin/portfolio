@@ -312,6 +312,7 @@ export default function HomeClient(props :
                     isLoggedIn={props.isLoggedIn}
                     tech={props.tech}
                     projects={props.projects}
+                    experience={props.experience}
                 />
             </section>
 
