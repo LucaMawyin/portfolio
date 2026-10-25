@@ -602,12 +602,12 @@ export default function TechStack(props: {
                                         popupPlacement === "left" || popupPlacement === "right"
                                             ? "translateY(-50%)"
                                             : "none",
-                                    maxHeight: "min(70vh, 480px)",
+                                    maxHeight: "min(70vh, 320px)",
                                 }}
                                 className="
                                     relative
                                     w-[min(288px,calc(100vw-32px))]
-                                    max-h-[min(70vh,480px)]
+                                    max-h-[min(70vh,320px)]
                                     wrap-break-words
                                     rounded-xl
                                     border
