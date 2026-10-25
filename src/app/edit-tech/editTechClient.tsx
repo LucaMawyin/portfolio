@@ -8,6 +8,8 @@ import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { LoginResponse, Tech } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import Badge from "@/components/Badge";
+import { formatList, normalizeList } from "@/lib/format";
+import ListTextarea from "@/components/ListTextArea";
 
 export default function EditTechClient(props: {
     tech: Tech[];
@@ -25,10 +27,10 @@ export default function EditTechClient(props: {
     const [step, setStep] = useState(1);
 
     const [form, setForm] = useState({
-        languages: grouped.languages?.join(", ") ?? "",
-        libraries: grouped.libraries?.join(", ") ?? "",
-        tools: grouped.tools?.join(", ") ?? "",
-        skills: grouped.skills?.join(", ") ?? "",
+        languages: formatList(grouped.languages?.join(", ") ?? ""),
+        libraries: formatList(grouped.libraries?.join(", ") ?? ""),
+        tools: formatList(grouped.tools?.join(", ") ?? ""),
+        skills: formatList(grouped.skills?.join(", ") ?? ""),
     });
 
     const [nextPage] = useState<string | null>(() => {
@@ -65,43 +67,11 @@ export default function EditTechClient(props: {
         });
     }, [step]);
 
-    const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement |
-            HTMLTextAreaElement |
-            HTMLSelectElement
-        >
-    ) => {
-        const { name, value } = e.target;
-
-        const shouldCapitalize =
-            name === "tools" ||
-            name === "languages" ||
-            name === "skills" ||
-            name === "libraries";
-
-        const formattedValue = shouldCapitalize
-            ? capitalizeNamesAndTitles(
-                value.replace(/\s*,\s*/g, ", ")
-            )
-            : value;
-
+    const handleValueChange = (name: string, value: string) => {
         setForm((prev) => ({
             ...prev,
-            [name]: formattedValue,
+            [name]: value,
         }));
-
-        if (e.target instanceof HTMLTextAreaElement) {
-            const scrollY = window.scrollY;
-
-            e.target.style.height = "auto";
-            e.target.style.height = `${e.target.scrollHeight}px`;
-
-            window.scrollTo({
-                top: scrollY,
-                behavior: "instant",
-            });
-        }
     };
 
     const validateStep = (stepToValidate: number) => {
@@ -113,6 +83,9 @@ export default function EditTechClient(props: {
                 return true;
 
             case 3:
+                return true;
+
+            case 4:
                 return true;
 
             default:
@@ -138,6 +111,23 @@ export default function EditTechClient(props: {
             if (!validateStep(currentStep)) {
                 return;
             }
+        }
+
+        if (targetStep === 5) {
+            setForm((prev) => ({
+                languages: capitalizeNamesAndTitles(
+                    normalizeList(prev.languages)
+                ),
+                libraries: capitalizeNamesAndTitles(
+                    normalizeList(prev.libraries)
+                ),
+                tools: capitalizeNamesAndTitles(
+                    normalizeList(prev.tools)
+                ),
+                skills: capitalizeNamesAndTitles(
+                    normalizeList(prev.skills)
+                ),
+            }));
         }
 
         setStep(targetStep);
@@ -295,23 +285,12 @@ export default function EditTechClient(props: {
                                     disableHover={true}
                                     className="max-w-full flex-0"
                                 >
-                                    <label htmlFor="languages">
-                                        Languages
-                                    </label>
-
-                                    <textarea
+                                    <ListTextarea
                                         id="languages"
                                         name="languages"
                                         placeholder="Languages (comma separated)"
                                         value={form.languages}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                            overflowWrap: "normal",
-                                            wordBreak: "normal",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
                                 </Tile>
                             )}
@@ -323,23 +302,12 @@ export default function EditTechClient(props: {
                                     disableHover={true}
                                     className="max-w-full flex-0"
                                 >
-                                    <label htmlFor="libraries">
-                                        Libraries
-                                    </label>
-
-                                    <textarea
+                                    <ListTextarea
                                         id="libraries"
                                         name="libraries"
                                         placeholder="Libraries (comma separated)"
                                         value={form.libraries}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                            overflowWrap: "normal",
-                                            wordBreak: "normal",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
                                 </Tile>
                             )}
@@ -351,23 +319,12 @@ export default function EditTechClient(props: {
                                     disableHover={true}
                                     className="max-w-full flex-0"
                                 >
-                                    <label htmlFor="tools">
-                                        Tools
-                                    </label>
-
-                                    <textarea
+                                    <ListTextarea
                                         id="tools"
                                         name="tools"
                                         placeholder="Tools (comma separated)"
                                         value={form.tools}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                            overflowWrap: "normal",
-                                            wordBreak: "normal",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
                                 </Tile>
                             )}
@@ -379,23 +336,12 @@ export default function EditTechClient(props: {
                                     disableHover={true}
                                     className="max-w-full flex-0"
                                 >
-                                    <label htmlFor="skills">
-                                        Skills
-                                    </label>
-
-                                    <textarea
+                                    <ListTextarea
                                         id="skills"
                                         name="skills"
                                         placeholder="Skills (comma separated)"
                                         value={form.skills}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                            overflowWrap: "normal",
-                                            wordBreak: "normal",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
                                 </Tile>
                             )}
@@ -544,6 +490,24 @@ export default function EditTechClient(props: {
                                                     ))}
                                             </div>
                                         )}
+                                    </div>
+                                    <div
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4
+                                            rounded-xl
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(4)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[3]}
+                                        </h2>
                                         {form.skills && (
                                             <div className="flex flex-wrap gap-2">
                                                 {form.skills
@@ -600,7 +564,7 @@ export default function EditTechClient(props: {
                             }}
                         />
 
-                        {step !== 4 && (
+                        {step !== 5 && (
                             <Button
                                 text="Next"
                                 onClick={() =>
@@ -609,7 +573,7 @@ export default function EditTechClient(props: {
                             />
                         )}
 
-                        {step === 4 && (
+                        {step === 5 && (
                             <Button
                                 text="Post"
                                 type="submit"

@@ -20,6 +20,8 @@ import { slugify } from "@/lib/slugify";
 import DayPickerClient from "@/components/DayPicker";
 import Switch from "@/components/Switch";
 import { Eye, EyeOff, Pin, PinOff } from "lucide-react";
+import ListTextarea from "@/components/ListTextArea";
+import { formatList, normalizeList } from "@/lib/format";
 
 export default function CreateProjectPage(props : {
     initialData? : any;
@@ -47,10 +49,10 @@ export default function CreateProjectPage(props : {
         content: safeString(props.initialData?.content),
         link: safeString(props.initialData?.link),
         created_at: safeString(props.initialData?.created_at),
-        languages: safeString(normalizeArray(props.initialData?.languages)).replace(/\s*,\s*/g, ", "),
-        tools: safeString(normalizeArray(props.initialData?.tools)).replace(/\s*,\s*/g, ", "),
-        libraries: safeString(normalizeArray(props.initialData?.libraries)).replace(/\s*,\s*/g, ", "),
-        skills: safeString(normalizeArray(props.initialData?.skills)).replace(/\s*,\s*/g, ", "),        
+        languages: formatList(props.initialData?.languages),
+        tools: formatList(props.initialData?.tools),
+        libraries: formatList(props.initialData?.libraries),
+        skills: formatList(props.initialData?.skills),
         tag: safeString(props.initialData?.tag),
         colour: safeString(props.initialData?.colour),
         status: safeString(props.initialData?.status),
@@ -150,6 +152,13 @@ export default function CreateProjectPage(props : {
                 behavior: "instant",
             });
         }
+    };
+
+    const handleValueChange = (name: string, value: string) => {
+        setForm((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
   
     // Image select
@@ -347,6 +356,24 @@ export default function CreateProjectPage(props : {
             if (!validateStep(currentStep)) {
                 return;
             }
+        }
+
+        if (targetStep === 4) {
+            setForm((prev) => ({
+                ...prev,
+                languages: capitalizeNamesAndTitles(
+                    normalizeList(prev.languages)
+                ),
+                libraries: capitalizeNamesAndTitles(
+                    normalizeList(prev.libraries)
+                ),
+                tools: capitalizeNamesAndTitles(
+                    normalizeList(prev.tools)
+                ),
+                skills: capitalizeNamesAndTitles(
+                    normalizeList(prev.skills)
+                ),
+            }));
         }
 
         setStep(targetStep);
@@ -653,60 +680,36 @@ export default function CreateProjectPage(props : {
                                     disableHover={true}
                                     className="max-w-full flex-0"
                                 >
-                                    <label htmlFor="languages">Languages Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="languages"
                                         name="languages"
                                         placeholder="Languages (comma separated)"
                                         value={form.languages}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
 
-                                    <label htmlFor="libraries">Libraries Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="libraries"
                                         name="libraries"
                                         placeholder="Libraries (comma separated)"
                                         value={form.libraries}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
 
-                                    <label htmlFor="tools">Tools Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="tools"
                                         name="tools"
                                         placeholder="Tools (comma separated)"
                                         value={form.tools}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
 
-                                    <label htmlFor="skills">Skills Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="skills"
                                         name="skills"
                                         placeholder="Skills (comma separated)"
                                         value={form.skills}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
                                 </Tile>
                             )}

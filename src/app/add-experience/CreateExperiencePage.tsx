@@ -15,6 +15,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Switch from "@/components/Switch";
 import { shadow } from "@/lib/tags";
 import { normalizeArray } from "@/lib/normalizeJSON";
+import ListTextarea from "@/components/ListTextArea";
+import { formatList, normalizeList } from "@/lib/format";
 
 export default function CreateExperiencePage(props: {
     initialData?: any;
@@ -42,11 +44,10 @@ export default function CreateExperiencePage(props: {
         status: safeString(props.initialData?.status),
         status_colour: safeString(props.initialData?.status_colour),
         link: safeString(props.initialData?.link),
-        languages: safeString(normalizeArray(props.initialData?.languages)).replace(/\s*,\s*/g, ", "),
-        tools: safeString(normalizeArray(props.initialData?.tools)).replace(/\s*,\s*/g, ", "),
-        libraries: safeString(normalizeArray(props.initialData?.libraries)).replace(/\s*,\s*/g, ", "),
-        skills: safeString(normalizeArray(props.initialData?.skills)).replace(/\s*,\s*/g, ", "),        
-
+        languages: formatList(props.initialData?.languages),
+        tools: formatList(props.initialData?.tools),
+        libraries: formatList(props.initialData?.libraries),
+        skills: formatList(props.initialData?.skills),
     });
 
     const [customTag, setCustomTag] = useState("");
@@ -145,11 +146,7 @@ export default function CreateExperiencePage(props: {
             name === "title" ||
             name === "company" ||
             name === "region" ||
-            name === "city" ||
-            name === "tools" || 
-            name === "languages" ||
-            name === "skills" ||
-            name === "libraries";
+            name === "city" ;
 
         const formattedValue = shouldCapitalize
             ? capitalizeNamesAndTitles(value)
@@ -171,6 +168,13 @@ export default function CreateExperiencePage(props: {
                 behavior: "instant",
             });
         }
+    };
+
+    const handleValueChange = (name: string, value: string) => {
+        setForm((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
 
     const validateStep = (stepToValidate: number) => {
@@ -222,6 +226,24 @@ export default function CreateExperiencePage(props: {
             if (!validateStep(currentStep)) {
                 return;
             }
+        }
+
+        if (targetStep === 4) {
+            setForm((prev) => ({
+                ...prev,
+                languages: capitalizeNamesAndTitles(
+                    normalizeList(prev.languages)
+                ),
+                libraries: capitalizeNamesAndTitles(
+                    normalizeList(prev.libraries)
+                ),
+                tools: capitalizeNamesAndTitles(
+                    normalizeList(prev.tools)
+                ),
+                skills: capitalizeNamesAndTitles(
+                    normalizeList(prev.skills)
+                ),
+            }));
         }
 
         setStep(targetStep);
@@ -931,60 +953,36 @@ export default function CreateExperiencePage(props: {
                                     disableHover={true}
                                     className="max-w-full flex-0"
                                 >
-                                    <label htmlFor="languages">Languages Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="languages"
                                         name="languages"
                                         placeholder="Languages (comma separated)"
                                         value={form.languages}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
 
-                                    <label htmlFor="libraries">Libraries Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="libraries"
                                         name="libraries"
                                         placeholder="Libraries (comma separated)"
                                         value={form.libraries}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
 
-                                    <label htmlFor="tools">Tools Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="tools"
                                         name="tools"
                                         placeholder="Tools (comma separated)"
                                         value={form.tools}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
 
-                                    <label htmlFor="skills">Skills Used</label>
-                                    <textarea
+                                    <ListTextarea
                                         id="skills"
                                         name="skills"
                                         placeholder="Skills (comma separated)"
                                         value={form.skills}
-                                        rows={1}
-                                        style={{
-                                            overflow: "hidden",
-                                            resize: "none",
-                                        }}
-                                        onChange={handleChange}
+                                        onValueChange={handleValueChange}
                                     />
                                 </Tile>
                             )}
