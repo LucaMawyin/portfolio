@@ -14,6 +14,7 @@ import ReactMarkdown from "react-markdown";
 import { Eye, EyeOff } from "lucide-react";
 import Switch from "@/components/Switch";
 import { shadow } from "@/lib/tags";
+import { normalizeArray } from "@/lib/normalizeJSON";
 
 export default function CreateExperiencePage(props: {
     initialData?: any;
@@ -41,6 +42,11 @@ export default function CreateExperiencePage(props: {
         status: safeString(props.initialData?.status),
         status_colour: safeString(props.initialData?.status_colour),
         link: safeString(props.initialData?.link),
+        languages: safeString(normalizeArray(props.initialData?.languages)).replace(/\s*,\s*/g, ", "),
+        tools: safeString(normalizeArray(props.initialData?.tools)).replace(/\s*,\s*/g, ", "),
+        libraries: safeString(normalizeArray(props.initialData?.libraries)).replace(/\s*,\s*/g, ", "),
+        skills: safeString(normalizeArray(props.initialData?.skills)).replace(/\s*,\s*/g, ", "),        
+
     });
 
     const [customTag, setCustomTag] = useState("");
@@ -106,6 +112,7 @@ export default function CreateExperiencePage(props: {
     const steps = [
         "Overview",
         "Details",
+        "Technologies",
         "Review",
     ];
 
@@ -138,7 +145,11 @@ export default function CreateExperiencePage(props: {
             name === "title" ||
             name === "company" ||
             name === "region" ||
-            name === "city";
+            name === "city" ||
+            name === "tools" || 
+            name === "languages" ||
+            name === "skills" ||
+            name === "libraries";
 
         const formattedValue = shouldCapitalize
             ? capitalizeNamesAndTitles(value)
@@ -251,6 +262,10 @@ export default function CreateExperiencePage(props: {
         formData.append("status", form.status);
         formData.append("status_colour", form.status_colour);
         formData.append("link", form.link);
+        formData.append("languages", form.languages);
+        formData.append("tools", form.tools);
+        formData.append("libraries", form.libraries);
+        formData.append("skills", form.skills);
 
         const res = await fetch("/api/experience", {
             method: "POST",
@@ -910,9 +925,71 @@ export default function CreateExperiencePage(props: {
                                     </label>
                                 </Tile>
                             )}
-
-                            {/* STEP 3 - REVIEW */}
                             {step === 3 && (
+                                <Tile
+                                    title={steps[step-1]}
+                                    disableHover={true}
+                                    className="max-w-full flex-0"
+                                >
+                                    <label htmlFor="languages">Languages Used</label>
+                                    <textarea
+                                        id="languages"
+                                        name="languages"
+                                        placeholder="Languages (comma separated)"
+                                        value={form.languages}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="libraries">Libraries Used</label>
+                                    <textarea
+                                        id="libraries"
+                                        name="libraries"
+                                        placeholder="Libraries (comma separated)"
+                                        value={form.libraries}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="tools">Tools Used</label>
+                                    <textarea
+                                        id="tools"
+                                        name="tools"
+                                        placeholder="Tools (comma separated)"
+                                        value={form.tools}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+
+                                    <label htmlFor="skills">Skills Used</label>
+                                    <textarea
+                                        id="skills"
+                                        name="skills"
+                                        placeholder="Skills (comma separated)"
+                                        value={form.skills}
+                                        rows={1}
+                                        style={{
+                                            overflow: "hidden",
+                                            resize: "none",
+                                        }}
+                                        onChange={handleChange}
+                                    />
+                                </Tile>
+                            )}
+                            {/* STEP 3 - REVIEW */}
+                            {step === 4 && (
                                 <Tile
                                     title={steps[step - 1]}
                                     disableHover={true}
@@ -1076,6 +1153,122 @@ export default function CreateExperiencePage(props: {
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* TECH STACK */}
+                                    <div 
+                                        className="
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            p-4 
+                                            rounded-xl 
+                                            transition-colors
+                                            duration-100
+                                            hover:bg-gray-200
+                                            hover:cursor-pointer
+                                        "
+                                        onClick={() => goToStep(3)}
+                                    >
+                                        <h2 className="text-[2rem] font-semibold text-center">
+                                            {steps[2]}
+                                        </h2>
+                                        {form.languages && (
+                                            <div>
+                                                <h4 className="font-semibold">Languages</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.languages
+                                                        .split(",")
+                                                        .map((lang : string) => lang.trim())
+                                                        .filter(Boolean)
+                                                        .map((lang: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-200 border border-gray-300"
+                                                                text={lang}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {form.libraries && (
+                                            <div>
+                                                <h4 className="font-semibold">Libraries</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.libraries
+                                                        .split(",")
+                                                        .map((lib: string) => lib.trim())
+                                                        .filter(Boolean)
+                                                        .map((lib: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-100 border border-gray-300"
+                                                                text={lib}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {form.tools && (
+                                            <div>
+                                                <h4 className="font-semibold">Tools</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.tools
+                                                        .split(",")
+                                                        .map((tool: string) => tool.trim())
+                                                        .filter(Boolean)
+                                                        .map((tool: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-300 border border-gray-400"
+                                                                text={tool}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {form.skills && (
+                                            <div>
+                                                <h4 className="font-semibold">Skills</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {form.skills
+                                                        .split(",")
+                                                        .map((skill: string) => skill.trim())
+                                                        .filter(Boolean)
+                                                        .map((skill: string, i: number) => (
+                                                            <Badge
+                                                                key={i}
+                                                                fontWeight="normal"
+                                                                borderRadius="lg"
+                                                                textSize="xs"
+                                                                shadow="sm"
+                                                                px={2}
+                                                                py={1}
+                                                                className="bg-gray-300 border border-gray-400"
+                                                                text={skill}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </Tile>
                             )}
                         </div>
@@ -1104,7 +1297,7 @@ export default function CreateExperiencePage(props: {
                             }}
                         />
 
-                        {step !== 3 && (
+                        {step !== 4 && (
                             <Button
                                 text="Next"
                                 onClick={() =>
@@ -1113,7 +1306,7 @@ export default function CreateExperiencePage(props: {
                             />
                         )}
 
-                        {step === 3 && (
+                        {step === 4 && (
                             <Button
                                 text="Post"
                                 type="submit"

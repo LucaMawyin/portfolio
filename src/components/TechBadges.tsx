@@ -8,7 +8,7 @@ export default function TechBadges({
     iconClassName = "",
     condensed = false,
 }: {
-    label: string;
+    label?: string;
     items: string[];
     className?: string;
     iconClassName?: string;
@@ -62,8 +62,10 @@ export default function TechBadges({
     };
 
     return (
-        <div className="flex flex-wrap gap-2 mt-2">
-            <b className="flex my-auto">{label}:</b>
+        <div className="flex flex-wrap gap-2">
+            {label && (
+                <b className="flex my-auto">{label}:</b>
+            )}
 
             {visible.map((item, i) => renderBadge(item, i))}
 

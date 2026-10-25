@@ -460,7 +460,7 @@ export default function ProjectCard( props : {
                     <div className={props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}>
                         <ReactMarkdown>{props.project.description}</ReactMarkdown>
                     </div>
-                    <div>
+                    <div className="flex flex-col gap-2">
 
                         <TechBadges
                             label="Languages"

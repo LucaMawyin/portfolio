@@ -11,6 +11,7 @@ import Badge from "./Badge";
 import AddButton from "./AddButton";
 import EditButton from "./EditButton";
 import { shadow } from "@/lib/tags";
+import TechBadges from "./TechBadges";
 
 
 export default function ExperienceClient(props: { isLoggedIn:boolean; experienceList: Experience[] }) {
@@ -124,6 +125,22 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                             glowRGB: statusGlowRGB, 
                             borderColour: statusBorderColour
                         } = shadow(exp.status_colour);
+
+                        const technologies = [
+                            ...(typeof exp.languages === "string"
+                                ? JSON.parse(exp.languages || "[]")
+                                : exp.languages || []),
+                            ...(typeof exp.libraries === "string"
+                                ? JSON.parse(exp.libraries || "[]")
+                                : exp.libraries || []),
+                            ...(typeof exp.tools === "string"
+                                ? JSON.parse(exp.tools || "[]")
+                                : exp.tools || []),
+                            ...(typeof exp.skills === "string"
+                                ? JSON.parse(exp.skills || "[]")
+                                : exp.skills || []),
+                        ];
+
                         
                         return (
                             <div
@@ -293,6 +310,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
 
                                     </div>
                                     
+                                    {/* CONTENT */}
                                     <div className="text-sm mt-2">
                                         <ReactMarkdown
                                             components={{
@@ -307,6 +325,12 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                             {exp.description}
                                         </ReactMarkdown>
                                     </div>
+
+                                    {/* TECH STACK */}
+                                    <TechBadges
+                                        items={technologies}
+                                        className="bg-gray-200 border border-gray-300"
+                                    />
 
                                     
                                     {props.isLoggedIn && (
@@ -389,6 +413,21 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
 
                         const titleOffset =
                             Math.max(0, experience.length - certificates.length) * 4;
+
+                        const technologies = [
+                            ...(typeof cert.languages === "string"
+                                ? JSON.parse(cert.languages || "[]")
+                                : cert.languages || []),
+                            ...(typeof cert.libraries === "string"
+                                ? JSON.parse(cert.libraries || "[]")
+                                : cert.libraries || []),
+                            ...(typeof cert.tools === "string"
+                                ? JSON.parse(cert.tools || "[]")
+                                : cert.tools || []),
+                            ...(typeof cert.skills === "string"
+                                ? JSON.parse(cert.skills || "[]")
+                                : cert.skills || []),
+                        ];
 
                         return (
                             <div
@@ -562,6 +601,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
 
                                     </div>
                                     
+                                    {/* CONTENT */}
                                     <div className="text-sm mt-2">
                                         <ReactMarkdown
                                             components={{
@@ -576,6 +616,12 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                             {cert.description}
                                         </ReactMarkdown>
                                     </div>
+
+                                    {/* TECH STACK */}
+                                    <TechBadges
+                                        items={technologies}
+                                        className="bg-gray-200 border border-gray-300"
+                                    />
 
                                     {props.isLoggedIn && (
                                         <div className="flex w-full justify-between mt-auto">

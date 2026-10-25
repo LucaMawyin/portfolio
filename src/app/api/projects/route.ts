@@ -1,7 +1,7 @@
 import { validateSession } from "@/lib/auth";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { getDB } from "@/lib/db";
-import { deleteFromR2, r2, uploadToR2 } from "@/lib/r2";
+import { deleteFromR2, uploadToR2 } from "@/lib/r2";
 import { Project } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 

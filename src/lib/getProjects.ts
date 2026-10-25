@@ -79,9 +79,17 @@ export async function getProject(
 export const getTech = async (): Promise<Tech[]> => {
     const db = await getDB();
 
-    const [techRes, projectRes] = await Promise.all([
+    const [techRes, projectRes, experienceRes] = await Promise.all([
         db.prepare(`SELECT * FROM tech`).all() as Promise<{ results: Tech[] }>,
         db.prepare(`SELECT languages, tools, libraries, skills FROM projects`).all() as Promise<{
+            results: {
+                languages: string | null;
+                tools: string | null;
+                libraries: string | null;
+                skills: string | null;
+            }[];
+        }>,
+        db.prepare(`SELECT languages, tools, libraries, skills FROM experience`).all() as Promise<{
             results: {
                 languages: string | null;
                 tools: string | null;
@@ -140,17 +148,29 @@ export const getTech = async (): Promise<Tech[]> => {
         }
     }
 
-    for (const project of projectRes.results) {
-        const languages: string[] = JSON.parse(project.languages || "[]");
-        const tools: string[] = JSON.parse(project.tools || "[]");
-        const libraries: string[] = JSON.parse(project.libraries || "[]");
-        const skills: string[] = JSON.parse(project.skills || "[]");
+    const processTechData = (
+        items: {
+            languages: string | null;
+            tools: string | null;
+            libraries: string | null;
+            skills: string | null;
+        }[]
+    ) => {
+        for (const item of items) {
+            const languages: string[] = JSON.parse(item.languages || "[]");
+            const tools: string[] = JSON.parse(item.tools || "[]");
+            const libraries: string[] = JSON.parse(item.libraries || "[]");
+            const skills: string[] = JSON.parse(item.skills || "[]");
 
-        for (const language of languages) addTech(language, "languages");
-        for (const tool of tools) addTech(tool, "tools");
-        for (const library of libraries) addTech(library, "libraries");
-        for (const skill of skills) addTech(skill, "skills");
-    }
+            for (const language of languages) addTech(language, "languages");
+            for (const tool of tools) addTech(tool, "tools");
+            for (const library of libraries) addTech(library, "libraries");
+            for (const skill of skills) addTech(skill, "skills");
+        }
+    };
+
+    processTechData(projectRes.results);
+    processTechData(experienceRes.results);
 
     return Array.from(techMap.values()).map((tech) => {
         const parsed = parseTechName(tech.name);

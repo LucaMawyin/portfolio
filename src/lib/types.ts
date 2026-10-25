@@ -139,6 +139,10 @@ export type Experience = {
     status : string;
     status_colour : string;
     link : string | null;
+    languages : string | null;
+    tools : string | null;
+    libraries:  string | null;
+    skills: string | null;
 }
 
 export type SocialLink = {

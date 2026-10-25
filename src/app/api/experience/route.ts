@@ -8,6 +8,38 @@ export async function POST(req: Request) {
     try {
         const formData = await req.formData();
 
+        const languagesRaw = (formData.get("languages") as string)?.trim();
+        const languages = languagesRaw
+        ? languagesRaw
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : null;
+
+        const toolsRaw = (formData.get("tools") as string)?.trim();
+        const tools = toolsRaw
+        ? toolsRaw
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : null;
+
+        const librariesRaw = (formData.get("libraries") as string)?.trim();
+        const libraries = librariesRaw
+        ? librariesRaw
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : null;
+
+        const skillsRaw = (formData.get("skills") as string)?.trim();
+        const skills = skillsRaw
+        ? skillsRaw
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : null;
+
         const id = formData.get("id")?.toString();
         const title = formData.get("title")?.toString();
         const company = formData.get("company")?.toString();
@@ -70,9 +102,21 @@ export async function POST(req: Request) {
             await db
                 .prepare(`
                     UPDATE experience
-                    SET title = ?, company = ?, description = ?, tag = ?,
-                        city = ?, region = ?, start_date = ?, end_date = ?,
-                        hidden = ?, status = ?, link = ?
+                    SET title = ?, 
+                        company = ?, 
+                        description = ?, 
+                        tag = ?,
+                        city = ?, 
+                        region = ?, 
+                        start_date = ?, 
+                        end_date = ?,
+                        hidden = ?, 
+                        status = ?, 
+                        link = ?,
+                        languages = ?,
+                        tools = ?,
+                        libraries = ?,
+                        skills = ?
                     WHERE id = ?
                 `)
                 .bind(
@@ -87,6 +131,12 @@ export async function POST(req: Request) {
                     hidden,
                     status,
                     link,
+
+                    languages ? JSON.stringify(languages) : null,
+                    tools ? JSON.stringify(tools) : null,
+                    libraries ? JSON.stringify(libraries) : null,
+                    skills ? JSON.stringify(skills) : null,
+
                     id
                 )
                 .run();
@@ -98,10 +148,23 @@ export async function POST(req: Request) {
         await db
             .prepare(`
                 INSERT INTO experience (
-                    title, company, description, tag, city, region,
-                    start_date, end_date, hidden, status, link
+                    title, 
+                    company, 
+                    description, 
+                    tag, 
+                    city, 
+                    region,
+                    start_date, 
+                    end_date, 
+                    hidden, 
+                    status, 
+                    link,
+                    languages,
+                    tools,
+                    libraries,
+                    skills
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `)
             .bind(
                 title,
@@ -114,7 +177,11 @@ export async function POST(req: Request) {
                 end_date,
                 hidden,
                 status,
-                link
+                link,
+                languages ? JSON.stringify(languages) : null,
+                tools ? JSON.stringify(tools) : null,
+                libraries ? JSON.stringify(libraries) : null,
+                skills ? JSON.stringify(skills) : null
             )
             .run();
 

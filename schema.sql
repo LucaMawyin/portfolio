@@ -88,7 +88,11 @@ CREATE TABLE experience (
     hidden BOOLEAN DEFAULT 0,
     status TEXT,
     status_colour TEXT,
-    link TEXT
+    link TEXT,
+    languages TEXT,
+    tools TEXT,
+    libraries TEXT,
+    skills TEXT
 );
 CREATE TABLE links (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
