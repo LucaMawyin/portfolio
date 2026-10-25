@@ -249,31 +249,24 @@ textarea {
 }
 
 @keyframes tagPulse {
-    0%, 100% {
-        opacity: 0.25;
+    0% {
+        box-shadow: 0 0 3px rgba(var(--glow), 0.1);
+        filter: brightness(1);
     }
 
     50% {
-        opacity: 1;
+        box-shadow: 0 0 10px rgba(var(--glow), 0.3);
+        filter: brightness(1.06);
+    }
+
+    100% {
+        box-shadow: 0 0 3px rgba(var(--glow), 0.1);
+        filter: brightness(1);
     }
 }
 
 .animate-tag-pulse {
-    position: relative;
-    isolation: isolate;
-    animation: none;
-}
-
-.animate-tag-pulse::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    box-shadow: 0 0 10px rgba(var(--glow), 0.3);
-    opacity: 0.25;
-    z-index: -1;
-    pointer-events: none;
-    animation: tagPulse 2.5s ease-in-out infinite;
+	animation: tagPulse 2.5s ease-in-out infinite;
 }
 
 .pillow {
