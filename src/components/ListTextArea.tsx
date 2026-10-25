@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef, useLayoutEffect } from "react";
@@ -21,26 +22,16 @@ export default function ListTextarea({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const pendingCaret = useRef<number | null>(null);
 
-    const resizeTextarea = (
-        textarea: HTMLTextAreaElement,
-        scrollY: number
-    ) => {
+    const resizeTextarea = (textarea: HTMLTextAreaElement) => {
         textarea.style.height = "auto";
         textarea.style.height = `${textarea.scrollHeight}px`;
-
-        window.scrollTo({
-            top: scrollY,
-            behavior: "instant",
-        });
     };
 
     useLayoutEffect(() => {
         const textarea = textareaRef.current;
         if (!textarea) return;
 
-        const scrollY = window.scrollY;
-
-        resizeTextarea(textarea, scrollY);
+        resizeTextarea(textarea);
 
         if (pendingCaret.current !== null) {
             const caret = Math.min(
@@ -53,36 +44,16 @@ export default function ListTextarea({
         }
     }, [value]);
 
-    const normalizeBullets = (text: string) => {
-        return text
-            .split(/[\n,]+/)
-            .map((entry) =>
-                entry.trim().replace(/^(?:•|-)\s*/, "")
-            )
-            .filter(Boolean)
-            .map((entry) => `• ${capitalizeNamesAndTitles(entry)}`)
-            .join("\n");
-    };
-
     const handleChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
         const textarea = e.currentTarget;
-        const scrollY = window.scrollY;
-        const rawValue = textarea.value;
 
-        const endsWithSeparator = /[,\n]\s*$/.test(rawValue);
-        const normalized = normalizeBullets(rawValue);
+        // Preserve the user's exact text and cursor position.
+        pendingCaret.current = textarea.selectionStart;
 
-        const updatedValue =
-            endsWithSeparator && normalized
-                ? `${normalized}\n• `
-                : normalized;
-
-        pendingCaret.current = updatedValue.length;
-
-        resizeTextarea(textarea, scrollY);
-        onValueChange(name, updatedValue);
+        resizeTextarea(textarea);
+        onValueChange(name, textarea.value);
     };
 
     const handleKeyDown = (
@@ -94,8 +65,6 @@ export default function ListTextarea({
         e.preventDefault();
 
         const textarea = e.currentTarget;
-        const scrollY = window.scrollY;
-
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
 
@@ -124,7 +93,6 @@ export default function ListTextarea({
         pendingCaret.current =
             prefix.length + formattedEntry.length + separator.length + 2;
 
-        resizeTextarea(textarea, scrollY);
         onValueChange(name, updatedValue);
     };
 

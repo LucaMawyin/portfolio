@@ -657,7 +657,7 @@ export default function TechStack(props: {
                                 <div
                                     ref={popupContentRef}
                                     className="
-                                        max-h-[min(70vh,480px)]
+                                        max-h-[min(70vh,320px)]
                                         overflow-y-auto
                                         overscroll-contain
                                         rounded-xl
