@@ -204,50 +204,43 @@ textarea {
   	animation: fade-in 0.8s ease-out 1s forwards, bounce-slow 2s 1.8s infinite;
 }
 
-@keyframes newBadge {
-    0%,
-    100% {
+.animate-new-badge {
+    box-shadow: 0 5px 14px rgba(234, 179, 8, 0.25);
+    animation: newBadgeScale 2s ease-in-out infinite;
+}
+
+@keyframes newBadgeScale {
+    0%, 100% {
         transform: scale(1);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     }
 
     50% {
         transform: scale(1.06);
-        box-shadow: 0 5px 14px rgba(234, 179, 8, 0.4);
-    }
-}
-
-.animate-new-badge {
-    animation: newBadge 2s ease-in-out infinite;
-}
-
-@keyframes updatedBadge {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    50% {
-        transform: scale(1.04);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 }
 
 .animate-updated-badge {
-    animation: updatedBadge 2.5s ease-in-out infinite;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    animation: updatedBadgeScale 2.5s ease-in-out infinite;
 }
 
-@keyframes tagTextPulse {
-    0% {
-        filter: brightness(1);
+@keyframes updatedBadgeScale {
+    0%, 100% {
+        transform: scale(1);
     }
 
     50% {
-        filter: brightness(1.08);
+        transform: scale(1.04);
+    }
+}
+
+@keyframes tagTextPulse {
+    0%, 100% {
+        opacity: 1;
     }
 
-    100% {
-        filter: brightness(1);
+    50% {
+        opacity: 0.85;
     }
 }
 
@@ -256,35 +249,31 @@ textarea {
 }
 
 @keyframes tagPulse {
-    0% {
-        box-shadow: 0 0 3px rgba(var(--glow), 0.1);
-        filter: brightness(1);
+    0%, 100% {
+        opacity: 0.25;
     }
 
     50% {
-        box-shadow: 0 0 10px rgba(var(--glow), 0.3);
-        filter: brightness(1.06);
-    }
-
-    100% {
-        box-shadow: 0 0 3px rgba(var(--glow), 0.1);
-        filter: brightness(1);
+        opacity: 1;
     }
 }
 
 .animate-tag-pulse {
-	animation: tagPulse 2.5s ease-in-out infinite;
+    position: relative;
+    isolation: isolate;
+    animation: none;
 }
 
-@keyframes messageIn {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.animate-tag-pulse::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    box-shadow: 0 0 10px rgba(var(--glow), 0.3);
+    opacity: 0.25;
+    z-index: -1;
+    pointer-events: none;
+    animation: tagPulse 2.5s ease-in-out infinite;
 }
 
 .pillow {
