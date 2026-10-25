@@ -112,12 +112,11 @@ export default function FadeInOnView({
             style={{
                 ...style,
                 transitionDelay:
-                    style?.transitionDelay ??
-                    `${delay}ms`,
+                    style?.transitionDelay ?? `${delay}ms`,
             }}
             className={`
                 relative
-                transition-all
+                transition-[opacity,transform]
                 duration-700
                 ease-out
                 ${animationClasses}
