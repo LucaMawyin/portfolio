@@ -423,7 +423,7 @@ b {
 }
 
 .animate-hold-progress {
-    animation: hold-progress 1000ms ease-in;
+    animation: hold-progress 1000ms linear;
 }
 
 @media (min-width: 768px) {
