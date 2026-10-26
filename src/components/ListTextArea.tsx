@@ -21,15 +21,18 @@ export default function ListTextarea({
 }: ListTextareaProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const pendingCaret = useRef<number | null>(null);
+    const pendingScroll = useRef<{ x: number; y: number } | null>(null);
 
     const resizeTextarea = (textarea: HTMLTextAreaElement) => {
-        textarea.style.height = "auto";
+        textarea.style.height = "0px";
         textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
     useLayoutEffect(() => {
         const textarea = textareaRef.current;
         if (!textarea) return;
+
+        const scroll = pendingScroll.current;
 
         resizeTextarea(textarea);
 
@@ -42,6 +45,11 @@ export default function ListTextarea({
             textarea.setSelectionRange(caret, caret);
             pendingCaret.current = null;
         }
+
+        if (scroll) {
+            window.scrollTo(scroll.x, scroll.y);
+            pendingScroll.current = null;
+        }
     }, [value]);
 
     const handleChange = (
@@ -49,18 +57,20 @@ export default function ListTextarea({
     ) => {
         const textarea = e.currentTarget;
 
-        // Preserve the user's exact text and cursor position.
+        pendingScroll.current = {
+            x: window.scrollX,
+            y: window.scrollY,
+        };
+
         pendingCaret.current = textarea.selectionStart;
 
-        resizeTextarea(textarea);
         onValueChange(name, textarea.value);
     };
 
     const handleKeyDown = (
         e: React.KeyboardEvent<HTMLTextAreaElement>
     ) => {
-        if (e.key !== "Enter" && e.key !== ",") return;
-        if (e.nativeEvent.isComposing) return;
+        if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
 
         e.preventDefault();
 
@@ -68,9 +78,13 @@ export default function ListTextarea({
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
 
+        pendingScroll.current = {
+            x: window.scrollX,
+            y: window.scrollY,
+        };
+
         const before = value.slice(0, start);
         const after = value.slice(end);
-
         const currentEntry = before.split(/[\n,]/).pop() ?? "";
 
         const formattedEntry = capitalizeNamesAndTitles(
@@ -118,6 +132,7 @@ export default function ListTextarea({
                     wordBreak: "normal",
                     boxSizing: "border-box",
                     whiteSpace: "pre-wrap",
+                    overflowAnchor: "none",
                 }}
             />
         </>

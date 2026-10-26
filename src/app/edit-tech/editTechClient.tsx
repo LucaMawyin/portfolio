@@ -95,6 +95,16 @@ export default function EditTechClient(props: {
 
     const goToStep = (targetStep: number) => {
         if (targetStep < step) {
+            if (step === 5 && targetStep < 5) {
+                setForm((prev) => ({
+                    ...prev,
+                    languages: formatList(normalizeList(prev.languages)),
+                    libraries: formatList(normalizeList(prev.libraries)),
+                    tools: formatList(normalizeList(prev.tools)),
+                    skills: formatList(normalizeList(prev.skills)),
+                }));
+            }
+
             setStep(targetStep);
             return;
         }
@@ -115,18 +125,11 @@ export default function EditTechClient(props: {
 
         if (targetStep === 5) {
             setForm((prev) => ({
-                languages: capitalizeNamesAndTitles(
-                    normalizeList(prev.languages)
-                ),
-                libraries: capitalizeNamesAndTitles(
-                    normalizeList(prev.libraries)
-                ),
-                tools: capitalizeNamesAndTitles(
-                    normalizeList(prev.tools)
-                ),
-                skills: capitalizeNamesAndTitles(
-                    normalizeList(prev.skills)
-                ),
+                ...prev,
+                languages: normalizeList(prev.languages),
+                libraries: normalizeList(prev.libraries),
+                tools: normalizeList(prev.tools),
+                skills: normalizeList(prev.skills),
             }));
         }
 
@@ -554,12 +557,10 @@ export default function EditTechClient(props: {
                             variant="secondary"
                             onClick={() => {
                                 if (step !== 1) {
-                                    setStep(step - 1);
+                                    goToStep(step - 1);
                                 } else {
                                     router.refresh();
-                                    router.push(
-                                        nextPage ?? "/tech"
-                                    );
+                                    router.push(nextPage ?? "/tech");
                                 }
                             }}
                         />

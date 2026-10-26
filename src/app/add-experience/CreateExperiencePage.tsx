@@ -14,7 +14,6 @@ import ReactMarkdown from "react-markdown";
 import { Eye, EyeOff } from "lucide-react";
 import Switch from "@/components/Switch";
 import { shadow } from "@/lib/tags";
-import { normalizeArray } from "@/lib/normalizeJSON";
 import ListTextarea from "@/components/ListTextArea";
 import { formatList, normalizeList } from "@/lib/format";
 
@@ -210,6 +209,16 @@ export default function CreateExperiencePage(props: {
 
     const goToStep = (targetStep: number) => {
         if (targetStep < step) {
+            if (step === 4 && targetStep < 4) {
+                setForm((prev) => ({
+                    ...prev,
+                    languages: formatList(normalizeList(prev.languages)),
+                    libraries: formatList(normalizeList(prev.libraries)),
+                    tools: formatList(normalizeList(prev.tools)),
+                    skills: formatList(normalizeList(prev.skills)),
+                }));
+            }
+
             setStep(targetStep);
             return;
         }
@@ -231,18 +240,10 @@ export default function CreateExperiencePage(props: {
         if (targetStep === 4) {
             setForm((prev) => ({
                 ...prev,
-                languages: capitalizeNamesAndTitles(
-                    normalizeList(prev.languages)
-                ),
-                libraries: capitalizeNamesAndTitles(
-                    normalizeList(prev.libraries)
-                ),
-                tools: capitalizeNamesAndTitles(
-                    normalizeList(prev.tools)
-                ),
-                skills: capitalizeNamesAndTitles(
-                    normalizeList(prev.skills)
-                ),
+                languages: normalizeList(prev.languages),
+                libraries: normalizeList(prev.libraries),
+                tools: normalizeList(prev.tools),
+                skills: normalizeList(prev.skills),
             }));
         }
 
@@ -1285,12 +1286,10 @@ export default function CreateExperiencePage(props: {
                             variant="secondary"
                             onClick={() => {
                                 if (step !== 1) {
-                                    setStep(step - 1);
+                                    goToStep(step - 1);
                                 } else {
                                     router.refresh();
-                                    router.push(
-                                        nextPage ?? "/experience"
-                                    );
+                                    router.push(nextPage ?? "/experience");
                                 }
                             }}
                         />
