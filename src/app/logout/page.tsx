@@ -38,9 +38,10 @@ export default function Logout() {
                 you back home...
             </p>
 
-            <a
-                href="/"
+            <div
+                onClick={() => router.push("/")}
                 className="
+                    cursor-pointer
                     mt-8
                     px-5
                     py-2.5
@@ -57,7 +58,7 @@ export default function Logout() {
                 "
             >
                 Back Home
-            </a>
+            </div>
         </main>
     );
 }

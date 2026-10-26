@@ -160,7 +160,7 @@ export default function HomeClient(props :
                 id="hero"
                 className="
                     relative
-                    min-h-screen
+                    min-h-dvh
                     w-full
                     flex justify-center items-center
             ">
@@ -269,10 +269,11 @@ export default function HomeClient(props :
                 </div>
 
                 {/* Scroll down arrow */}
-                <a 
-                    href="#about" 
+                <div
+                    onClick={(e) => handleClick(e, pages.find((page) => page.section === "about")!)}
                     aria-label="Scroll to about section"
                     className="
+                        cursor-pointer
                         absolute 
                         bottom-6 
                         left-1/2 
@@ -297,7 +298,7 @@ export default function HomeClient(props :
                             />
                         </svg>
                     </div>
-                </a>
+                </div>
 
             </section>
 

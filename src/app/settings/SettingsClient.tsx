@@ -14,7 +14,7 @@ import resizeImage from "@/lib/resizeImage";
 import { shadow } from "@/lib/tags";
 import { ChangePasswordResponse, Project, Session, SiteContent, SocialLink, User } from "@/lib/types";
 import { Icon } from "@iconify/react";
-import { RotateCcw } from "lucide-react";
+import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
@@ -1048,10 +1048,21 @@ export default function SettingsClient(props : {
 
                                 <button
                                     type="button"
-                                    className="flex-0 hover:cursor-pointer"
+                                    className="
+                                        cursor-pointer 
+                                        flex-0 
+                                        mb-2
+                                        rounded-md p-1
+                                    "
                                     onClick={() => setShowPassword((p) => !p)}
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
-                                    {showPassword ? "Hide" : "Show"}
+                                    {showPassword ? (
+
+                                        <EyeOff size={20} />
+                                    ) : (
+                                        <Eye size={20} />
+                                    )}
                                 </button>
                             </div>
                             <label

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/Button";
 import { LoginResponse } from "@/lib/types";
 import { useNotifications } from "@/components/NotificationProvider";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login(props : {isLoggedIn : boolean}){
 
@@ -85,9 +86,10 @@ export default function Login(props : {isLoggedIn : boolean}){
                     to log in again.
                 </p>
 
-                <a
-                    href="/"
+                <div
+                    onClick={() => router.push("/")}
                     className="
+                        cursor-pointer
                         mt-8
                         px-5
                         py-2.5
@@ -104,7 +106,7 @@ export default function Login(props : {isLoggedIn : boolean}){
                     "
                 >
                     Return to Home
-                </a>
+                </div>
             </div>
         );
     }
@@ -179,16 +181,20 @@ export default function Login(props : {isLoggedIn : boolean}){
                             <button
                                 type="button"
                                 className="
-                                    shrink-0
-                                    px-2
-                                    font-medium
-                                    text-gray-600
-                                    hover:text-gray-950
-                                    cursor-pointer
+                                    cursor-pointer 
+                                    flex-0 
+                                    mb-2
+                                    rounded-md p-1
                                 "
                                 onClick={() => setShowPassword((p) => !p)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
                             >
-                                {showPassword ? "Hide" : "Show"}
+                                {showPassword ? (
+
+                                    <EyeOff size={20} />
+                                ) : (
+                                    <Eye size={20} />
+                                )}
                             </button>
                         </div>
                     </div>

@@ -1,4 +1,11 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function NotFound() {
+
+    const router = useRouter();
+
     return (
         <main className="min-h-[90vh] flex flex-col items-center justify-center px-6 text-center">
             <p className="text-sm font-semibold tracking-widest uppercase opacity-60">
@@ -13,9 +20,10 @@ export default function NotFound() {
                 The page you're looking for doesn't exist or may have been moved.
             </p>
 
-            <a
-                href="/"
+            <div
+                onClick={() => router.push("/")}
                 className="
+                    cursor-pointer
                     mt-8
                     px-5
                     py-2.5
@@ -32,7 +40,7 @@ export default function NotFound() {
                 "
             >
                 Back Home
-            </a>
+            </div>
         </main>
     );
 }
