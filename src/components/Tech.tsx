@@ -38,20 +38,30 @@ export default function TechStack(props: {
         setMounted(true);
     }, []);
 
+    const parseTechArray = (value: string[] | string | null | undefined): string[] => {
+        if (!value) return [];
+
+        if (Array.isArray(value)) return value;
+
+        try {
+            const parsed: unknown = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    };
+
+    const matchesTech = (item: string, techName: string): boolean => {
+        const cleanName = item.split("&icon=")[0];
+        const itemName = parseTechName(cleanName).name.toLowerCase();
+        const name = parseTechName(techName).name.toLowerCase();
+
+        const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        return new RegExp(`\\b${escapedName}\\b`).test(itemName);
+    };
+
     const getProjectsForTech = (techName: string) => {
-
-        const parseTechArray = (value: string[] | string | null | undefined): string[] => {
-            if (!value) return [];
-
-            if (Array.isArray(value)) return value;
-
-            try {
-                const parsed: unknown = JSON.parse(value);
-                return Array.isArray(parsed) ? parsed : [];
-            } catch {
-                return [];
-            }
-        };
 
         const name = parseTechName(techName).name.toLowerCase();
 
@@ -63,30 +73,12 @@ export default function TechStack(props: {
                 ...parseTechArray(project.skills),
             ];
 
-            return projectTech.some((item) => {
-                const cleanName = item.split("&icon=")[0];
+            return projectTech.some((item) => matchesTech(item, techName));
 
-                return (
-                    parseTechName(cleanName).name.toLowerCase() === name
-                );
-            });
         });
     };
 
     const getExperienceForTech = (techName: string) => {
-
-        const parseTechArray = (value: string[] | string | null | undefined): string[] => {
-            if (!value) return [];
-
-            if (Array.isArray(value)) return value;
-
-            try {
-                const parsed: unknown = JSON.parse(value);
-                return Array.isArray(parsed) ? parsed : [];
-            } catch {
-                return [];
-            }
-        };
 
         const name = parseTechName(techName).name.toLowerCase();
 
@@ -98,13 +90,7 @@ export default function TechStack(props: {
                 ...parseTechArray(exp.skills),
             ];
 
-            return experienceTech.some((item) => {
-                const cleanName = item.split("&icon=")[0];
-
-                return (
-                    parseTechName(cleanName).name.toLowerCase() === name
-                );
-            });
+            return experienceTech.some((item) => matchesTech(item, techName));
         });
     };
 
