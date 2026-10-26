@@ -2,7 +2,17 @@ import { SocialLink } from "@/lib/types";
 
 export default function Footer(props : {links: SocialLink[]}){
     return (
-        <footer className="w-full py-4 flex flex-col items-center gap-3 text-sm text-gray-500">
+        <footer className="
+            w-full 
+            py-4 
+            flex 
+            flex-col 
+            items-center 
+            gap-3 
+            text-sm 
+            text-gray-500
+            z-50
+        ">
             <p>© {new Date().getFullYear()} Luca Mawyin</p>
 
             <div className="flex flex-wrap justify-center gap-4">
