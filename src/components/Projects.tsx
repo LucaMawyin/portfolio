@@ -40,6 +40,10 @@ export default function Projects(props: {
     const [holdingProjectId, setHoldingProjectId] =
         useState<number | null>(null);
 
+    const modalTouchStartY = useRef<number | null>(null);
+    const modalTouchStartScrollTop = useRef(0);
+    const [isClosing, setIsClosing] = useState(false);
+    const [closeDirection, setCloseDirection] = useState<"up" | "down">("down");
 
     // Project ineractions
     const startX = useRef<number | null>(null);
@@ -60,12 +64,16 @@ export default function Projects(props: {
     };
 
     const closeModal = () => {
+        if (isClosing) return;
+
         cancelModalClose();
+        setIsClosing(true);
 
         closeTimeout.current = setTimeout(() => {
             setHoveredProject(null);
             setIsInteracting(false);
-        }, 100);
+            setIsClosing(false);
+        }, 200);
     };
 
     const holdTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -764,7 +772,7 @@ export default function Projects(props: {
                 typeof document !== "undefined" &&
                 createPortal(
                     <div
-                        className="
+                        className={`
                             fixed
                             inset-0
                             z-9999
@@ -773,9 +781,39 @@ export default function Projects(props: {
                             overscroll-contain
                             bg-black/50
                             backdrop-blur-[2px]
-                        "
+
+                            ${isClosing
+                                ? "animate-modal-backdrop-out"
+                                : "animate-modal-backdrop-in"
+                            }
+                        `}
                         onWheel={(e) => e.stopPropagation()}
                         onClick={closeModal}
+                        onTouchStart={(e) => {
+                            modalTouchStartY.current = e.touches[0].clientY;
+                            modalTouchStartScrollTop.current = e.currentTarget.scrollTop;
+                        }}
+                        onTouchEnd={(e) => {
+                            const startY = modalTouchStartY.current;
+                            modalTouchStartY.current = null;
+
+                            if (startY === null) return;
+
+                            const deltaY = e.changedTouches[0].clientY - startY;
+                            const element = e.currentTarget;
+                            const atTop = element.scrollTop <= 0;
+                            const atBottom =
+                                element.scrollTop + element.clientHeight >=
+                                element.scrollHeight - 2;
+
+                            if (deltaY > 100 && atTop) {
+                                setCloseDirection("down");
+                                closeModal();
+                            } else if (deltaY < -100 && atBottom) {
+                                setCloseDirection("up");
+                                closeModal();
+                            }
+                        }}
                     >
                         <div
                             className="
@@ -787,12 +825,19 @@ export default function Projects(props: {
                             "
                         >
                             <div
-                                className="
+                                className={`
                                     relative
                                     my-auto
                                     h-fit
-                                    animate-modal-fade-up
-                                "
+
+                                    ${
+                                        isClosing
+                                            ? closeDirection === "down"
+                                                ? "animate-modal-fade-down"
+                                                : "animate-modal-fade-up-out"
+                                            : "animate-modal-fade-up"
+                                    }
+                                `}
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <div className="relative">

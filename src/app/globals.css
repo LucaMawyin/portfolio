@@ -422,6 +422,54 @@ b {
     }
 }
 
+@keyframes modal-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modal-backdrop-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes modal-fade-down {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+    }
+}
+
+@keyframes modal-fade-up-out {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.96);
+    }
+}
+
+.animate-modal-backdrop-in {
+    animation: modal-backdrop-in 200ms ease-out both;
+}
+
+.animate-modal-backdrop-out {
+    animation: modal-backdrop-out 200ms ease-in both;
+}
+
+.animate-modal-fade-down {
+    animation: modal-fade-down 200ms ease-in both;
+}
+
+.animate-modal-fade-up-out {
+    animation: modal-fade-up-out 200ms ease-in both;
+}
+
 .animate-hold-progress {
     animation: hold-progress 1000ms linear;
 }
