@@ -6,16 +6,12 @@ export function parseTechName(value: string): {
     name: string;
     iconOverride?: string;
 } {
-    const [name, ...params] = value.split("&");
-
-    const iconParam = params.find((param) =>
-        param.startsWith("icon=")
-    );
+    const [name, iconOverride] = value.split(/&icon=/, 2);
 
     return {
         name: name.trim(),
-        iconOverride: iconParam
-            ? decodeURIComponent(iconParam.slice("icon=".length))
+        iconOverride: iconOverride
+            ? decodeURIComponent(iconOverride)
             : undefined,
     };
 }

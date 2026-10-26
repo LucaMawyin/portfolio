@@ -1,6 +1,6 @@
 "use client";
 
-import { Experience } from "@/lib/types";
+import { Experience, Tech } from "@/lib/types";
 import FadeInOnView from "./FadeInOnView";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -12,9 +12,14 @@ import AddButton from "./AddButton";
 import EditButton from "./EditButton";
 import { shadow } from "@/lib/tags";
 import TechBadges from "./TechBadges";
+import { parseTechName } from "@/lib/techIcons";
 
 
-export default function ExperienceClient(props: { isLoggedIn:boolean; experienceList: Experience[] }) {
+export default function ExperienceClient(props: { 
+    isLoggedIn:boolean; 
+    experienceList: Experience[] ;
+    techStack: Tech[];
+}) {
 
     const router = useRouter();
     const [experience, setExperience] = useState<Experience[]>(
@@ -39,6 +44,24 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                 (certificates.length * (certificates.length - 1) / 2) * 64
             }px)`
             : "0px";
+
+    const applyTechIconOverrides = (items: string[]) =>
+        items.map((item) => {
+            const parsed = parseTechName(item);
+
+            const existing = props.techStack.find((entry) => {
+                const tech = parseTechName(entry.name);
+
+                return (
+                    tech.name.toLowerCase() === parsed.name.toLowerCase() &&
+                    !!tech.iconOverride
+                );
+            });
+
+            return existing
+                ? `${parseTechName(existing.name).name}&icon=${parseTechName(existing.name).iconOverride}`
+                : item;
+        });
     
     return (
         <div
@@ -141,6 +164,7 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                 : exp.skills || []),
                         ];
 
+                        const finalTech = applyTechIconOverrides(technologies);
                         
                         return (
                             <div
@@ -309,28 +333,32 @@ export default function ExperienceClient(props: { isLoggedIn:boolean; experience
                                         </div>
 
                                     </div>
-                                    
-                                    {/* CONTENT */}
-                                    <div className="text-sm mt-2">
-                                        <ReactMarkdown
-                                            components={{
-                                                ul: ({ ...props }) => (
-                                                    <ul className="list-disc pl-5 space-y-1" {...props} />
-                                                ),
-                                                li: ({ ...props }) => (
-                                                    <li {...props} />
-                                                ),
-                                            }}
-                                            >
-                                            {exp.description}
-                                        </ReactMarkdown>
-                                    </div>
 
-                                    {/* TECH STACK */}
-                                    <TechBadges
-                                        items={technologies}
-                                        className="bg-gray-200 border border-gray-300"
-                                    />
+                                    <div className="flex flex-col flex-1 gap-4 justify-evenly">
+                                        {/* CONTENT */}
+                                        <div className="text-sm mt-2">
+                                            <ReactMarkdown
+                                                components={{
+                                                    ul: ({ ...props }) => (
+                                                        <ul className="list-disc pl-5 space-y-1" {...props} />
+                                                    ),
+                                                    li: ({ ...props }) => (
+                                                        <li {...props} />
+                                                    ),
+                                                }}
+                                                >
+                                                {exp.description}
+                                            </ReactMarkdown>
+                                        </div>
+
+                                        {/* TECH STACK */}
+                                        <TechBadges
+                                            items={finalTech}
+                                            className="bg-gray-200 border border-gray-300"
+                                        />                                        
+                                    </div>
+                                    
+
 
                                     
                                     {props.isLoggedIn && (

@@ -321,6 +321,7 @@ export default function HomeClient(props :
                 <ExperienceClient
                     experienceList={props.experience}
                     isLoggedIn={props.isLoggedIn}
+                    techStack={props.tech}
                 />
             </section>
         </>
