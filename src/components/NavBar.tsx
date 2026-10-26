@@ -6,8 +6,9 @@ import { getIcon, pages } from "@/lib/info";
 import { usePathname, useRouter } from "next/navigation";
 import { Page, SocialLink } from "@/lib/types";
 import { getHref } from "@/lib/getHref";
-import { BriefcaseBusiness, Circle, FileText, FolderGit2, GraduationCap, House, LogOut, Menu, Settings, UserRound, Wrench, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Icon } from "@iconify/react";
+import { getPageIcon } from "@/lib/getPageIcon";
 
 export default function NavBar( props : {
     isLoggedIn : boolean, 
@@ -51,12 +52,16 @@ export default function NavBar( props : {
     const router = useRouter();
     const pathname = usePathname();
     const handleClick = (
-        e: React.MouseEvent<HTMLAnchorElement>,
+        e: React.MouseEvent<HTMLElement>,
         page: Page
     ) => {
-        if (page.newTab) return;
-
+        
         e.preventDefault();
+
+        if (page.newTab) {
+            window.open(getHref(page), "_blank", "noopener,noreferrer");
+            return;
+        }
 
         const isHomeSection = pages.some(
             (p) =>
@@ -106,7 +111,7 @@ export default function NavBar( props : {
         router.push(page.href);
     };
 
-    const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const handleHomeClick = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
 
         const isHomeSection = pages.some(
@@ -224,36 +229,57 @@ export default function NavBar( props : {
                     text-base
                     whitespace-nowrap
                 ">
-                    <a
-                        href="/"
+                    <div
                         onClick={handleHomeClick}
                         className="
-                            transition-transform duration-(--transition-duration)
-                            hover:scale-(--link-scale)
+                            cursor-pointer
+                            transition-transform 
+                            duration-(--transition-duration)
+                            hover:scale-105
                         "
                     >
                         Luca Mawyin
-                    </a>
-                    <div className="flex gap-8">
+                    </div>
+                    <div className="flex gap-[clamp(0.75rem,2vw,2rem)]">
                         {visiblePages
-                            .filter((page) => (!page.mobile && page.show))
-                            .map((page) => (
-                            <a
-                                key={page.title}
-                                href={getHref(page)}
-                                onClick={(e) => {
-                                    handleClick(e, page);
-                                }}
-                                target={page.newTab ? "_blank" : undefined}
-                                className="
-                                    transition-transform duration-(--transition-duration)
-                                    hover:scale-(--link-scale)
-                                "
-                            >
-                                {capitalizeNamesAndTitles(page.title)}
-                            </a>
-                            ))
-                        }                    
+                            .filter((page) => !page.mobile && page.show)
+                            .map((page) => {
+                                const Icon = getPageIcon(page.title);
+
+                                return (
+                                    <div
+                                        key={page.title}
+                                        onClick={(e) => handleClick(e, page)}
+                                        rel={page.newTab ? "noopener noreferrer" : undefined}
+                                        className="
+                                            cursor-pointer
+                                            group
+                                            flex
+                                            items-center
+                                            gap-1.5
+                                            text-muted-foreground
+                                            transition-colors
+                                            duration-200
+                                            hover:text-foreground
+                                        "
+                                    >
+                                        <Icon
+                                            size={16}
+                                            strokeWidth={1.75}
+                                            className="
+                                                shrink-0
+                                                transition-transform
+                                                duration-200
+                                                group-hover:-translate-y-0.5
+                                            "
+                                        />
+                                        <span className="mt-0.5">
+                                            {capitalizeNamesAndTitles(page.title)}
+                                        </span>
+                                    </div>
+                                );
+                            })
+                        }              
                     </div>
 
                 </div>
@@ -265,14 +291,53 @@ export default function NavBar( props : {
                     gap-3
                     px-4 py-3
                 ">
-                    <a
-                        href="/"
+                    <div
                         aria-label="Go to homepage"
-                        className="transition-transform duration-200 hover:scale-110"
+                        className="
+                            cursor-pointer
+                            group 
+                            flex 
+                            shrink-0 
+                            items-center 
+                            gap-2 
+                            whitespace-nowrap 
+                        "
                         onClick={handleHomeClick}
                     >
-                        Luca Mawyin
-                    </a>
+                        
+                        <span className="
+                            flex 
+                            w-7 
+                            h-7 
+                            items-center 
+                            justify-center 
+                            squircle
+                            pillow-black
+                            pillow-hover-black
+                            transition-all!
+                            duration-200
+                            group-hover:scale-110
+                        ">
+                            <img
+                                src="/logo.svg"
+                                alt="logo"
+                            />
+                        </span>
+
+                        {/* Name */}
+                        <span
+                            className="
+                                mt-0.5
+                                hidden 
+                                min-[380px]:inline
+                                transition-transform
+                                duration-200
+                                group-hover:translate-x-1
+                            "
+                        >
+                            Luca Mawyin
+                        </span>
+                    </div>
                     
                     {props.links.length > 0 && (
                         <div className="flex items-center gap-6">
@@ -429,29 +494,17 @@ export default function NavBar( props : {
                     {visiblePages
                         .filter((page) => page.show && !page.requireLogin)
                         .map((page) => {
-                            const title = page.title.toLowerCase();
-
-                            const Icon =
-                                title === "home" ? House :
-                                title.includes("experience") ? BriefcaseBusiness :
-                                title.includes("education") ? GraduationCap :
-                                title.includes("project") ? FolderGit2 :
-                                title.includes("about") ? UserRound :
-                                title.includes("settings") ? Settings :
-                                title.includes("tech") ? Wrench :
-                                title.includes("resume") ? FileText :
-                                Circle;
+                            const Icon = getPageIcon(page.title);
 
                             return (
-                                <a
+                                <div
                                     key={page.title}
-                                    href={getHref(page)}
-                                    target={page.newTab ? "_blank" : undefined}
                                     rel={page.newTab ? "noopener noreferrer" : undefined}
                                     aria-label={capitalizeNamesAndTitles(page.title)}
                                     title={capitalizeNamesAndTitles(page.title)}
                                     onClick={(e) => handleClick(e, page)}
                                     className="
+                                        cursor-pointer
                                         flex 
                                         shrink-0 
                                         items-center 
@@ -465,7 +518,7 @@ export default function NavBar( props : {
                                     "
                                 >
                                     <Icon size={20} strokeWidth={1.75} />
-                                </a>
+                                </div>
                             );
                         })}
 
@@ -575,30 +628,20 @@ export default function NavBar( props : {
                         {visiblePages
                             .filter((page) => page.show && page.requireLogin)
                             .map((page) => {
-                                const title = page.title.toLowerCase();
 
-                                const Icon =
-                                    title.includes("experience") ? BriefcaseBusiness :
-                                    title.includes("education") ? GraduationCap :
-                                    title.includes("project") ? FolderGit2 :
-                                    title.includes("about") ? UserRound :
-                                    title.includes("settings") ? Settings :
-                                    title.includes("tech") ? Wrench :
-                                    title.includes("logout") || title.includes("log out") ? LogOut :
-                                    title.includes("resume") ? FileText :
-                                    Circle;
+                                const Icon = getPageIcon(page.title);
 
                                 return (
-                                    <a
+                                    <div
                                         key={page.title}
-                                        href={getHref(page)}
-                                        target={page.newTab ? "_blank" : undefined}
                                         rel={page.newTab ? "noopener noreferrer" : undefined}
                                         onClick={(e) => {
                                             setBottomMenuOpen(false);
                                             handleClick(e, page);
                                         }}
                                         className="
+                                            group
+                                            cursor-pointer
                                             flex 
                                             items-center 
                                             gap-3
@@ -610,11 +653,24 @@ export default function NavBar( props : {
                                             hover:bg-gray-100/40
                                         "
                                     >
-                                        <Icon size={18} strokeWidth={1.75} />
-                                        <span className="whitespace-nowrap">
+                                        <Icon 
+                                            size={18} 
+                                            strokeWidth={1.75} 
+                                            className="
+                                                transition-transform
+                                                duration-200
+                                                group-hover:scale-(--link-scale)
+                                            "   
+                                            />
+                                        <span className="
+                                            whitespace-nowrap
+                                            transition-transform
+                                            duration-200
+                                            group-hover:translate-x-1
+                                        ">
                                             {capitalizeNamesAndTitles(page.title)}
                                         </span>
-                                    </a>
+                                    </div>
                                 );
                             })}
                     </div>

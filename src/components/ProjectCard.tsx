@@ -109,10 +109,10 @@ export default function ProjectCard( props : {
         }
 
     return (
-        <a
-            href={props.project.link}
-            target="_blank"
+        <div
+            onClick={() => window.open(props.project.link, "_blank", "noopener,noreferrer")}
             className={`
+                cursor-pointer
                 flex
                 flex-col
                 rounded-xl
@@ -582,6 +582,6 @@ export default function ProjectCard( props : {
                     />
                 </div>
             )}
-        </a>
+        </div>
     );
 }

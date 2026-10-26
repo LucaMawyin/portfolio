@@ -7,9 +7,9 @@ import TechStack from "@/components/Tech";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { getHref } from "@/lib/getHref";
 import { getIcon, pages } from "@/lib/info"; 
-import { Experience, Project, SiteContent, SocialLink, Tech } from "@/lib/types";
+import { Experience, Page, Project, SiteContent, SocialLink, Tech } from "@/lib/types";
 import { Icon } from "@iconify/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -28,6 +28,74 @@ export default function HomeClient(props :
         !page.requireLogin || props.isLoggedIn
     );
 
+    // Handling clicks on navbar links
+    const [pendingScroll, setPendingScroll] = useState<{
+        path: string;
+        id: string;
+    } | null>(null);
+
+    const router = useRouter();
+    const pathname = usePathname();
+    const handleClick = (
+        e: React.MouseEvent<HTMLElement>,
+        page: Page
+    ) => {
+        
+        e.preventDefault();
+
+        if (page.newTab) {
+            window.open(getHref(page), "_blank", "noopener,noreferrer");
+            return;
+        }
+
+        const isHomeSection = pages.some(
+            (p) =>
+                p.href === "/" &&
+                p.section &&
+                `/${p.section}` === pathname
+        );
+
+        const isHome = pathname === "/" || isHomeSection;
+
+        // Home link: scroll to the top
+        if (page.title === "home") {
+            if (isHome) {
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+
+                window.history.replaceState(null, "", "/");
+            } else {
+                router.push("/");
+            }
+
+            return;
+        }
+
+        // Section links
+        if (page.section) {
+            if (!isHome) {
+                setPendingScroll({
+                    path: "/",
+                    id: page.section,
+                });
+
+                router.push("/");
+                return;
+            }
+
+            document.getElementById(page.section)?.scrollIntoView({
+                behavior: "smooth",
+            });
+
+            return;
+        }
+
+        // Other pages
+        router.push(page.href);
+    };
+
     // Page animation on load
     const [loaded, setLoaded] = useState(false);
     useEffect(() => {
@@ -35,7 +103,6 @@ export default function HomeClient(props :
     }, []);
 
     // Scroll to section if URL has section on load
-    const pathname = usePathname();
     useEffect(() => {
 
         if (pathname === "/") return;
@@ -165,12 +232,13 @@ export default function HomeClient(props :
                         {visiblePages
                             .filter((page) => (!page.mobile && page.show))
                             .map((page, index) => (
-                                <a
+                                <div
+                                    onClick={(e) => handleClick(e, page)}
                                     key={page.title}
-                                    href={getHref(page)}
-                                    target={page.newTab ? "_blank" : undefined}
                                     className={`
-                                        relative w-fit
+                                        cursor-pointer
+                                        relative
+                                        w-fit
 
                                         after:content-['']
                                         after:absolute after:left-0 after:bottom-0
@@ -193,7 +261,7 @@ export default function HomeClient(props :
                                     }}
                                 >
                                     {`${capitalizeNamesAndTitles(page.title)}`}
-                                </a>
+                                </div>
                             ))
                         }				
                     </div>

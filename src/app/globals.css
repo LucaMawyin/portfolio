@@ -433,7 +433,7 @@ b {
 }
 
 .liquid-glass {
-    background: color-mix(in srgb, var(--bg) 40%, transparent);
+    background: color-mix(in srgb, var(--bg) 20%, transparent);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
 
@@ -449,7 +449,7 @@ b {
 }
 
 .liquid-glass-dropdown {
-    background: color-mix(in srgb, var(--bg) 40%, transparent);
+    background: color-mix(in srgb, var(--bg) 20%, transparent);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
 

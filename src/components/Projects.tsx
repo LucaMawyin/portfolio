@@ -6,7 +6,6 @@ import ProjectCard from "./ProjectCard";
 import { useRouter } from "next/navigation";
 import FadeInOnView from "./FadeInOnView";
 import { useNotifications } from "./NotificationProvider";
-import Link from "next/link";
 import { createPortal } from "react-dom";
 import AddButton from "./AddButton";
 
@@ -692,9 +691,10 @@ export default function Projects(props: {
             </div>
             
             <FadeInOnView className="fade-right">
-                <Link
-                    href="/projects/all"
+                <div
+                    onClick={() => router.push("/projects/all")}
                     className="
+                        cursor-pointer
                         group
                         flex flex-col items-center
                         mt-[10%] sm:mt-[5%]
@@ -756,7 +756,7 @@ export default function Projects(props: {
                             group-hover:bg-black
                         "
                     />
-                </Link>                
+                </div>                
             </FadeInOnView>
 
 
