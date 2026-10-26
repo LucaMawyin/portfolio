@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useRef, useLayoutEffect } from "react";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
+import { useRef, useLayoutEffect } from "react";
 
 type ListTextareaProps = {
     id: string;

@@ -1,4 +1,3 @@
-import { capitalizeNamesAndTitles } from "./capitalizeNamesAndTitles";
 
 export function normalizeList(value: string): string {
     return value
@@ -42,6 +41,6 @@ export function formatList(
             item.trim().replace(/^(?:•|-)\s*/, "").trim()
         )
         .filter(Boolean)
-        .map((item) => `• ${capitalizeNamesAndTitles(item)}`)
+        .map((item) => `• ${item}`)
         .join("\n");
 }
