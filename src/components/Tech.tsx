@@ -63,8 +63,6 @@ export default function TechStack(props: {
 
     const getProjectsForTech = (techName: string) => {
 
-        const name = parseTechName(techName).name.toLowerCase();
-
         return props.projects.filter((project: Project) => {
             const projectTech = [
                 ...parseTechArray(project.languages),
@@ -79,8 +77,6 @@ export default function TechStack(props: {
     };
 
     const getExperienceForTech = (techName: string) => {
-
-        const name = parseTechName(techName).name.toLowerCase();
 
         return props.experience.filter((exp: Experience) => {
             const experienceTech = [
@@ -250,8 +246,15 @@ export default function TechStack(props: {
     useEffect(() => {
         const grouped = props.tech.reduce(
             (acc: Record<string, string[]>, item) => {
-                acc[item.category] ??= [];
-                acc[item.category].push(item.name);
+                const category = item.category;
+                const name = parseTechName(item.name).name;
+
+                acc[category] ??= [];
+
+                if (!acc[category].includes(name)) {
+                    acc[category].push(name);
+                }
+
                 return acc;
             },
             {}
@@ -271,9 +274,7 @@ export default function TechStack(props: {
                 categories[Math.floor(Math.random() * categories.length)];
 
             const items = grouped[category];
-
-            const item =
-                items[Math.floor(Math.random() * items.length)];
+            const item = items[Math.floor(Math.random() * items.length)];
 
             setHighlighted((current) => ({
                 ...current,
@@ -281,18 +282,16 @@ export default function TechStack(props: {
             }));
         };
 
-        setHighlighted(() => {
-            const initial: Record<string, string> = {};
+        const initial: Record<string, string> = {};
 
-            categories.forEach((category) => {
-                const items = grouped[category];
+        categories.forEach((category) => {
+            const items = grouped[category];
 
-                initial[category] =
-                    items[Math.floor(Math.random() * items.length)];
-            });
-
-            return initial;
+            initial[category] =
+                items[Math.floor(Math.random() * items.length)];
         });
+
+        setHighlighted(initial);
 
         const interval = setInterval(updateHighlight, 2000);
 
