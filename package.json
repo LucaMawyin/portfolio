@@ -28,6 +28,7 @@
     "react": "^19.1.7",
     "react-day-picker": "^10.0.2",
     "react-dom": "^19.1.7",
+    "react-easy-crop": "^6.2.4",
     "react-markdown": "^10.1.0",
     "resend": "^6.12.4",
     "simple-icons": "^16.33.0"

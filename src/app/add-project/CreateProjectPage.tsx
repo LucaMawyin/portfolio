@@ -5,12 +5,10 @@ import resizeImage from "@/lib/resizeImage";
 import Tile from "@/components/Tile";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { LoginResponse, Tag } from "@/lib/types";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { ensurePunctuation } from "@/lib/ensurePunctuation";
 import { useEffect } from "react";
-import { normalizeArray } from "@/lib/normalizeJSON";
 import DeleteButton from "@/components/DeleteButton";
 import { useNotifications } from "@/components/NotificationProvider";
 import ReactMarkdown from "react-markdown";
@@ -22,6 +20,7 @@ import Switch from "@/components/Switch";
 import { Eye, EyeOff, Pin, PinOff } from "lucide-react";
 import ListTextarea from "@/components/ListTextArea";
 import { formatList, normalizeList } from "@/lib/format";
+import ImageCropper from "@/components/ImageCroper";
 
 export default function CreateProjectPage(props : {
     initialData? : any;
@@ -73,6 +72,7 @@ export default function CreateProjectPage(props : {
 
     const [ imageFile, setImageFile ] = useState<File | null>(null);
     const [ preview, setPreview ] = useState<string | null>(null);
+    const [cropSource, setCropSource] = useState<string | null>(null);
 
     const [nextPage, setNextPage] = useState<string | null>(() => {
         if (typeof window === "undefined") return props.referrer ?? null;
@@ -160,39 +160,92 @@ export default function CreateProjectPage(props : {
             [name]: value,
         }));
     };
+
+    const openCropper = (file: File) => {
+        if (!file.type.startsWith("image/")) {
+            notify("Please select an image", "error");
+            return;
+        }
+
+        const source = URL.createObjectURL(file);
+        setCropSource(source);
+    };
   
     // Image select
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         
         const file = e.target.files?.[0];
-        if (!file) return;
 
-        // Resize image until it's under the max size
-        let finalFile = await resizeImage(file, 1200, 0.8, 3 / 2);
-        while (finalFile.size > MAX_SIZE) {
-            finalFile = await resizeImage(finalFile, 1200, 0.8, 3 / 2);
-        }
+        if (file) openCropper(file);
 
-        setImageFile(finalFile);
-        setPreview(URL.createObjectURL(finalFile));
+        // Allow the same file to be selected again.
+        e.target.value = "";
     };
 
     // Image drop
-    const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (
+        e: React.DragEvent<HTMLDivElement>
+    ) => {
         e.preventDefault();
 
         const file = e.dataTransfer.files?.[0];
-        if (!file) return;
-        if (!file.type.startsWith("image/")) return;
 
-        // Resize image until it's under the max size
-        let finalFile = await resizeImage(file, 1200, 0.8, 3 / 2);
-        while (finalFile.size > MAX_SIZE) {
-            finalFile = await resizeImage(finalFile, 1200, 0.8, 3 / 2);
+        if (file) openCropper(file);
+    };
+
+    const handleCrop = async (blob: Blob) => {
+        let previewUrl: string | null = null;
+
+        try {
+            let quality = 0.85;
+            let width = 1200;
+            let finalFile: File;
+
+            // Always start with the original cropped image.
+            while (true) {
+                finalFile = await resizeImage(
+                    new File([blob], "project-thumbnail.jpg", {
+                        type: "image/jpeg",
+                    }),
+                    width,
+                    quality,
+                    3 / 2,
+                );
+
+                if (finalFile.size <= MAX_SIZE) {
+                    break;
+                }
+
+                if (quality > 0.35) {
+                    quality = Math.max(0.35, quality - 0.1);
+                } else if (width > 400) {
+                    width = Math.max(400, Math.round(width * 0.75));
+                    quality = 0.75;
+                } else {
+                    notify(
+                        "Image is too large after compression. Please try another image.",
+                        "error",
+                    );
+                    return;
+                }
+            }
+
+            previewUrl = URL.createObjectURL(finalFile);
+
+            setImageFile(finalFile);
+            setPreview(previewUrl);
+
+            if (cropSource) {
+                URL.revokeObjectURL(cropSource);
+            }
+
+            setCropSource(null);
+        } catch (error) {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+            console.error(error);
+            notify("Failed to crop image", "error");
         }
-
-        setImageFile(finalFile);
-        setPreview(URL.createObjectURL(finalFile));
     };
 
     // Form submit
@@ -605,6 +658,17 @@ export default function CreateProjectPage(props : {
                                             <img src={preview} alt="Preview" className="max-w-1/2 self-center rounded-lg"/>
                                         )}
                                     </div>
+
+                                    {cropSource && (
+                                        <ImageCropper
+                                            image={cropSource}
+                                            onCancel={() => {
+                                                URL.revokeObjectURL(cropSource);
+                                                setCropSource(null);
+                                            }}
+                                            onCrop={handleCrop}
+                                        />
+                                    )}
                                     
                                 </Tile>
                             )}
