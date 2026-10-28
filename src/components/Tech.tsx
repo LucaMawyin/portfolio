@@ -52,13 +52,27 @@ export default function TechStack(props: {
     };
 
     const matchesTech = (item: string, techName: string): boolean => {
-        const cleanName = item.split("&icon=")[0];
-        const itemName = parseTechName(cleanName).name.toLowerCase();
-        const name = parseTechName(techName).name.toLowerCase();
+        const itemName = parseTechName(item.split("&icon=")[0]).name
+            .trim()
+            .toLowerCase();
 
+        const name = parseTechName(techName).name
+            .trim()
+            .toLowerCase();
+
+        if (!name || !itemName) return false;
+
+        // Exact match for names containing special chars
+        if (itemName === name) return true;
+
+        // Escape regex special chars
         const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-        return new RegExp(`\\b${escapedName}\\b`).test(itemName);
+        // Match whole words only when tech name has word boundaries
+        return new RegExp(
+            `(?:^|[^a-zA-Z0-9_])${escapedName}(?:$|[^a-zA-Z0-9_])`,
+            "i"
+        ).test(itemName);
     };
 
     const getProjectsForTech = (techName: string) => {
