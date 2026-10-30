@@ -16,6 +16,7 @@ import Switch from "@/components/Switch";
 import { shadow } from "@/lib/tags";
 import ListTextarea from "@/components/ListTextArea";
 import { formatList, normalizeList } from "@/lib/format";
+import useSwipeNavigation from "@/lib/useSwipeNavigation";
 
 export default function CreateExperiencePage(props: {
     initialData?: any;
@@ -250,6 +251,19 @@ export default function CreateExperiencePage(props: {
         setStep(targetStep);
     };
 
+    const swipeHandlers = useSwipeNavigation({
+        onSwipeLeft: () => {
+            if (step < steps.length) {
+                goToStep(step + 1);
+            }
+        },
+        onSwipeRight: () => {
+            if (step > 1) {
+                goToStep(step - 1);
+            }
+        },
+    });
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -431,7 +445,16 @@ export default function CreateExperiencePage(props: {
 
                 <div className="my-auto!">
                     {/* FORM */}
-                    <div className="relative w-full mt-0! px-2">
+                    <div 
+                        className="
+                            relative 
+                            w-full 
+                            mt-0! 
+                            px-2 
+                            touch-pan-y
+                        "
+                        {...swipeHandlers}
+                    >
                         <div
                             key={step}
                             className="

@@ -21,6 +21,7 @@ import { Eye, EyeOff, Pin, PinOff } from "lucide-react";
 import ListTextarea from "@/components/ListTextArea";
 import { formatList, normalizeList } from "@/lib/format";
 import ImageCropper from "@/components/ImageCroper";
+import useSwipeNavigation from "@/lib/useSwipeNavigation";
 
 export default function CreateProjectPage(props : {
     initialData? : any;
@@ -79,6 +80,9 @@ export default function CreateProjectPage(props : {
 
         return sessionStorage.getItem("nextPage") ?? props.referrer ?? null;
     });
+
+    const touchStartX = useRef<number | null>(null);
+    const touchStartY = useRef<number | null>(null);
 
     // Setting data if loading a draft that exists
     useEffect(() => {
@@ -434,6 +438,19 @@ export default function CreateProjectPage(props : {
         setStep(targetStep);
     };
 
+    const swipeHandlers = useSwipeNavigation({
+        onSwipeLeft: () => {
+            if (step < steps.length) {
+                goToStep(step + 1);
+            }
+        },
+        onSwipeRight: () => {
+            if (step > 1) {
+                goToStep(step - 1);
+            }
+        },
+    });
+
     const { glowColour, glowRGB, borderColour } = shadow(form.colour);
 
     const { 
@@ -550,7 +567,16 @@ export default function CreateProjectPage(props : {
                 
                 <div className="my-auto!">
                 {/* FORM */}
-                    <div className="relative w-full mt-0! px-2">
+                    <div 
+                        className="
+                            relative 
+                            w-full 
+                            mt-0! 
+                            px-2 
+                            touch-pan-y
+                        "
+                        {...swipeHandlers}
+                    >
                         <div
                             key={step}
                             className="

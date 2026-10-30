@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Badge from "@/components/Badge";
 import { formatList, normalizeList } from "@/lib/format";
 import ListTextarea from "@/components/ListTextArea";
+import useSwipeNavigation from "@/lib/useSwipeNavigation";
 
 export default function EditTechClient(props: {
     tech: Tech[];
@@ -135,6 +136,19 @@ export default function EditTechClient(props: {
 
         setStep(targetStep);
     };
+
+    const swipeHandlers = useSwipeNavigation({
+        onSwipeLeft: () => {
+            if (step < steps.length) {
+                goToStep(step + 1);
+            }
+        },
+        onSwipeRight: () => {
+            if (step > 1) {
+                goToStep(step - 1);
+            }
+        },
+    });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -273,7 +287,16 @@ export default function EditTechClient(props: {
 
                 <div className="my-auto!">
                     {/* FORM */}
-                    <div className="relative w-full mt-0! px-2">
+                    <div 
+                        className="
+                            relative 
+                            w-full 
+                            mt-0! 
+                            px-2 
+                            touch-pan-y
+                        "
+                        {...swipeHandlers}
+                    >
                         <div
                             key={step}
                             className="
