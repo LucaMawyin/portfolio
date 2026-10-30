@@ -863,98 +863,165 @@ export default function SettingsClient(props : {
                                 </div>
                             )}
 
-                            {links.map((link) => (
-                                <div
-                                    key={link.id}
-                                    className="
-                                        flex 
-                                        items-center 
-                                        gap-4
-                                        min-w-0 
-                                        max-w-full
-                                        p-3 
-                                        pillow 
-                                        pillow-hover
-                                        hover:scale-(--subtle-scale)
-                                        squircle-medium
-                                        w-full
-                                        lg:w-fit
-                                    "
-                                >
-                                    <a
-                                        href={link.url}
-                                        aria-label={`${link.title} profile`}
-                                        target={link.url.startsWith("mailto:") ? undefined : "_blank"}
-                                        rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                            {links.map((link) => {
+                                const isEditing = editingLinkId === link.id;
+
+                                return (
+                                    <div
+                                        key={link.id}
                                         className="
-                                            flex items-center gap-2
-                                            min-w-0 flex-1
+                                            flex flex-col
+                                            gap-4
+                                            min-w-0
+                                            max-w-full
+                                            w-full
+                                            p-3
+                                            pillow
+                                            pillow-hover
+                                            squircle-medium
                                         "
                                     >
-                                        <span className="
-                                            flex 
-                                            shrink-0 
-                                            items-center 
-                                            justify-center
-                                            w-7 h-7 
-                                            bg-black 
-                                            squircle
-                                            pillow-black
-                                            pillow-hover-black
-                                        ">
-                                            <Icon
-                                                icon={getIcon(link.url)}
-                                                width={18}
-                                                height={18}
-                                                color="white"
+                                        <div className="flex items-center gap-4 min-w-0">
+                                            <a
+                                                href={link.url}
+                                                aria-label={`${link.title} profile`}
+                                                target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+                                                rel={link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                                                className="flex items-center gap-2 min-w-0 flex-1"
+                                            >
+                                                <span className="
+                                                    flex shrink-0 items-center justify-center
+                                                    w-7 h-7 bg-black squircle
+                                                    pillow-black pillow-hover-black
+                                                ">
+                                                    <Icon
+                                                        icon={getIcon(link.url)}
+                                                        width={18}
+                                                        height={18}
+                                                        color="white"
+                                                    />
+                                                </span>
+
+                                                <span className="font-medium truncate">
+                                                    {link.title}
+                                                </span>
+                                            </a>
+
+                                            <EditButton
+                                                action={() => {
+                                                    if (isEditing) {
+                                                        setEditingLinkId(null);
+                                                        setLinkName("");
+                                                        setLinkUrl("");
+                                                        return;
+                                                    }
+
+                                                    setEditingLinkId(link.id);
+                                                    setLinkName(link.title);
+                                                    setLinkUrl(link.url);
+                                                }}
+                                                x={3}
+                                                y={1}
                                             />
-                                        </span>
 
-                                        <span className="font-medium truncate">
-                                            {link.title}
-                                        </span>
-                                    </a>
+                                            <DeleteButton
+                                                action={() => handleRemoveLink(link.id)}
+                                                itemName={link.title}
+                                                x={3}
+                                                y={1}
+                                            />
+                                        </div>
 
-                                    <EditButton
-                                        action={() => {
-                                            setEditingLinkId(link.id);
-                                            setLinkName(link.title);
-                                            setLinkUrl(link.url);
-                                            setShowLinkForm(true);
-                                        }}
-                                        x={3}
-                                        y={1}
-                                    />
+                                        {/* Inline edit form */}
+                                        {isEditing && (
+                                            <form
+                                                onSubmit={handleSaveLink}
+                                                className="flex flex-col gap-3 border-t pt-4"
+                                            >
+                                                <div className="flex flex-col gap-1">
+                                                    <label htmlFor={`link-name-${link.id}`} className="text-gray-500">
+                                                        Link Title
+                                                    </label>
 
-                                    <DeleteButton
-                                        action={() => handleRemoveLink(link.id)}
-                                        itemName={link.title}
-                                        x={3}
-                                        y={1}
-                                    />
-                                </div>
-                            ))}
+                                                    <input
+                                                        id={`link-name-${link.id}`}
+                                                        type="text"
+                                                        value={linkName}
+                                                        onChange={(e) =>
+                                                            setLinkName(capitalizeNamesAndTitles(e.target.value))
+                                                        }
+                                                        placeholder="e.g. GitHub"
+                                                        maxLength={100}
+                                                        required
+                                                        className="w-full"
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col gap-1">
+                                                    <label htmlFor={`link-url-${link.id}`} className="text-gray-500">
+                                                        URL
+                                                    </label>
+
+                                                    <input
+                                                        id={`link-url-${link.id}`}
+                                                        type="text"
+                                                        inputMode="url"
+                                                        value={linkUrl}
+                                                        onChange={(e) => setLinkUrl(e.target.value)}
+                                                        placeholder="https://github.com/username or email@example.com"
+                                                        maxLength={2048}
+                                                        required
+                                                        className="w-full"
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-3">
+                                                    <Button
+                                                        text={savingLink ? "Saving..." : "Save Changes"}
+                                                        type="submit"
+                                                        disabled={savingLink}
+                                                        x={4}
+                                                        y={2}
+                                                    />
+
+                                                    <Button
+                                                        text="Cancel"
+                                                        type="button"
+                                                        variant="secondary"
+                                                        x={4}
+                                                        y={2}
+                                                        onClick={() => {
+                                                            setEditingLinkId(null);
+                                                            setLinkName("");
+                                                            setLinkUrl("");
+                                                        }}
+                                                    />
+                                                </div>
+                                            </form>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         {/* Add link form */}
                         {showLinkForm ? (
                             <form
                                 onSubmit={handleSaveLink}
-                                className="flex flex-col gap-3"
+                                className="flex flex-col gap-3 p-4 pillow squircle-medium"
                             >
                                 <div className="flex flex-col gap-1">
-                                    <label
-                                        htmlFor="link-name"
-                                        className="text-gray-500"
-                                    >
+                                    <label htmlFor="new-link-name" className="text-gray-500">
                                         Link Title
                                     </label>
 
                                     <input
-                                        id="link-name"
+                                        id="new-link-name"
                                         type="text"
                                         value={linkName}
-                                        onChange={(e) => setLinkName(capitalizeNamesAndTitles(e.target.value))}
+                                        onChange={(e) =>
+                                            setLinkName(capitalizeNamesAndTitles(e.target.value))
+                                        }
                                         placeholder="e.g. GitHub"
                                         maxLength={100}
                                         required
@@ -963,15 +1030,12 @@ export default function SettingsClient(props : {
                                 </div>
 
                                 <div className="flex flex-col gap-1">
-                                    <label
-                                        htmlFor="link-url"
-                                        className="text-gray-500"
-                                    >
+                                    <label htmlFor="new-link-url" className="text-gray-500">
                                         URL
                                     </label>
 
                                     <input
-                                        id="link-url"
+                                        id="new-link-url"
                                         type="text"
                                         inputMode="url"
                                         value={linkUrl}
@@ -983,15 +1047,11 @@ export default function SettingsClient(props : {
                                     />
                                 </div>
 
-                                <div className="flex flex-wrap gap-4">
+                                <div className="flex flex-wrap gap-3">
                                     <Button
-                                        text={
-                                            savingLink
-                                                ? editingLinkId !== null ? "Saving..." : "Adding..."
-                                                : editingLinkId !== null ? "Save Changes" : "Save Link"
-                                        }
+                                        text={savingLink ? "Adding..." : "Save Link"}
                                         type="submit"
-                                        className="w-full sm:w-fit"
+                                        disabled={savingLink}
                                         x={4}
                                         y={2}
                                     />
@@ -1000,12 +1060,10 @@ export default function SettingsClient(props : {
                                         text="Cancel"
                                         type="button"
                                         variant="secondary"
-                                        className="w-full sm:w-fit"
                                         x={4}
                                         y={2}
                                         onClick={() => {
                                             setShowLinkForm(false);
-                                            setEditingLinkId(null);
                                             setLinkName("");
                                             setLinkUrl("");
                                         }}
@@ -1014,7 +1072,12 @@ export default function SettingsClient(props : {
                             </form>
                         ) : (
                             <AddButton
-                                action={() => setShowLinkForm(true)}
+                                action={() => {
+                                    setEditingLinkId(null);
+                                    setLinkName("");
+                                    setLinkUrl("");
+                                    setShowLinkForm(true);
+                                }}
                                 x={4}
                                 y={2}
                                 text="Add Link"
