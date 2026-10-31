@@ -37,6 +37,14 @@
     --input-colour: #d9dee4;
     --input-focus-colour: #c4cbd3;
 
+    /* Liquid glass colours */
+    --glass-colour: 255, 255, 255;
+    --glass-opacity: 0.4;
+    --glass-border-colour: 255, 255, 255;
+    --glass-border-opacity: 0.3;
+    --glass-highlight-opacity: 0.5;
+    --glass-shadow-opacity: 0.18;
+
     --pillow-bg: linear-gradient(135deg, #ffffff, #e6e6e6);
     --pillow-shadow: 0 10px 16px rgba(0, 0, 0, 0.25);
     --pillow-shadow-hover: 0 14px 22px rgba(0, 0, 0, 0.32);
@@ -481,17 +489,30 @@ b {
 }
 
 .liquid-glass {
-    background: color-mix(in srgb, var(--bg) 40%, transparent);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.02) 45%,
+            rgba(0, 0, 0, 0.04) 100%
+        ),
+        rgba(
+            var(--glass-colour, 255, 255, 255),
+            var(--glass-opacity, 0.78)
+        );
+
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
 
-    border: 1px solid rgba(255, 255, 255, 0.30);
+    border: 1px solid
+        rgba(
+            var(--glass-border-colour, 255, 255, 255),
+            var(--glass-border-opacity, 0.3)
+        );
 
     box-shadow:
-        0 0.25em 1.5em rgba(0, 0, 0, 0.18),
-        0 0.125em 0.5em rgba(0, 0, 0, 0.10),
-        inset 0 1px 0 rgba(255, 255, 255, 0.50),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+        0 8px 24px rgba(0, 0, 0, var(--glass-shadow-opacity, 0.3)),
+        inset 0 1px 0 rgba(255, 255, 255, var(--glass-highlight-opacity, 0.2));
 
     isolation: isolate;
 }
