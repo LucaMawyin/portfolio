@@ -116,7 +116,7 @@ export default function FadeInOnView({
             }}
             className={`
                 relative
-                transition-[opacity,transform]
+                transition-all
                 duration-700
                 ease-out
                 ${animationClasses}
