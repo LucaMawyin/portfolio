@@ -344,9 +344,12 @@ export default function ProjectPageClient({
 
                 {/* TECHNOLOGIES */}
                 <div className="
+                    flex
+                    flex-col
                     pt-4
                     border-t
                     border-gray-200
+                    gap-2
                 ">
                     <h2 className="text-2xl font-bold">
                         Technologies

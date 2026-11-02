@@ -7,6 +7,7 @@ import TechBadges from "./TechBadges";
 import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 import { parseTechName } from "@/lib/techIcons";
+import { EyeOff, Pin } from "lucide-react";
 
 export default function ProjectCard( props : {
     project : Project;
@@ -157,7 +158,7 @@ export default function ProjectCard( props : {
                     items-center 
                     sm:items-stretch 
                     gap-2
-                    pb-4
+                    pb-3
                 `}
             >
                 <h1
@@ -170,27 +171,57 @@ export default function ProjectCard( props : {
                 >
                     {props.project.name}
                 </h1>
+
+                <div className="
+                    flex
+                    flex-row
+                    items-center
+                    gap-2
+                ">
+                    {props.project.tag && (
+                        
+                        <Badge
+                            text={props.project.tag}
+                            style={{
+                                "--glow" : glowRGB,
+                                backgroundColor: props.project.colour,
+                                borderColor: borderColour,
+                                color: glowColour,
+                            } as React.CSSProperties}
+                            textSize="xl"
+                            px={3}
+                            py={0}
+                            className="
+                                border
+                                animate-tag-pulse
+                                animate-tag-text
+                            "
+                        />
+                    )}      
+
+                    {(props.project.pinned === 1|| props.project.hidden === 1) && props.isLoggedIn &&(
+                        <div className="flex flex-row gap-4">
+                            {/* PIN */}
+                            {(props.project.pinned === 1) && (
+                                <Pin
+                                    size={20}
+                                    className="text-gray-400"
+                                />
+
+                            )}
+
+                            {/* HIDDEN */}
+                            {(props.project.hidden === 1) && (
+                                <EyeOff
+                                    size={20}
+                                    className="text-gray-400"
+                                />
+                            )}                    
+                        </div>                    
+                    )}              
+                </div>
                 
-                {props.project.tag && (
-                    
-                    <Badge
-                        text={props.project.tag}
-                        style={{
-                            "--glow" : glowRGB,
-                            backgroundColor: props.project.colour,
-                            borderColor: borderColour,
-                            color: glowColour,
-                        } as React.CSSProperties}
-                        textSize="xl"
-                        px={3}
-                        py={0}
-                        className="
-                            border
-                            animate-tag-pulse
-                            animate-tag-text
-                        "
-                    />
-                )}
+
 
                 {props.holdProgress !== undefined && (
                     <>
@@ -225,41 +256,6 @@ export default function ProjectCard( props : {
                 )}
             </div>
 
-            {/* STATUS / PIN / HIDDEN */}
-            <div className={`
-                min-h-8
-                flex 
-                ${props.position === "start" ? "sm:flex-row" : "sm:flex-row-reverse"}
-                items-center 
-                justify-center
-                sm:justify-between
-                gap-4
-            `}>
-                
-                {(props.project.pinned === 1|| props.project.hidden === 1) && props.isLoggedIn &&(
-                    <div className="flex flex-row gap-4">
-                        {/* PIN */}
-                        {(props.project.pinned === 1) && (
-                            <Badge
-                                text="Pinned"
-                                className="bg-yellow-400"
-                            />
-
-                        )}
-
-                        {/* HIDDEN */}
-                        {(props.project.hidden === 1) && (
-                            <Badge
-                                text="Hidden"
-                                className="bg-orange-400"
-                            />
-                        )}                    
-                    </div>                    
-                )}
-
-
-            </div>
-
 
             {/* Tile Content */}
             <div
@@ -284,6 +280,7 @@ export default function ProjectCard( props : {
                     flex 
                     justify-center 
                     items-center
+                    mt-4
                 ">
                     {props.project.image && (() => {
                         return (
@@ -456,41 +453,40 @@ export default function ProjectCard( props : {
                     min-w-70
                     justify-evenly
                     text-sm
+                    gap-2
                 ">
                     <div className={props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}>
                         <ReactMarkdown>{props.project.description}</ReactMarkdown>
                     </div>
-                    <div className="flex flex-col gap-2">
 
-                        <TechBadges
-                            label="Languages"
-                            items={finalLanguages}
-                            condensed={props.condenseTech}
-                            className="bg-gray-200 border border-gray-300"
-                        />
+                    <TechBadges
+                        label="Languages"
+                        items={finalLanguages}
+                        condensed={props.condenseTech}
+                        className="bg-gray-200 border border-gray-300"
+                    />
 
-                        <TechBadges
-                            label="Libraries"
-                            items={finalLibraries}
-                            condensed={props.condenseTech}
-                            className="bg-gray-100 border border-gray-300"
-                        />
+                    <TechBadges
+                        label="Libraries"
+                        items={finalLibraries}
+                        condensed={props.condenseTech}
+                        className="bg-gray-100 border border-gray-300"
+                    />
 
-                        <TechBadges
-                            label="Tools"
-                            items={finalTools}
-                            condensed={props.condenseTech}
-                            className="bg-gray-300 border border-gray-400"
-                        />
+                    <TechBadges
+                        label="Tools"
+                        items={finalTools}
+                        condensed={props.condenseTech}
+                        className="bg-gray-300 border border-gray-400"
+                    />
 
-                        <TechBadges
-                            label="Skills"
-                            items={finalSkills}
-                            condensed={props.condenseTech}
-                            className="bg-gray-100 border border-gray-300"
-                        />
+                    <TechBadges
+                        label="Skills"
+                        items={finalSkills}
+                        condensed={props.condenseTech}
+                        className="bg-gray-100 border border-gray-300"
+                    />
 
-                    </div>
 
                 </div>
 
