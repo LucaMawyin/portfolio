@@ -106,10 +106,8 @@ export default function NotificationBubble({
                 color: colours.text,
             } as React.CSSProperties}
             className={`
-                w-[min(360px,calc(100vw-32px))]
-                min-h-16
-                px-4
-                py-2
+                px-5
+                py-3
                 text-sm
                 font-medium
                 whitespace-normal
@@ -117,10 +115,10 @@ export default function NotificationBubble({
                 duration-300
                 ease-out
                 liquid-glass
-                squircle-medium
+                rounded-full
                 flex
                 items-center
-                gap-5
+                gap-3
                 ${
                     visible
                         ? "translate-y-0 opacity-100 scale-100"
@@ -130,7 +128,7 @@ export default function NotificationBubble({
         >
 
             <StatusIcon
-                size={21}
+                size={20}
                 color="white"
                 strokeWidth={2.5}
             />
