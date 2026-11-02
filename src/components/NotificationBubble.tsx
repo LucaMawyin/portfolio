@@ -24,7 +24,7 @@ type NotificationBubbleProps = {
 export default function NotificationBubble({
     notification,
     onRemove,
-    duration = 3000,
+    duration = 100000,
 }: NotificationBubbleProps) {
     const [visible, setVisible] = useState(false);
 
@@ -87,13 +87,6 @@ export default function NotificationBubble({
         warning: AlertTriangle,
     }[notification.status];
 
-    const iconColours = {
-        success: "#30D158",
-        error: "#FF453A",
-        info: "#0A84FF",
-        warning: "#FF9F0A",
-    };
-
     return (
         <div
             style={{
@@ -110,7 +103,7 @@ export default function NotificationBubble({
                 py-3
                 text-sm
                 font-medium
-                whitespace-normal
+                whitespace-nowrap
                 transition-all
                 duration-300
                 ease-out
