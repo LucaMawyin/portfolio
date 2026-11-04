@@ -795,7 +795,6 @@ export default function Projects(props: {
                             overscroll-contain
                             bg-black/50
                             backdrop-blur-[2px]
-                            h-screen!
 
                             ${isClosing
                                 ? "animate-modal-backdrop-out"
