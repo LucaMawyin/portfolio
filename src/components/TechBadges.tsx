@@ -62,7 +62,7 @@ export default function TechBadges({
     };
 
     return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 w-fit">
             {label && (
                 <b className="flex my-auto">{label}:</b>
             )}

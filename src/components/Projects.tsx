@@ -560,6 +560,13 @@ export default function Projects(props: {
                                     isLoggedIn={props.isLoggedIn}
                                     position="start"
                                     className="max-w-full"
+                                    onViewMore={() => {
+                                        cancelHold();
+                                        cancelModalClose();
+                                        setIsClosing(false);
+                                        setIsInteracting(false);
+                                        setHoveredProject(project);
+                                    }}
                                     onHoverStart={() => {
                                         startHold(project);
                                     }}
@@ -662,6 +669,13 @@ export default function Projects(props: {
                                     isLoggedIn={props.isLoggedIn}
                                     position="start"
                                     className="max-w-full"
+                                    onViewMore={() => {
+                                        cancelHold();
+                                        cancelModalClose();
+                                        setIsClosing(false);
+                                        setIsInteracting(false);
+                                        setHoveredProject(project);
+                                    }}
                                     onHoverStart={() => {
                                         startHold(project);
                                     }}

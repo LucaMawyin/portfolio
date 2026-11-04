@@ -502,7 +502,7 @@ export default function TechStack(props: {
                                                                 ? "semibold"
                                                                 : "normal"
                                                         }
-                                                        px={2}
+                                                        px={1.5}
                                                         className={`
                                                             transition-all duration-300
                                                             border

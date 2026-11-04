@@ -8,6 +8,7 @@ import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 import { parseTechName } from "@/lib/techIcons";
 import { EyeOff, Pin } from "lucide-react";
+import Button from "./Button";
 
 export default function ProjectCard( props : {
     project : Project;
@@ -26,6 +27,7 @@ export default function ProjectCard( props : {
     onDelete?: () => void;
     imageHoverText?: string;
     techEntries: Tech[];
+    onViewMore?: () => void;
 }){
     const [isTouching, setIsTouching] = React.useState(false);
     const [isImageHovered, setIsImageHovered] = React.useState(false);
@@ -108,6 +110,24 @@ export default function ProjectCard( props : {
             isGithub = hostname === "github.com" || hostname.endsWith(".github.com");
         } catch {
         }
+
+    const techGroups = [
+        { label: "Languages", items: finalLanguages },
+        { label: "Libraries", items: finalLibraries },
+        { label: "Tools", items: finalTools },
+        { label: "Skills", items: finalSkills },
+    ];
+
+    const techKey = JSON.stringify(techGroups);
+
+    const randomTech = React.useMemo(() => {
+        return techGroups.map((group) => ({
+            ...group,
+            items: group.items.length
+                ? [group.items[0]]
+                : [],
+        }));
+    }, [techKey]);
 
     return (
         <div
@@ -463,39 +483,81 @@ export default function ProjectCard( props : {
                     </ReactMarkdown>
                 </div>
 
-                <div className="flex flex-col gap-2 text-sm!">
-                    <TechBadges
-                        label="Languages"
-                        items={finalLanguages}
-                        condensed={props.condenseTech}
-                        className="bg-gray-200 border border-gray-300"
-                    />
-
-                    <TechBadges
-                        label="Libraries"
-                        items={finalLibraries}
-                        condensed={props.condenseTech}
-                        className="bg-gray-100 border border-gray-300"
-                    />
-
-                    <TechBadges
-                        label="Tools"
-                        items={finalTools}
-                        condensed={props.condenseTech}
-                        className="bg-gray-300 border border-gray-400"
-                    />
-
-                    <TechBadges
-                        label="Skills"
-                        items={finalSkills}
-                        condensed={props.condenseTech}
-                        className="bg-gray-100 border border-gray-300"
-                    />                        
-                </div>
+                {props.condenseTech ? (
+                    <div className="flex flex-col gap-4 text-sm! w-full">
+                        <div className="
+                            flex
+                            flex-wrap
+                            gap-2
+                        ">
+                            {(props.condenseTech ? randomTech : techGroups).map((group, index) => (
+                                <TechBadges
+                                    key={group.label}
+                                    items={group.items}
+                                    condensed={false}
+                                    className={[
+                                        "bg-gray-200 border border-gray-300",
+                                        "bg-gray-100 border border-gray-300",
+                                        "bg-gray-300 border border-gray-400",
+                                        "bg-gray-100 border border-gray-300",
+                                    ][index]}
+                                />
+                            ))}
+                        </div>
 
 
+                        {props.condenseTech && (
+                            <Button
+                                x={2}
+                                y={1}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    props.onViewMore?.();
+                                }}
+                                borderRadius="lg"
+                                text="See More +"
+                                className="
+                                    text-xs
+                                    hover:bg-gray-100
+                                    hover:border-gray-200
+                                    text-gray-700!
+                                    hover:text-gray-900!
+                                    hover:-translate-y-0.5
+                                "
+                            />
+                        )}
+                    </div>                    
+                ) : (
+                    <div className="flex flex-col gap-2 text-sm!">
+                        <TechBadges
+                            label="Languages"
+                            items={finalLanguages}
+                            condensed={props.condenseTech}
+                            className="bg-gray-200 border border-gray-300"
+                        />
 
+                        <TechBadges
+                            label="Libraries"
+                            items={finalLibraries}
+                            condensed={props.condenseTech}
+                            className="bg-gray-100 border border-gray-300"
+                        />
 
+                        <TechBadges
+                            label="Tools"
+                            items={finalTools}
+                            condensed={props.condenseTech}
+                            className="bg-gray-300 border border-gray-400"
+                        />
+
+                        <TechBadges
+                            label="Skills"
+                            items={finalSkills}
+                            condensed={props.condenseTech}
+                            className="bg-gray-100 border border-gray-300"
+                        />                        
+                    </div>
+                )}
 
             </div>
 
