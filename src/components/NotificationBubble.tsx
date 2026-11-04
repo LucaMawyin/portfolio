@@ -24,7 +24,7 @@ type NotificationBubbleProps = {
 export default function NotificationBubble({
     notification,
     onRemove,
-    duration = 100000,
+    duration = 3000,
 }: NotificationBubbleProps) {
     const [visible, setVisible] = useState(false);
 
