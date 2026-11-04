@@ -502,13 +502,14 @@ export default function TechStack(props: {
                                                                 ? "semibold"
                                                                 : "normal"
                                                         }
-                                                        px={1.5}
+                                                        px={(initials || item.iconPath) ? 1.5 : 2}
                                                         className={`
                                                             transition-all duration-300
                                                             border
                                                             cursor-pointer
                                                             hover:-translate-y-1
                                                             hover:shadow-md
+                                                            h-full
                                                             ${
                                                                 isHighlighted
                                                                     ? `
@@ -528,39 +529,42 @@ export default function TechStack(props: {
                                                         `}
                                                         text={parsed.name}
                                                     >
-                                                        <div
-                                                            className={`
-                                                                flex
-                                                                items-center
-                                                                justify-center
-                                                                w-6
-                                                                h-6
-                                                                rounded-md
-                                                                text-[10px]
-                                                                font-semibold
-                                                                ${
-                                                                    isHighlighted
-                                                                        ? `${section.accent.icon} ${section.accent.text}`
-                                                                        : "bg-gray-100 text-gray-500"
-                                                                }
-                                                            `}
-                                                        >
-                                                            {item.iconPath ? (
-                                                                <svg
-                                                                    viewBox="0 0 24 24"
-                                                                    className="w-4 h-4 fill-current"
-                                                                    aria-hidden="true"
-                                                                >
-                                                                    <path
-                                                                        d={
-                                                                            item.iconPath
-                                                                        }
-                                                                    />
-                                                                </svg>
-                                                            ) : (
-                                                                initials
-                                                            )}
-                                                        </div>
+                                                        {(initials || item.iconPath) && (
+                                                            <div
+                                                                className={`
+                                                                    flex
+                                                                    items-center
+                                                                    justify-center
+                                                                    w-6
+                                                                    h-6
+                                                                    rounded-md
+                                                                    text-[10px]
+                                                                    font-semibold
+                                                                    ${
+                                                                        isHighlighted
+                                                                            ? `${section.accent.icon} ${section.accent.text}`
+                                                                            : "bg-gray-100 text-gray-500"
+                                                                    }
+                                                                `}
+                                                            >
+                                                                {item.iconPath ? (
+                                                                    <svg
+                                                                        viewBox="0 0 24 24"
+                                                                        className="w-4 h-4 fill-current"
+                                                                        aria-hidden="true"
+                                                                    >
+                                                                        <path
+                                                                            d={
+                                                                                item.iconPath
+                                                                            }
+                                                                        />
+                                                                    </svg>
+                                                                ) : (
+                                                                    initials
+                                                                )}
+                                                            </div>                                                            
+                                                        )}
+
                                                     </Badge>  
 
                                                 </div>
