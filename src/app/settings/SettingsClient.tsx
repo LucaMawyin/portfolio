@@ -6,13 +6,15 @@ import Button from "@/components/Button";
 import DeleteButton from "@/components/DeleteButton";
 import EditButton from "@/components/EditButton";
 import { useNotifications } from "@/components/NotificationProvider";
+import TechBadges from "@/components/TechBadges";
 import Tile from "@/components/Tile";
 import { capitalizeNamesAndTitles } from "@/lib/capitalizeNamesAndTitles";
 import { getDevice } from "@/lib/getDevice";
 import { getIcon } from "@/lib/info";
 import resizeImage from "@/lib/resizeImage";
 import { shadow } from "@/lib/tags";
-import { ChangePasswordResponse, Project, Session, SiteContent, SocialLink, User } from "@/lib/types";
+import { parseTechName } from "@/lib/techIcons";
+import { ChangePasswordResponse, Project, Session, SiteContent, SocialLink, Tech, User } from "@/lib/types";
 import { Icon } from "@iconify/react";
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -49,6 +51,7 @@ export default function SettingsClient(props : {
     currentSession : Session,
     projects : Project[],
     links: SocialLink[],
+    techEntries: Tech[],
 }){
 
     const router = useRouter();
@@ -534,6 +537,24 @@ export default function SettingsClient(props : {
 
         notify("Successfully removed session", "success")
     }
+
+    const applyTechIconOverrides = (items: string[]) =>
+        items.map((item) => {
+            const parsed = parseTechName(item);
+
+            const existing = props.techEntries.find((entry) => {
+                const tech = parseTechName(entry.name);
+
+                return (
+                    tech.name.toLowerCase() === parsed.name.toLowerCase() &&
+                    !!tech.iconOverride
+                );
+            });
+
+            return existing
+                ? `${parseTechName(existing.name).name}&icon=${parseTechName(existing.name).iconOverride}`
+                : item;
+        });
 
     return (
         <div className="
@@ -1331,217 +1352,255 @@ export default function SettingsClient(props : {
                             mt-4
                             gap-4
                         ">
-                            {visibleProjects.map((project) => (
-                                <div 
-                                    key={project.id}
-                                    className="
-                                        flex
-                                        flex-wrap
-                                        justify-between
-                                        rounded-lg 
-                                        p-4
-                                        gap-2
-                                        transition
-                                        pillow
-                                        squircle-large
-                                        pillow-hover
-                                        hover:cursor-pointer
-                                        hover:scale-(--subtle-scale)
-                                    "
-                                    onClick={() => router.push(`/projects/${project.slug}`)}
-                                >
-                                    <div className="
-                                        flex 
-                                        flex-col 
-                                        flex-1 
-                                        min-w-[70%] 
-                                        wrap-break-word
-                                        [&_span]:text-gray-500
-                                        gap-1
-                                        mb-auto
-                                    ">
-                                        
-                                        {/* PROJECT PIN & HIDDEN */}
+                            {visibleProjects.map((project) => {
+
+                                const tools = (
+                                typeof project.tools === "string"
+                                    ? JSON.parse(project.tools || "[]")
+                                    : project.tools || []
+                                ) as string[];
+
+                                const languages = (
+                                typeof project.languages === "string"
+                                    ? JSON.parse(project.languages || "[]")
+                                    : project.languages || []
+                                ) as string[];
+
+                                const libraries = (
+                                typeof project.libraries === "string"
+                                    ? JSON.parse(project.libraries || "[]")
+                                    : project.libraries || []
+                                ) as string[];
+
+                                const skills = (
+                                typeof project.skills === "string"
+                                    ? JSON.parse(project.skills || "[]")
+                                    : project.skills || []
+                                ) as string[];
+
+                                const finalTools = applyTechIconOverrides(tools);
+                                const finalLanguages = applyTechIconOverrides(languages);
+                                const finalLibraries = applyTechIconOverrides(libraries);
+                                const finalSkills = applyTechIconOverrides(skills);
+
+                                return (
+                                    <div 
+                                        key={project.id}
+                                        className="
+                                            flex
+                                            flex-wrap
+                                            justify-between
+                                            rounded-lg 
+                                            p-6
+                                            gap-2
+                                            transition
+                                            pillow
+                                            squircle-large
+                                            pillow-hover
+                                            hover:cursor-pointer
+                                            hover:scale-(--subtle-scale)
+                                        "
+                                        onClick={() => router.push(`/projects/${project.slug}`)}
+                                    >
                                         <div className="
                                             flex 
-                                            gap-4
+                                            flex-col 
+                                            flex-1 
+                                            min-w-[70%] 
+                                            wrap-break-word
+                                            [&_span]:text-gray-500
+                                            gap-2
+                                            mb-auto
+                                            [&_b]:font-normal
+                                            [&_b]:text-gray-500
                                         ">
-                                            <p className="font-medium">{project.name}</p>
-                                            {project.status && (
+                                            
+                                            {/* PROJECT PIN & HIDDEN */}
+                                            <div className="
+                                                flex 
+                                                gap-4
+                                            ">
+                                                <p className="font-medium">{project.name}</p>
+                                                {project.status && (
 
-                                                <Badge
-                                                    text={project.status}
-                                                    shadow="none"
-                                                    textSize="base"
-                                                    py={0}
-                                                    fontWeight="normal"
-                                                    style={
-                                                        {
-                                                            color: shadow(project.status_colour).glowColour,
-                                                            backgroundColor: project.status_colour,
-                                                            borderColor: shadow(project.status_colour).borderColour,
-                                                        }
-                                                    }
-                                                    className="border font-normal"
-                                                />
-                                        
-                                            )}        
-                                        </div>   
-
-                                        {(project.pinned === 1 || project.hidden === 1) && (
-                                            <div className="flex gap-4">
-                                                {/* PIN */}
-                                                {(project.pinned === 1) && (
                                                     <Badge
-                                                        text="Pinned"
-                                                        className="bg-yellow-400"
+                                                        text={project.status}
                                                         shadow="none"
-                                                    />
-                                                )}
-
-                                                {/* HIDDEN */}
-                                                {(project.hidden === 1) && (
-                                                    <Badge
-                                                        text="Hidden"
-                                                        className="bg-orange-400"
-                                                        shadow="none"
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
-  
-
-                                        {project.tag && (
-                                            <div className="flex gap-2">
-                                                <span>Tag: </span>
-
-                                                <Badge
-                                                    text={project.tag}
-                                                    shadow="none"
-                                                    fontWeight="normal"
-                                                    textSize="base"
-                                                    py={0}
-                                                    className="border"
-                                                    style={
-                                                        {
-                                                            color: shadow(project.colour).glowColour,
-                                                            backgroundColor: project.colour,
-                                                            borderColor: shadow(project.colour).borderColour,
-                                                        }
-                                                    }
-                                                />
-                                            </div>                                            
-                                        )}
-
-                                        <p>
-                                            <span>Created: </span>
-                                            {formatDate(project.created_at)}
-                                        </p>
-                                        <p>
-                                            <span>Updated: </span>
-                                            {new Date(project.updated_at.replace(" ", "T") + "Z").toLocaleString("en-US", {
-                                                year: "numeric",
-                                                month: "short",
-                                                day: "numeric",
-                                                hour: "numeric",
-                                                minute: "2-digit",
-                                            })}
-                                        </p>
-
-                                        {!!project.link && (
-                                            <p className="flex flex-wrap">
-                                                <span>Link:&nbsp;</span>
-                                                <a 
-                                                    href={project.link}
-                                                    target="_blank"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="
-                                                        block
-                                                        max-w-[75%]
-                                                        truncate
-                                                        text-blue-300
-                                                        hover:text-blue-600
-                                                        transition-all
-                                                        ease-in-out
-                                                        duration-50
-                                                    "
-                                                >
-                                                    {project.link}
-                                                </a>
-                                            </p>
-                                        )}
-                                        {project.languages && (
-                                            <p>
-                                                <span>Languages: </span>
-                                                {JSON.parse(project.languages).join(", ")}
-                                            </p>                                            
-                                        )}
-                                        {project.libraries && (
-                                            <p>
-                                                <span>Libraries: </span>
-                                                {JSON.parse(project.libraries).join(", ")}
-                                            </p>                                            
-                                        )}
-                                        {project.tools && (
-                                            <p>
-                                                <span>Tools: </span>
-                                                {JSON.parse(project.tools).join(", ")}
-                                            </p>                                            
-                                        )}
-
-                                    </div>
-
-                                    {/* Delete/Edit Buttons */}
-                                    <div 
-                                        className="flex flex-row gap-4 w-full mt-auto"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <EditButton
-                                            action={() => {
-                                                router.push(`add-project/edit?id=${project.id}`)
-                                            }}
-                                        />
-                                        <DeleteButton
-                                            itemName={project.name}
-                                            action={async () => {
-                                                const res = await fetch("/api/projects", {
-                                                    method: "DELETE",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                    },
-                                                    body: JSON.stringify({ id: project.id }),
-                                                });
-
-                                                if (res.status === 401) {
-                                                    router.push("/login");
-                                                    return;
-                                                }
-
-                                                if (!res.ok) {
-                                                    return;
-                                                }
-                                                
-                                                setProjects((prev) =>
-                                                    prev.map((p) =>
-                                                        p.id === project.id
-                                                            ? {
-                                                                ...p,
-                                                                deleted: 1,
-                                                                deleted_at: new Date()
-                                                                    .toISOString()
-                                                                    .slice(0, 19)
-                                                                    .replace("T", " "),
+                                                        textSize="base"
+                                                        py={0}
+                                                        fontWeight="normal"
+                                                        style={
+                                                            {
+                                                                color: shadow(project.status_colour).glowColour,
+                                                                backgroundColor: project.status_colour,
+                                                                borderColor: shadow(project.status_colour).borderColour,
                                                             }
-                                                            : p
-                                                    )
-                                                );
+                                                        }
+                                                        className="border font-normal"
+                                                    />
+                                            
+                                                )}        
+                                            </div>   
 
-                                                notify("Project deleted successfully", "success");
-                                            }}
-                                        />                        
+                                            {(project.pinned === 1 || project.hidden === 1) && (
+                                                <div className="flex gap-4">
+                                                    {/* PIN */}
+                                                    {(project.pinned === 1) && (
+                                                        <Badge
+                                                            text="Pinned"
+                                                            className="bg-yellow-400"
+                                                            shadow="none"
+                                                        />
+                                                    )}
+
+                                                    {/* HIDDEN */}
+                                                    {(project.hidden === 1) && (
+                                                        <Badge
+                                                            text="Hidden"
+                                                            className="bg-orange-400"
+                                                            shadow="none"
+                                                        />
+                                                    )}
+                                                </div>
+                                            )}
+    
+
+                                            {project.tag && (
+                                                <div className="flex gap-2">
+                                                    <span>Tag: </span>
+
+                                                    <Badge
+                                                        text={project.tag}
+                                                        shadow="none"
+                                                        fontWeight="normal"
+                                                        textSize="base"
+                                                        py={0}
+                                                        className="border"
+                                                        style={
+                                                            {
+                                                                color: shadow(project.colour).glowColour,
+                                                                backgroundColor: project.colour,
+                                                                borderColor: shadow(project.colour).borderColour,
+                                                            }
+                                                        }
+                                                    />
+                                                </div>                                            
+                                            )}
+
+                                            <p>
+                                                <span>Created: </span>
+                                                {formatDate(project.created_at)}
+                                            </p>
+                                            <p>
+                                                <span>Updated: </span>
+                                                {new Date(project.updated_at.replace(" ", "T") + "Z").toLocaleString("en-US", {
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    hour: "numeric",
+                                                    minute: "2-digit",
+                                                })}
+                                            </p>
+
+                                            {!!project.link && (
+                                                <p className="flex flex-wrap">
+                                                    <span>Link:&nbsp;</span>
+                                                    <a 
+                                                        href={project.link}
+                                                        target="_blank"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="
+                                                            block
+                                                            max-w-[75%]
+                                                            truncate
+                                                            text-blue-300
+                                                            hover:text-blue-600
+                                                            transition-all
+                                                            ease-in-out
+                                                            duration-50
+                                                        "
+                                                    >
+                                                        {project.link}
+                                                    </a>
+                                                </p>
+                                            )}
+                                            <TechBadges
+                                                label="Languages"
+                                                items={finalLanguages}
+                                                className="bg-gray-200 border border-gray-300"
+                                            />
+                                            <TechBadges
+                                                label="Libraries"
+                                                items={finalLibraries}
+                                                className="bg-gray-100 border border-gray-300"
+                                            />
+
+                                            <TechBadges
+                                                label="Tools"
+                                                items={finalTools}
+                                                className="bg-gray-300 border border-gray-400"
+                                            />
+
+                                            <TechBadges
+                                                label="Skills"
+                                                items={finalSkills}
+                                                className="bg-gray-100 border border-gray-300"
+                                            />       
+
+                                        </div>
+
+                                        {/* Delete/Edit Buttons */}
+                                        <div 
+                                            className="flex flex-row gap-4 w-full mt-auto"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <EditButton
+                                                action={() => {
+                                                    router.push(`add-project/edit?id=${project.id}`)
+                                                }}
+                                            />
+                                            <DeleteButton
+                                                itemName={project.name}
+                                                action={async () => {
+                                                    const res = await fetch("/api/projects", {
+                                                        method: "DELETE",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                        },
+                                                        body: JSON.stringify({ id: project.id }),
+                                                    });
+
+                                                    if (res.status === 401) {
+                                                        router.push("/login");
+                                                        return;
+                                                    }
+
+                                                    if (!res.ok) {
+                                                        return;
+                                                    }
+                                                    
+                                                    setProjects((prev) =>
+                                                        prev.map((p) =>
+                                                            p.id === project.id
+                                                                ? {
+                                                                    ...p,
+                                                                    deleted: 1,
+                                                                    deleted_at: new Date()
+                                                                        .toISOString()
+                                                                        .slice(0, 19)
+                                                                        .replace("T", " "),
+                                                                }
+                                                                : p
+                                                        )
+                                                    );
+
+                                                    notify("Project deleted successfully", "success");
+                                                }}
+                                            />                        
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div> 
                     }
                     
@@ -1650,234 +1709,273 @@ export default function SettingsClient(props : {
                                 mb-6
                                 gap-4
                             ">
-                                {deletedProjects.map((project) => (
-                                    <div 
-                                        key={project.id}
-                                        className="
-                                            flex
-                                            flex-wrap
-                                            justify-between
-                                            bg-gray-100 
-                                            rounded-lg 
-                                            p-4
-                                            gap-2
-                                            pillow
-                                            squircle-large
-                                        "
-                                    >
-                                        <div className="
-                                            flex 
-                                            flex-col 
-                                            flex-1 
-                                            min-w-[70%] 
-                                            wrap-break-word
-                                            [&_span]:text-gray-500
-                                            gap-1
-                                        ">
-                                            
-                                            {/* PROJECT PIN & HIDDEN */}
+                                {deletedProjects.map((project) => { 
+                                    const tools = (
+                                    typeof project.tools === "string"
+                                        ? JSON.parse(project.tools || "[]")
+                                        : project.tools || []
+                                    ) as string[];
+
+                                    const languages = (
+                                    typeof project.languages === "string"
+                                        ? JSON.parse(project.languages || "[]")
+                                        : project.languages || []
+                                    ) as string[];
+
+                                    const libraries = (
+                                    typeof project.libraries === "string"
+                                        ? JSON.parse(project.libraries || "[]")
+                                        : project.libraries || []
+                                    ) as string[];
+
+                                    const skills = (
+                                    typeof project.skills === "string"
+                                        ? JSON.parse(project.skills || "[]")
+                                        : project.skills || []
+                                    ) as string[];
+
+                                    const finalTools = applyTechIconOverrides(tools);
+                                    const finalLanguages = applyTechIconOverrides(languages);
+                                    const finalLibraries = applyTechIconOverrides(libraries);
+                                    const finalSkills = applyTechIconOverrides(skills);
+
+                                    return (
+                                        <div 
+                                            key={project.id}
+                                            className="
+                                                flex
+                                                flex-wrap
+                                                justify-between
+                                                bg-gray-100 
+                                                rounded-lg 
+                                                p-4
+                                                gap-2
+                                                pillow
+                                                squircle-large
+                                            "
+                                        >
                                             <div className="
                                                 flex 
-                                                gap-4
+                                                flex-col 
+                                                flex-1 
+                                                min-w-[70%] 
+                                                wrap-break-word
+                                                [&_span]:text-gray-500
+                                                gap-1
+                                                [&_b]:font-normal
+                                                [&_b]:text-gray-500
                                             ">
-                                                <p className="font-medium">{project.name}</p>
-                                                {project.status && (
+                                                
+                                                {/* PROJECT PIN & HIDDEN */}
+                                                <div className="
+                                                    flex 
+                                                    gap-4
+                                                ">
+                                                    <p className="font-medium">{project.name}</p>
+                                                    {project.status && (
 
-                                                    <Badge
-                                                        text={project.status}
-                                                        shadow="none"
-                                                        textSize="base"
-                                                        py={0}
-                                                        fontWeight="normal"
-                                                        style={
-                                                            {
-                                                                color: shadow(project.status_colour).glowColour,
-                                                                backgroundColor: project.status_colour,
-                                                                borderColor: shadow(project.status_colour).borderColour,
+                                                        <Badge
+                                                            text={project.status}
+                                                            shadow="none"
+                                                            textSize="base"
+                                                            py={0}
+                                                            fontWeight="normal"
+                                                            style={
+                                                                {
+                                                                    color: shadow(project.status_colour).glowColour,
+                                                                    backgroundColor: project.status_colour,
+                                                                    borderColor: shadow(project.status_colour).borderColour,
+                                                                }
                                                             }
-                                                        }
-                                                        className="border font-normal"
-                                                    />
-                                            
-                                                )}        
-                                            </div>   
+                                                            className="border font-normal"
+                                                        />
+                                                
+                                                    )}        
+                                                </div>   
 
-                                            <div className="flex gap-4">
-                                                {/* DELETED */}
-                                                <Badge
-                                                    text="Deleted"
-                                                    className="bg-red-400"
-                                                    shadow="none"
+                                                <div className="flex gap-4">
+                                                    {/* DELETED */}
+                                                    <Badge
+                                                        text="Deleted"
+                                                        className="bg-red-400"
+                                                        shadow="none"
+                                                    />
+
+                                                    {/* PIN */}
+                                                    {(project.pinned === 1) && (
+                                                        <Badge
+                                                            text="Pinned"
+                                                            className="bg-yellow-400"
+                                                            shadow="none"
+                                                        />
+                                                    )}
+
+                                                    {/* HIDDEN */}
+                                                    {(project.hidden === 1) && (
+                                                        <Badge
+                                                            text="Hidden"
+                                                            className="bg-orange-400"
+                                                            shadow="none"
+                                                        />
+                                                    )}
+                                                </div>
+        
+
+                                                {project.tag && (
+                                                    <div className="flex gap-2">
+                                                        <span>Tag: </span>
+
+                                                        <Badge
+                                                            text={project.tag}
+                                                            shadow="none"
+                                                            fontWeight="normal"
+                                                            textSize="base"
+                                                            py={0}
+                                                            className="border"
+                                                            style={
+                                                                {
+                                                                    color: shadow(project.colour).glowColour,
+                                                                    backgroundColor: project.colour,
+                                                                    borderColor: shadow(project.colour).borderColour,
+                                                                }
+                                                            }
+                                                        />
+                                                    </div>                                            
+                                                )}
+
+                                                <p>
+                                                    <span>Created: </span>
+                                                    {formatDate(project.created_at)}
+                                                </p>
+                                                <p>
+                                                    <span>Updated: </span>
+                                                    {new Date(project.updated_at.replace(" ", "T") + "Z").toLocaleString("en-US", {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        hour: "numeric",
+                                                        minute: "2-digit",
+                                                    })}
+                                                </p>
+                                                <p>
+                                                    <span>Deleted: </span>
+                                                    {new Date(project.deleted_at?.replace(" ", "T") + "Z").toLocaleString("en-US", {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        hour: "numeric",
+                                                        minute: "2-digit",
+                                                    })}
+                                                </p>
+                                                {!!project.link && (
+                                                    <p className="flex flex-wrap">
+                                                        <span>Link:&nbsp;</span>
+                                                        <a 
+                                                            href={project.link}
+                                                            target="_blank"
+                                                            className="
+                                                                block
+                                                                max-w-[75%]
+                                                                truncate
+                                                                text-blue-300
+                                                                hover:text-blue-600
+                                                                transition-all
+                                                                ease-in-out
+                                                                duration-50
+                                                            "
+                                                        >
+                                                            {project.link}
+                                                        </a>
+                                                    </p>
+                                                )}
+
+                                                <TechBadges
+                                                    label="Languages"
+                                                    items={finalLanguages}
+                                                    className="bg-gray-200 border border-gray-300"
                                                 />
 
-                                                {/* PIN */}
-                                                {(project.pinned === 1) && (
-                                                    <Badge
-                                                        text="Pinned"
-                                                        className="bg-yellow-400"
-                                                        shadow="none"
-                                                    />
-                                                )}
+                                                <TechBadges
+                                                    label="Libraries"
+                                                    items={finalLibraries}
+                                                    className="bg-gray-100 border border-gray-300"
+                                                />
 
-                                                {/* HIDDEN */}
-                                                {(project.hidden === 1) && (
-                                                    <Badge
-                                                        text="Hidden"
-                                                        className="bg-orange-400"
-                                                        shadow="none"
-                                                    />
-                                                )}
+                                                <TechBadges
+                                                    label="Tools"
+                                                    items={finalTools}
+                                                    className="bg-gray-300 border border-gray-400"
+                                                />
+
+                                                <TechBadges
+                                                    label="Skills"
+                                                    items={finalSkills}
+                                                    className="bg-gray-100 border border-gray-300"
+                                                />      
+
                                             </div>
-    
 
-                                            {project.tag && (
-                                                <div className="flex gap-2">
-                                                    <span>Tag: </span>
+                                            {/* Delete/Edit Buttons */}
+                                            <div className="flex flex-row gap-4 w-full mt-auto">
+                                                <Button
+                                                    onClick={async () => {
+                                                        const res = await fetch("/api/projects", {
+                                                            method: "PATCH",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                            },
+                                                            body: JSON.stringify({ id: project.id }),
+                                                        });
 
-                                                    <Badge
-                                                        text={project.tag}
-                                                        shadow="none"
-                                                        fontWeight="normal"
-                                                        textSize="base"
-                                                        py={0}
-                                                        className="border"
-                                                        style={
-                                                            {
-                                                                color: shadow(project.colour).glowColour,
-                                                                backgroundColor: project.colour,
-                                                                borderColor: shadow(project.colour).borderColour,
-                                                            }
+                                                        if (res.status === 401) {
+                                                            router.push("/login");
+                                                            return;
                                                         }
-                                                    />
-                                                </div>                                            
-                                            )}
 
-                                            <p>
-                                                <span>Created: </span>
-                                                {formatDate(project.created_at)}
-                                            </p>
-                                            <p>
-                                                <span>Updated: </span>
-                                                {new Date(project.updated_at.replace(" ", "T") + "Z").toLocaleString("en-US", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    hour: "numeric",
-                                                    minute: "2-digit",
-                                                })}
-                                            </p>
-                                            <p>
-                                                <span>Deleted: </span>
-                                                {new Date(project.deleted_at?.replace(" ", "T") + "Z").toLocaleString("en-US", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    hour: "numeric",
-                                                    minute: "2-digit",
-                                                })}
-                                            </p>
-                                            {!!project.link && (
-                                                <p className="flex flex-wrap">
-                                                    <span>Link:&nbsp;</span>
-                                                    <a 
-                                                        href={project.link}
-                                                        target="_blank"
-                                                        className="
-                                                            block
-                                                            max-w-[75%]
-                                                            truncate
-                                                            text-blue-300
-                                                            hover:text-blue-600
-                                                            transition-all
-                                                            ease-in-out
-                                                            duration-50
-                                                        "
-                                                    >
-                                                        {project.link}
-                                                    </a>
-                                                </p>
-                                            )}
-                                            {project.languages && (
-                                                <p>
-                                                    <span>Languages: </span>
-                                                    {JSON.parse(project.languages).join(", ")}
-                                                </p>                                            
-                                            )}
-                                            {project.libraries && (
-                                                <p>
-                                                    <span>Libraries: </span>
-                                                    {JSON.parse(project.libraries).join(", ")}
-                                                </p>                                            
-                                            )}
-                                            {project.tools && (
-                                                <p>
-                                                    <span>Tools: </span>
-                                                    {JSON.parse(project.tools).join(", ")}
-                                                </p>                                            
-                                            )}
+                                                        if (!res.ok) {
+                                                            return;
+                                                        }
 
+                                                        setProjects((prev) =>
+                                                            prev.map((p) =>
+                                                                p.id === project.id
+                                                                    ? { ...p, deleted: 0, deleted_at: null }
+                                                                    : p
+                                                            )
+                                                        );
+
+                                                        notify("Project restored successfully", "success");
+                                                    }}
+                                                >
+                                                    <RotateCcw size={18} />
+                                                </Button>
+                                                <DeleteButton
+                                                    itemName={project.name}
+                                                    action={async () => {
+                                                        const res = await fetch("/api/projects", {
+                                                            method: "DELETE",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                            },
+                                                            body: JSON.stringify({ id: project.id }),
+                                                        });
+
+                                                        if (res.status === 401) {
+                                                            router.push("/login");
+                                                            return;
+                                                        }
+                                                        
+                                                        setProjects((prev) =>
+                                                            prev.filter((p) => p.id !== project.id)
+                                                        );
+
+                                                        notify("Project permanently deleted successfully", "success");
+                                                    }}
+                                                />                        
+                                            </div>
                                         </div>
-
-                                        {/* Delete/Edit Buttons */}
-                                        <div className="flex flex-row gap-4 w-full mt-auto">
-                                            <Button
-                                                onClick={async () => {
-                                                    const res = await fetch("/api/projects", {
-                                                        method: "PATCH",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                        },
-                                                        body: JSON.stringify({ id: project.id }),
-                                                    });
-
-                                                    if (res.status === 401) {
-                                                        router.push("/login");
-                                                        return;
-                                                    }
-
-                                                    if (!res.ok) {
-                                                        return;
-                                                    }
-
-                                                    setProjects((prev) =>
-                                                        prev.map((p) =>
-                                                            p.id === project.id
-                                                                ? { ...p, deleted: 0, deleted_at: null }
-                                                                : p
-                                                        )
-                                                    );
-
-                                                    notify("Project restored successfully", "success");
-                                                }}
-                                            >
-                                                <RotateCcw size={18} />
-                                            </Button>
-                                            <DeleteButton
-                                                itemName={project.name}
-                                                action={async () => {
-                                                    const res = await fetch("/api/projects", {
-                                                        method: "DELETE",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                        },
-                                                        body: JSON.stringify({ id: project.id }),
-                                                    });
-
-                                                    if (res.status === 401) {
-                                                        router.push("/login");
-                                                        return;
-                                                    }
-                                                    
-                                                    setProjects((prev) =>
-                                                        prev.filter((p) => p.id !== project.id)
-                                                    );
-
-                                                    notify("Project permanently deleted successfully", "success");
-                                                }}
-                                            />                        
-                                        </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div> 
                         }
                     </Tile>                

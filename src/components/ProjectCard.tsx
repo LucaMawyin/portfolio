@@ -449,7 +449,7 @@ export default function ProjectCard( props : {
 
                 {/* Text Content */}
 
-                <div className={props.condenseTech ? "text-sm h-fit" : ""}>
+                <div className="text-sm h-fit">
                     <ReactMarkdown
                         components={{
                             p: ({ children }) => (
@@ -463,7 +463,7 @@ export default function ProjectCard( props : {
                     </ReactMarkdown>
                 </div>
 
-                <div className="flex flex-col gap-2 text-sm">
+                <div className="flex flex-col gap-2 text-sm!">
                     <TechBadges
                         label="Languages"
                         items={finalLanguages}
