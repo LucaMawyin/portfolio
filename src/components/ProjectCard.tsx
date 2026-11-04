@@ -459,33 +459,37 @@ export default function ProjectCard( props : {
                         <ReactMarkdown>{props.project.description}</ReactMarkdown>
                     </div>
 
-                    <TechBadges
-                        label="Languages"
-                        items={finalLanguages}
-                        condensed={props.condenseTech}
-                        className="bg-gray-200 border border-gray-300"
-                    />
+                    <div className="flex flex-col gap-2">
+                        <TechBadges
+                            label="Languages"
+                            items={finalLanguages}
+                            condensed={props.condenseTech}
+                            className="bg-gray-200 border border-gray-300"
+                        />
 
-                    <TechBadges
-                        label="Libraries"
-                        items={finalLibraries}
-                        condensed={props.condenseTech}
-                        className="bg-gray-100 border border-gray-300"
-                    />
+                        <TechBadges
+                            label="Libraries"
+                            items={finalLibraries}
+                            condensed={props.condenseTech}
+                            className="bg-gray-100 border border-gray-300"
+                        />
 
-                    <TechBadges
-                        label="Tools"
-                        items={finalTools}
-                        condensed={props.condenseTech}
-                        className="bg-gray-300 border border-gray-400"
-                    />
+                        <TechBadges
+                            label="Tools"
+                            items={finalTools}
+                            condensed={props.condenseTech}
+                            className="bg-gray-300 border border-gray-400"
+                        />
 
-                    <TechBadges
-                        label="Skills"
-                        items={finalSkills}
-                        condensed={props.condenseTech}
-                        className="bg-gray-100 border border-gray-300"
-                    />
+                        <TechBadges
+                            label="Skills"
+                            items={finalSkills}
+                            condensed={props.condenseTech}
+                            className="bg-gray-100 border border-gray-300"
+                        />                        
+                    </div>
+
+
 
 
                 </div>
