@@ -484,49 +484,46 @@ export default function ProjectCard( props : {
                 </div>
 
                 {props.condenseTech ? (
-                    <div className="flex flex-col gap-4 text-sm! w-full">
-                        <div className="
-                            flex
-                            flex-wrap
-                            gap-2
-                        ">
-                            {(props.condenseTech ? randomTech : techGroups).map((group, index) => (
-                                <TechBadges
-                                    key={group.label}
-                                    items={group.items}
-                                    condensed={false}
-                                    className={[
-                                        "bg-gray-200 border border-gray-300",
-                                        "bg-gray-100 border border-gray-300",
-                                        "bg-gray-300 border border-gray-400",
-                                        "bg-gray-100 border border-gray-300",
-                                    ][index]}
-                                />
-                            ))}
-                        </div>
-
-
-                        {props.condenseTech && (
-                            <Button
-                                x={2}
-                                y={1}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    props.onViewMore?.();
-                                }}
-                                borderRadius="lg"
-                                text="See More +"
-                                className="
-                                    text-xs
-                                    hover:bg-gray-100
-                                    hover:border-gray-200
-                                    text-gray-700!
-                                    hover:text-gray-900!
-                                    hover:-translate-y-0.5
-                                "
+                    <div className="
+                        flex
+                        flex-wrap
+                        gap-2
+                    ">
+                        {(props.condenseTech ? randomTech : techGroups).map((group, index) => (
+                            <TechBadges
+                                key={group.label}
+                                items={group.items}
+                                condensed={false}
+                                className={[
+                                    "bg-gray-200 border border-gray-300",
+                                    "bg-gray-100 border border-gray-300",
+                                    "bg-gray-300 border border-gray-400",
+                                    "bg-gray-100 border border-gray-300",
+                                ][index]}
                             />
-                        )}
-                    </div>                    
+                        ))}
+
+                        <Button
+                            x={2}
+                            y={1}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                props.onViewMore?.();
+                            }}
+                            borderRadius="lg"
+                            text="See More +"
+                            className="
+                                text-xs
+                                font-normal
+                                hover:font-semibold
+                                hover:bg-gray-100
+                                hover:border-gray-200
+                                hover:-translate-y-0.5
+                                border-gray-300!
+                            "
+                        />
+                    </div>
+                 
                 ) : (
                     <div className="flex flex-col gap-2 text-sm!">
                         <TechBadges

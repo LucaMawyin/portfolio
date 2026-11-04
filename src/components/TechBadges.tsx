@@ -7,12 +7,14 @@ export default function TechBadges({
     className,
     iconClassName = "",
     condensed = false,
+    onClick,
 }: {
     label?: string;
     items: string[];
     className?: string;
     iconClassName?: string;
     condensed?: boolean;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
     if (items.length === 0) return null;
 
