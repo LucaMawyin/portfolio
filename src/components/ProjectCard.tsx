@@ -469,18 +469,11 @@ export default function ProjectCard( props : {
 
                 {/* Text Content */}
 
-                <div className="text-sm h-fit">
-                    <ReactMarkdown
-                        components={{
-                            p: ({ children }) => (
-                                <p className={props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}>
-                                    {children}
-                                </p>
-                            ),
-                        }}
-                    >
-                        {props.project.description}
-                    </ReactMarkdown>
+                <div className={`
+                    ${props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}
+                    text-sm
+                `}>
+                    <ReactMarkdown>{props.project.description}</ReactMarkdown>
                 </div>
 
                 {props.condenseTech ? (
