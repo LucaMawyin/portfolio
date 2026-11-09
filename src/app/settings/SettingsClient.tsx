@@ -1639,7 +1639,7 @@ export default function SettingsClient(props : {
                             </button>
                         )}                        
 
-                        {visibleCount < projects.length && (
+                        {visibleCount < (projects.length - deletedProjects.length) && (
                             <button
                                 onClick={() => setVisibleCount((prev) => prev + projectLengthIncrement)}
                                 className="
