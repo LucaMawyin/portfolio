@@ -117,49 +117,6 @@ export default function SettingsClient(props : {
     const [savingLink, setSavingLink] = useState(false);
     const [showLinkForm, setShowLinkForm] = useState(false);
     const [editingLinkId, setEditingLinkId] = useState<number | null>(null);
-    async function handleAddLink(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-
-        try {
-            setSavingLink(true);
-
-            const title = linkName.trim();
-            const url = normalizedLink(linkUrl.trim());
-
-            if (!title || !url) {
-                notify("Please enter a title and URL", "error");
-                return;
-            }
-
-            const res = await fetch("/api/links", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ title, url }),
-            });
-
-            const data = await res.json() as any;
-
-            if (!res.ok) {
-                notify(data.error || "Failed to add link", "error");
-                return;
-            }
-
-            setLinks((prev) => [...prev, data.link]);
-
-            setLinkName("");
-            setLinkUrl("");
-
-            notify("Link added successfully", "success");
-            setShowLinkForm(false);
-            router.refresh();
-        } catch {
-            notify("Failed to add link", "error");
-        } finally {
-            setSavingLink(false);
-        }
-    }
 
     async function handleSaveLink(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -576,7 +533,7 @@ export default function SettingsClient(props : {
                     title="Profile Settings"
                     disableHover={true}
                     className="lg:max-w-[40vw] shadow-none pb-0"
-                    childClassName="mt-0! flex-1 justify-center"
+                    childClassName="mt-0! flex-1"
                     titleClassName="border-b"
                     disablePillow={true}
                 >
@@ -868,7 +825,7 @@ export default function SettingsClient(props : {
                 <Tile
                     className="lg:max-w-[40vw] shadow-none pb-0"
                     disableHover={true}
-                    childClassName="mt-0! flex-1 justify-center"
+                    childClassName="mt-0! flex-1"
                     disablePillow={true}
                 >
 

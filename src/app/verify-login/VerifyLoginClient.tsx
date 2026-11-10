@@ -145,8 +145,9 @@ export default function VerifyLoginClient(props : {type : string}) {
                     variant="primary"
                     disabled={loading}
                     className="self-center"
-                    x={8}
+                    x={loading ? 4 : 8}
                     y={3}
+                    loading={loading}
                 />
             </form>
         </div>

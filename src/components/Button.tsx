@@ -1,5 +1,7 @@
 "use client";
 
+import { LoaderCircle } from "lucide-react";
+
 const textSizeClasses = {
     xs: "text-xs",
     sm: "text-sm",
@@ -47,6 +49,7 @@ export default function Button(props: {
     className?: string;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     disabled?: boolean;
+    loading?: boolean;
     name?: string;
     value?: string;
     x?: number;
@@ -65,6 +68,7 @@ export default function Button(props: {
         justify-center
         items-center
         text-center
+        gap-2
         w-fit
         h-fit
         ${props.y ? "" : "py-4"}
@@ -92,7 +96,9 @@ export default function Button(props: {
             "bg-transparent text-gray-950 border border-transparent hover:bg-gray-100 hover:border-gray-200",
     };
 
-    const disabledStyle = props.disabled
+    const isDisabled = props.disabled || props.loading;
+
+    const disabledStyle = isDisabled
         ? "opacity-50 cursor-default!"
         : "";
 
@@ -103,7 +109,7 @@ export default function Button(props: {
                 e.stopPropagation();
                 clickEvent(e);
             }}
-            disabled={props.disabled}
+            disabled={isDisabled}
             className={`
                 ${base}
                 ${styles[props.variant ?? "primary"]}
@@ -123,6 +129,13 @@ export default function Button(props: {
                 }),
             }}
         >
+
+            {props.loading && (
+                <LoaderCircle
+                    size={18}
+                    className="animate-spin shrink-0"
+                />
+            )}
 
             {props.text}
             {props.children}

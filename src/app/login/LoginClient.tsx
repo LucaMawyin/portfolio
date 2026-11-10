@@ -14,55 +14,60 @@ export default function Login(props : {isLoggedIn : boolean}){
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errorKey, setErrorKey] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
     const { notify } = useNotifications();
-    function showError(message: string) {
-        
-        notify(message, "error");
-        setErrorKey(prev => prev + 1);
-    }
 
     // Login form submission
     const router = useRouter();
     const searchParams = useSearchParams();
     const next = searchParams.get("next") || "/";
 
-    async function handleSubmit(e : React.FormEvent){
+    async function handleSubmit(e: React.FormEvent) {
 
         e.preventDefault();
 
-        const response = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({email,password}),
-        });
+        if (isLoading) return;
 
-        let data : LoginResponse;
+        setIsLoading(true);
 
         try {
-            data = await response.json();
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            let data: LoginResponse;
+
+            try {
+                data = await response.json();
+            } catch {
+                notify("Server error", "error");
+                setIsLoading(false);
+                return;
+            }
+
+            if (!response.ok) {
+                notify(data.error || "Login failed", "error");
+                setIsLoading(false);
+                return;
+            }
+
+            if (data.status === "verification_required") {
+                router.push(
+                    `/verify-login?attempt=${data.attemptId}&next=${encodeURIComponent(next)}`
+                );
+                return;
+            }
+
+            setIsLoading(false);
+
         } catch {
-            notify("Server error", "error");
-            return;
+            notify("Unable to connect to the server", "error");
+            setIsLoading(false);
         }
-
-        // Login error response
-        if (!response.ok) {
-            notify(data.error || "Login failed", "error");
-            return;
-        }
-
-
-        // Push to verification page
-        if (data.status === "verification_required") {
-
-            router.push(
-                `/verify-login?attempt=${data.attemptId}&next=${encodeURIComponent(next)}`
-            );
-            return;
-        } 
     }
 
     // Show message if user is already logged in
@@ -200,12 +205,13 @@ export default function Login(props : {isLoggedIn : boolean}){
                     </div>
 
                     <Button
-                        text="Login"
+                        text={isLoading ? "Logging in..." : "Login"}
                         variant="primary"
                         type="submit"
                         className="self-center"
-                        x={8}
+                        x={isLoading ? 4 : 8}
                         y={3}
+                        loading={isLoading}
                     />
                 </form>
             </div>
