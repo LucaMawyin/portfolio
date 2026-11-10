@@ -413,8 +413,8 @@ export default function ExperienceClient(props: {
                         style={{
                             "--card-offset": `-${Math.min(
                                 20,
-                                Math.max(0, experience.length - certificates.length) * 5
-                            )}vh`,
+                                Math.max(0, experience.length - certificates.length) * 4.2
+                            )}%`,
                         } as React.CSSProperties}
                     >
                         Certificates
