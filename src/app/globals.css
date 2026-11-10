@@ -83,7 +83,6 @@ section:not(#hero) {
 	flex-direction: column;
 	opacity: 0;
 	scroll-margin-top: 10dvh;
-	min-height: 90dvh;
 }
 
 section:not(#hero).show {

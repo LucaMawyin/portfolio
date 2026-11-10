@@ -28,12 +28,6 @@ export default function HomeClient(props :
         !page.requireLogin || props.isLoggedIn
     );
 
-    // Handling clicks on navbar links
-    const [pendingScroll, setPendingScroll] = useState<{
-        path: string;
-        id: string;
-    } | null>(null);
-
     const router = useRouter();
     const pathname = usePathname();
     const handleClick = (
@@ -76,10 +70,6 @@ export default function HomeClient(props :
         // Section links
         if (page.section) {
             if (!isHome) {
-                setPendingScroll({
-                    path: "/",
-                    id: page.section,
-                });
 
                 router.push("/");
                 return;
@@ -303,14 +293,13 @@ export default function HomeClient(props :
             </section>
 
             {/* About me */}
-            <section id="about" className="min-h-[75vh]!">
+            <section id="about">
                 <div className="
                     w-full
                     flex flex-wrap-reverse
                     px-[15%]
                     sm:px-[10%]
-                    md:py-0
-                    py-[5%]
+                    py-[7.5%]
                     justify-between
                     my-auto
                 ">  

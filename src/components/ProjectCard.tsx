@@ -469,85 +469,96 @@ export default function ProjectCard( props : {
 
                 {/* Text Content */}
 
-                <div className={`
-                    ${props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}
+                <div className="
+                    flex-1 
+                    flex flex-col
+                    min-w-70
+                    justify-evenly
                     text-sm
-                `}>
-                    <ReactMarkdown>{props.project.description}</ReactMarkdown>
-                </div>
+                    gap-2
+                ">
+                    <div className={`
+                        ${props.condenseTech ? "line-clamp-3 overflow-hidden" : ""}
+                        text-sm
+                    `}>
+                        <ReactMarkdown>{props.project.description}</ReactMarkdown>
+                    </div>
 
-                {props.condenseTech ? (
-                    <div className="
-                        flex
-                        flex-wrap
-                        gap-2
-                    ">
-                        {(props.condenseTech ? randomTech : techGroups).map((group, index) => (
-                            <TechBadges
-                                key={group.label}
-                                items={group.items}
-                                condensed={false}
-                                className={[
-                                    "bg-gray-200 border border-gray-300",
-                                    "bg-gray-100 border border-gray-300",
-                                    "bg-gray-300 border border-gray-400",
-                                    "bg-gray-100 border border-gray-300",
-                                ][index]}
+                    {props.condenseTech ? (
+                        <div className="
+                            flex
+                            flex-wrap
+                            gap-2
+                        ">
+                            {(props.condenseTech ? randomTech : techGroups).map((group, index) => (
+                                <TechBadges
+                                    key={group.label}
+                                    items={group.items}
+                                    condensed={false}
+                                    className={[
+                                        "bg-gray-200 border border-gray-300",
+                                        "bg-gray-100 border border-gray-300",
+                                        "bg-gray-300 border border-gray-400",
+                                        "bg-gray-100 border border-gray-300",
+                                    ][index]}
+                                />
+                            ))}
+
+                            <Button
+                                x={2}
+                                y={1}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    props.onViewMore?.();
+                                }}
+                                borderRadius="lg"
+                                text="See More +"
+                                className="
+                                    text-xs
+                                    font-normal
+                                    hover:font-semibold
+                                    hover:bg-gray-100
+                                    hover:border-gray-200
+                                    hover:-translate-y-0.5
+                                    border-gray-300!
+                                "
                             />
-                        ))}
+                        </div>
+                    
+                    ) : (
+                        <div className="flex flex-col gap-2 text-sm!">
+                            <TechBadges
+                                label="Languages"
+                                items={finalLanguages}
+                                condensed={props.condenseTech}
+                                className="bg-gray-200 border border-gray-300"
+                            />
 
-                        <Button
-                            x={2}
-                            y={1}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                props.onViewMore?.();
-                            }}
-                            borderRadius="lg"
-                            text="See More +"
-                            className="
-                                text-xs
-                                font-normal
-                                hover:font-semibold
-                                hover:bg-gray-100
-                                hover:border-gray-200
-                                hover:-translate-y-0.5
-                                border-gray-300!
-                            "
-                        />
-                    </div>
-                 
-                ) : (
-                    <div className="flex flex-col gap-2 text-sm!">
-                        <TechBadges
-                            label="Languages"
-                            items={finalLanguages}
-                            condensed={props.condenseTech}
-                            className="bg-gray-200 border border-gray-300"
-                        />
+                            <TechBadges
+                                label="Libraries"
+                                items={finalLibraries}
+                                condensed={props.condenseTech}
+                                className="bg-gray-100 border border-gray-300"
+                            />
 
-                        <TechBadges
-                            label="Libraries"
-                            items={finalLibraries}
-                            condensed={props.condenseTech}
-                            className="bg-gray-100 border border-gray-300"
-                        />
+                            <TechBadges
+                                label="Tools"
+                                items={finalTools}
+                                condensed={props.condenseTech}
+                                className="bg-gray-300 border border-gray-400"
+                            />
 
-                        <TechBadges
-                            label="Tools"
-                            items={finalTools}
-                            condensed={props.condenseTech}
-                            className="bg-gray-300 border border-gray-400"
-                        />
+                            <TechBadges
+                                label="Skills"
+                                items={finalSkills}
+                                condensed={props.condenseTech}
+                                className="bg-gray-100 border border-gray-300"
+                            />                        
+                        </div>
+                    )}                   
 
-                        <TechBadges
-                            label="Skills"
-                            items={finalSkills}
-                            condensed={props.condenseTech}
-                            className="bg-gray-100 border border-gray-300"
-                        />                        
-                    </div>
-                )}
+
+                </div>
 
             </div>
 
