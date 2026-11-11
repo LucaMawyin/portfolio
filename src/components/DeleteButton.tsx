@@ -83,11 +83,12 @@ export default function DeleteButton({
                             z-10000
                             flex items-center justify-center
                             bg-black/50
-                            backdrop-blur-
+                            backdrop-blur-[2px]
                             p-4
                             touch-none
                         "
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation();
                             if (!isPending) setOpen(false);
                         }}
                     >

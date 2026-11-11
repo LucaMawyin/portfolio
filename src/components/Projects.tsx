@@ -835,7 +835,8 @@ export default function Projects(props: {
                                 w-full
                                 flex
                                 justify-center
-                                p-4
+                                px-4
+                                py-8
                             "
                         >
                             <div
