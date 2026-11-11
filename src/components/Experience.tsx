@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { formatToMonthYear } from "@/lib/formatMonthYear";
 import DeleteButton from "./DeleteButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Badge from "./Badge";
 import AddButton from "./AddButton";
 import EditButton from "./EditButton";
@@ -62,6 +62,19 @@ export default function ExperienceClient(props: {
                 ? `${parseTechName(existing.name).name}&icon=${parseTechName(existing.name).iconOverride}`
                 : item;
         });
+
+    const [isLandscape, setIsLandscape] = useState(
+        window.innerWidth > window.innerHeight
+    );
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLandscape(window.innerWidth > window.innerHeight);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
     
     return (
         <div
@@ -413,8 +426,9 @@ export default function ExperienceClient(props: {
                         style={{
                             "--card-offset": `-${Math.min(
                                 20,
-                                Math.max(0, experience.length - certificates.length) * 4.2
-                            )}%`,
+                                Math.max(0, experience.length - certificates.length) *
+                                    (isLandscape ? 5 : 4.15)
+                            )}vh`,
                         } as React.CSSProperties}
                     >
                         Certificates

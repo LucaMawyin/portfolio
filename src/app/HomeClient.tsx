@@ -348,7 +348,13 @@ export default function HomeClient(props :
                         <img
                             src={`/images/headshot?v=${props.content.headshot_updated_at}`}
                             alt="Luca Mawyin"
-                            className="my-auto w-full h-auto object-contain rounded-2xl"
+                            className="
+                                my-auto 
+                                w-full 
+                                h-auto 
+                                object-contain 
+                                squircle-large
+                            "
                         />
                     </FadeInOnView>
                 </div>
